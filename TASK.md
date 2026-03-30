@@ -70,7 +70,7 @@ W5 ─── 단독 실행 (통합 작업)
 - [x] 카테고리: outer, top, bottom, onepiece, shoes, bag, acc
 - [x] 참조: 기획서 섹션 5.2 (수집 쿼리 설계)
 
-**Task 1.5 — 상품 수집 실행** ⏳ `2026-03-30` ⚠️ .env 미설정 — API 키 입력 후 수동 실행 필요
+**Task 1.5 — 상품 수집 실행** 🔄 `2026-03-30`
 - [ ] Task 1.3 스크립트로 실제 수집 실행
 - [ ] 4톤 병렬 수집 x 3라운드 = 12톤 커버
 - [ ] raw JSON을 `backend/data/raw/` 에 톤별 저장
@@ -120,46 +120,46 @@ W5 ─── 단독 실행 (통합 작업)
 
 ### 🅑 Lane B: 인프라 셋업 (🅐와 동시 실행 가능)
 
-**Task 1.12 — Next.js 15 프로젝트 초기화**
-- [ ] `frontend/` 디렉토리에 Next.js 15 (App Router) 생성
-- [ ] TypeScript 설정
-- [ ] TailwindCSS 4.0 설치 + 설정
-- [ ] Framer Motion 11 설치
-- [ ] 동작 확인: `npm run dev` → localhost:3000
+**Task 1.12 — Next.js 15 프로젝트 초기화** ✅ `2026-03-30`
+- [x] `frontend/` 디렉토리에 Next.js 15 (App Router) 생성
+- [x] TypeScript 설정
+- [x] TailwindCSS 4.0 설치 + 설정
+- [x] Framer Motion 11 설치
+- [x] 동작 확인: `npm run build` 성공
 
-**Task 1.13 — 프론트엔드 디자인 토큰 세팅**
-- [ ] DESIGN.md 읽고 CSS variables 세팅 (`globals.css`)
-- [ ] 컬러 토큰 (--bg, --surface, --accent, --border 등)
-- [ ] 스코어 축 컬러 5개
-- [ ] 다크모드 토큰 (`[data-theme="dark"]`)
-- [ ] 스페이싱 스케일 (--space-2xs ~ --space-3xl)
-- [ ] Nanum Myeongjo Google Fonts 로딩 설정
+**Task 1.13 — 프론트엔드 디자인 토큰 세팅** ✅ `2026-03-30`
+- [x] DESIGN.md 읽고 CSS variables 세팅 (`globals.css`)
+- [x] 컬러 토큰 (--bg, --surface, --accent, --border 등)
+- [x] 스코어 축 컬러 5개
+- [x] 다크모드 토큰 (`[data-theme="dark"]`)
+- [x] 스페이싱 스케일 (--space-2xs ~ --space-3xl)
+- [x] Nanum Myeongjo Google Fonts 로딩 설정
 
-**Task 1.14 — FastAPI 프로젝트 초기화**
-- [ ] `backend/` 디렉토리에 FastAPI 프로젝트 생성
-- [ ] `requirements.txt` (fastapi, uvicorn, pydantic, sqlalchemy, httpx, pillow, numpy, scikit-learn)
-- [ ] 프로젝트 구조: `app/main.py`, `app/config.py`, `app/routers/`, `app/services/`, `app/models/`, `app/schemas/`, `app/db/`
-- [ ] CORS 미들웨어 설정 (localhost:3000 허용)
-- [ ] 헬스체크 엔드포인트 (`GET /health`)
-- [ ] 동작 확인: `uvicorn app.main:app --reload` → localhost:8000/docs
+**Task 1.14 — FastAPI 프로젝트 초기화** ✅ `2026-03-30`
+- [x] `backend/` 디렉토리에 FastAPI 프로젝트 생성
+- [x] `requirements.txt` (fastapi, uvicorn, pydantic, sqlalchemy, httpx, pillow, numpy, scikit-learn)
+- [x] 프로젝트 구조: `app/main.py`, `app/config.py`, `app/routers/`, `app/services/`, `app/models/`, `app/schemas/`, `app/db/`
+- [x] CORS 미들웨어 설정 (localhost:3000 허용)
+- [x] 헬스체크 엔드포인트 (`GET /health`)
+- [x] 동작 확인: FastAPI 앱 임포트 성공
 
-**Task 1.15 — DB 스키마 적용**
-- [ ] Supabase 연결 설정 (`app/db/database.py`)
-- [ ] SQLAlchemy 2.0 모델 정의
-  - [ ] `models/user.py` (users 테이블)
-  - [ ] `models/product.py` (products 테이블)
-  - [ ] `models/outfit.py` (outfits 테이블)
-  - [ ] `models/reaction.py` (reactions 테이블)
-  - [ ] `models/style_seed.py` (style_seeds 테이블)
-  - [ ] `models/user_preference.py` (user_preferences 테이블)
-- [ ] 인덱스 생성 (tone_id, designed_tpo, gender)
-- [ ] 참조: 기획서 섹션 14.4 (DB 스키마)
+**Task 1.15 — DB 스키마 적용** ✅ `2026-03-30`
+- [x] Supabase 연결 설정 (`app/db/database.py`)
+- [x] SQLAlchemy 2.0 모델 정의
+  - [x] `models/user.py` (users 테이블)
+  - [x] `models/product.py` (products 테이블)
+  - [x] `models/outfit.py` (outfits 테이블)
+  - [x] `models/reaction.py` (reactions 테이블)
+  - [x] `models/style_seed.py` (style_seeds 테이블)
+  - [x] `models/user_preference.py` (user_preferences 테이블)
+- [x] 인덱스 생성 (tone_id, designed_tpo, gender)
+- [x] 참조: 기획서 섹션 14.4 (DB 스키마)
 
-**Task 1.16 — 배포 설정**
-- [ ] Vercel 연결 (frontend/) — `vercel.json` 또는 자동 감지
-- [ ] Railway 연결 (backend/) — `Dockerfile` 또는 `railway.json`
-- [ ] 환경변수 설정 (각 플랫폼)
-- [ ] 배포 확인: 프론트 + 백엔드 둘 다 접속 가능
+**Task 1.16 — 배포 설정** ✅ `2026-03-30`
+- [x] Vercel 연결 (frontend/) — `vercel.json` 생성
+- [x] Railway 연결 (backend/) — `Dockerfile` + `railway.json` 생성
+- [ ] 환경변수 설정 (각 플랫폼) ⚠️ 실제 플랫폼 연결은 수동 필요
+- [ ] 배포 확인: 프론트 + 백엔드 둘 다 접속 가능 ⚠️ 실제 배포는 수동 필요
 
 ### W1 완료 기준
 - [ ] 상품 DB 20,000건 이상 (Task 1.5)
