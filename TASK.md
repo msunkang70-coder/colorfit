@@ -90,12 +90,12 @@ W5 ─── 단독 실행 (통합 작업)
 - [x] 가장 가까운 톤 ID 매핑 (`tone_id` 부여)
 - [x] 참조: 기획서 섹션 7.1 (상품 색상 → 톤 매핑 흐름도)
 
-**Task 1.8 — 전처리: 하이브리드 카테고리 분류**
-- [ ] 키워드 기반 분류 딕셔너리 (31개 카테고리 x 3~5 키워드)
-- [ ] 키워드 매칭 실패 시 Gemini Flash 폴백 분류
-- [ ] LLM 분류 결과 캐싱 (`backend/data/llm_cache.json`)
-- [ ] 분류 속성: category, silhouette, formality, tpo, gender
-- [ ] 참조: 기획서 섹션 5.4.1 (하이브리드 분류 체계)
+**Task 1.8 — 전처리: 하이브리드 카테고리 분류** ✅ `2026-03-30`
+- [x] 키워드 기반 분류 딕셔너리 (31개 카테고리 x 3~5 키워드)
+- [x] 키워드 매칭 실패 시 Gemini Flash 폴백 분류
+- [x] LLM 분류 결과 캐싱 (`backend/data/llm_cache.json`)
+- [x] 분류 속성: category, silhouette, formality, tpo, gender
+- [x] 참조: 기획서 섹션 5.4.1 (하이브리드 분류 체계)
 
 **Task 1.9 — 코디 레시피 JSON 정의**
 - [ ] `backend/data/outfit_recipes.json` 생성
