@@ -1,0 +1,33 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(grep -r import.*useRouter '/c/Users/MS/OneDrive/AI Study/Final' Project/colorfit/frontend/app --include=*.tsx)",
+      "Bash(grep -r mall_url '/c/Users/MS/OneDrive/AI Study/Final' Project/colorfit/frontend/app --include=*.tsx)",
+      "Bash(npx tsc:*)",
+      "Bash(xargs grep:*)",
+      "Bash(grep -r outfit.*outfit '/c/Users/MS/OneDrive/AI Study/Final Project/colorfit/frontend/app' --include=*.tsx)",
+      "Bash(grep -r \"Link\\\\|router.push\\\\|navigate\" '/c/Users/MS/OneDrive/AI Study/Final Project/colorfit/frontend/components' --include=*.tsx)",
+      "Bash(npm run:*)",
+      "Bash(python -m py_compile app/main.py)",
+      "Bash(python -m py_compile app/routers/reaction.py)",
+      "Bash(python -m py_compile app/routers/onboarding.py)",
+      "Bash(python -m py_compile app/routers/feed.py)",
+      "Bash(python -m py_compile app/routers/outfit.py)",
+      "Bash(find '/c/Users/MS/OneDrive/AI Study/Final Project/colorfit/backend' -name .env* -o -name requirements*.txt)",
+      "Bash(grep -n \"from fastapi import\" \"/c/Users/MS/OneDrive/AI Study/Final Project/colorfit/backend/app/routers\"/*.py)",
+      "Bash(grep -n settings. /c/Users/MS/OneDrive/AI Study/Final Project/colorfit/backend/app/**/*.py)",
+      "Bash(grep -n \"token.split\" app/routers/*.py)",
+      "Bash(grep -n \"all_item_ids\" app/services/*.py)",
+      "Bash(grep -n \".in_\\(all_ids\\)\" app/services/*.py app/routers/*.py)",
+      "Bash(python3 -c \"from sqlalchemy import and_; print\\(''SQLAlchemy AND available''\\)\")",
+      "Bash(python3:*)",
+      "Bash(python -m py_compile app/services/compare.py)",
+      "Bash(python -m py_compile app/services/oneshot.py)",
+      "Bash(find /c/Users/MS/OneDrive/AI Study/Final Project/colorfit -name *demo* -o -name *presentation* -o -name *시연* -o -name *발표*)",
+      "Bash(rm -rf .next)",
+      "Bash(npx rimraf:*)",
+      "Bash(mkdir -p \"$DST/backend/app/routers\" \"$DST/backend/app/schemas\" \"$DST/backend/app/services\" \"$DST/backend/app/models\" \"$DST/backend/app/db\" \"$DST/backend/scripts\" \"$DST/backend/data\" \"$DST/backend/tests\")",
+      "Bash(mkdir -p \"$DST/frontend/app\" \"$DST/frontend/components\" \"$DST/frontend/lib\" \"$DST/frontend/public\" \"$DST/frontend/types\")"
+    ]
+  }
+}
