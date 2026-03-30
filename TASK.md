@@ -70,19 +70,19 @@ W5 ─── 단독 실행 (통합 작업)
 - [x] 카테고리: outer, top, bottom, onepiece, shoes, bag, acc
 - [x] 참조: 기획서 섹션 5.2 (수집 쿼리 설계)
 
-**Task 1.5 — 상품 수집 실행**
+**Task 1.5 — 상품 수집 실행** ⏳ `2026-03-30` ⚠️ .env 미설정 — API 키 입력 후 수동 실행 필요
 - [ ] Task 1.3 스크립트로 실제 수집 실행
 - [ ] 4톤 병렬 수집 x 3라운드 = 12톤 커버
 - [ ] raw JSON을 `backend/data/raw/` 에 톤별 저장
 - [ ] 목표: 25,000개 상품
 - [ ] 톤별 수집량 확인 (최소 1,000개/톤)
 
-**Task 1.6 — 전처리: 상품 정규화**
-- [ ] `backend/scripts/rebuild_from_tones.py` 생성
-- [ ] HTML 태그 제거 (`<b>` 등 title에 포함된 태그)
-- [ ] 브랜드명 추출 (title 파싱 또는 mallName 기반)
-- [ ] 정규화 결과를 `NormalizedProduct` 형식으로 출력
-- [ ] 참조: 기획서 섹션 5.4 (전처리 과정)
+**Task 1.6 — 전처리: 상품 정규화** ✅ `2026-03-30`
+- [x] `backend/scripts/rebuild_from_tones.py` 생성
+- [x] HTML 태그 제거 (`<b>` 등 title에 포함된 태그)
+- [x] 브랜드명 추출 (title 파싱 또는 mallName 기반)
+- [x] 정규화 결과를 `NormalizedProduct` 형식으로 출력
+- [x] 참조: 기획서 섹션 5.4 (전처리 과정)
 
 **Task 1.7 — 전처리: 이미지 색상 추출 + 톤 매핑**
 - [ ] PIL + scikit-learn K-means로 상위 3개 dominant color 추출
