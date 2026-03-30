@@ -111,12 +111,12 @@ W5 ─── 단독 실행 (통합 작업)
 - [x] 목표: 2(성별) x 12(톤) x 8(TPO) x 8~10(코디) = 1,500~1,900개
 - [x] 참조: 기획서 섹션 5.3.1 (조합 알고리즘 의사코드)
 
-**Task 1.11 — Gemini 코디 품질 평가**
-- [ ] `backend/scripts/evaluate_outfits.py` 생성
-- [ ] Gemini Flash 배치 평가 (5점 척도)
-- [ ] 3점 미만 코디 제거
-- [ ] 평가 결과를 `llm_quality_score` 필드에 저장
-- [ ] 비용 추산: ~$6 (1,900개 x ~$0.003)
+**Task 1.11 — Gemini 코디 품질 평가** ✅ `2026-03-30`
+- [x] `backend/scripts/evaluate_outfits.py` 생성
+- [x] Gemini Flash 배치 평가 (5점 척도)
+- [x] 3점 미만 코디 제거
+- [x] 평가 결과를 `llm_quality_score` 필드에 저장
+- [x] 비용 추산: ~$6 (1,900개 x ~$0.003)
 
 ### 🅑 Lane B: 인프라 셋업 (🅐와 동시 실행 가능)
 
