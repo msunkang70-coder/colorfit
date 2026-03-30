@@ -55,13 +55,13 @@ W5 ─── 단독 실행 (통합 작업)
 - [x] 인지도 있는 브랜드 120개+ 리스트 (무신사 스탠다드, 유니클로, COS 등)
 - [x] 형식: `["무신사 스탠다드", "유니클로", ...]`
 
-**Task 1.3 — 네이버 쇼핑 API 수집 스크립트 기본 구조**
-- [ ] `backend/scripts/curate_by_tone.py` 생성
-- [ ] 네이버 쇼핑 API 호출 함수 (`search_products(query, display, start)`)
-- [ ] API 응답 파싱 + raw JSON 저장
-- [ ] Rate limit 처리 (exponential backoff)
-- [ ] `.env`에서 `NAVER_CLIENT_ID`, `NAVER_CLIENT_SECRET` 읽기
-- [ ] 테스트: API 연결 테스트 스크립트
+**Task 1.3 — 네이버 쇼핑 API 수집 스크립트 기본 구조** ✅ `2026-03-30`
+- [x] `backend/scripts/curate_by_tone.py` 생성
+- [x] 네이버 쇼핑 API 호출 함수 (`search_products(query, display, start)`)
+- [x] API 응답 파싱 + raw JSON 저장
+- [x] Rate limit 처리 (exponential backoff)
+- [x] `.env`에서 `NAVER_CLIENT_ID`, `NAVER_CLIENT_SECRET` 읽기
+- [x] 테스트: API 연결 테스트 스크립트
 
 **Task 1.4 — 톤별 수집 키워드 설계**
 - [ ] `backend/data/tone_queries.json` 생성
