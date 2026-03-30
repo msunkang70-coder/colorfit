@@ -27,6 +27,12 @@ Thumbs.db
 dist/
 build/
 
+# 수집 데이터 (대용량)
+backend/data/raw/
+backend/data/normalized/
+backend/data/llm_cache.json
+backend/data/eval_cache.json
+
 # 임시 파일
 /tmp/
 *.log
