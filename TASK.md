@@ -63,12 +63,12 @@ W5 ─── 단독 실행 (통합 작업)
 - [x] `.env`에서 `NAVER_CLIENT_ID`, `NAVER_CLIENT_SECRET` 읽기
 - [x] 테스트: API 연결 테스트 스크립트
 
-**Task 1.4 — 톤별 수집 키워드 설계**
-- [ ] `backend/data/tone_queries.json` 생성
-- [ ] 12톤별 검색 키워드 리스트 (톤 x 카테고리)
-- [ ] 예: `"spring_warm_light": ["봄 코랄 블라우스", "아이보리 원피스", ...]`
-- [ ] 카테고리: outer, top, bottom, onepiece, shoes, bag, acc
-- [ ] 참조: 기획서 섹션 5.2 (수집 쿼리 설계)
+**Task 1.4 — 톤별 수집 키워드 설계** ✅ `2026-03-30`
+- [x] `backend/data/tone_queries.json` 생성
+- [x] 12톤별 검색 키워드 리스트 (톤 x 카테고리) — 314개 쿼리
+- [x] 예: `"spring_warm_light": ["봄 코랄 블라우스", "아이보리 원피스", ...]`
+- [x] 카테고리: outer, top, bottom, onepiece, shoes, bag, acc
+- [x] 참조: 기획서 섹션 5.2 (수집 쿼리 설계)
 
 **Task 1.5 — 상품 수집 실행**
 - [ ] Task 1.3 스크립트로 실제 수집 실행
