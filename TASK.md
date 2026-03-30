@@ -97,11 +97,11 @@ W5 ─── 단독 실행 (통합 작업)
 - [x] 분류 속성: category, silhouette, formality, tpo, gender
 - [x] 참조: 기획서 섹션 5.4.1 (하이브리드 분류 체계)
 
-**Task 1.9 — 코디 레시피 JSON 정의**
-- [ ] `backend/data/outfit_recipes.json` 생성
-- [ ] 여성 TPO 8종 x 무드 레시피 (필수/선택/금지 카테고리, 포멀도 범위)
-- [ ] 남성 TPO 8종 x 무드 레시피
-- [ ] 참조: 기획서 섹션 5.3.1 (TPO x 무드 레시피 매트릭스)
+**Task 1.9 — 코디 레시피 JSON 정의** ✅ `2026-03-30`
+- [x] `backend/data/outfit_recipes.json` 생성
+- [x] 여성 TPO 8종 x 무드 레시피 (필수/선택/금지 카테고리, 포멀도 범위)
+- [x] 남성 TPO 8종 x 무드 레시피
+- [x] 참조: 기획서 섹션 5.3.1 (TPO x 무드 레시피 매트릭스)
 
 **Task 1.10 — 코디 조합 생성 알고리즘**
 - [ ] 레시피 기반 코디 조합 생성 스크립트

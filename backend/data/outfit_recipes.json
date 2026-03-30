@@ -1,0 +1,166 @@
+{
+  "female": [
+    {
+      "tpo": "interview",
+      "moods": ["classic", "minimal"],
+      "required": [["셔츠", "블라우스"], ["슬랙스", "스커트"]],
+      "optional": ["자켓", "로퍼", "힐"],
+      "forbidden": ["후드", "맨투맨", "스니커즈", "크롭탑", "레깅스", "숏팬츠"],
+      "formality_range": [3, 5],
+      "silhouette_prefer": ["slim", "fitted", "regular"],
+      "target_count": 10
+    },
+    {
+      "tpo": "commute",
+      "moods": ["classic", "minimal"],
+      "required": [["셔츠", "블라우스", "니트"], ["슬랙스"]],
+      "optional": ["자켓", "로퍼", "토트백"],
+      "forbidden": ["숏팬츠", "샌들", "레깅스", "크롭탑"],
+      "formality_range": [3, 4],
+      "silhouette_prefer": ["slim", "fitted", "regular"],
+      "target_count": 10
+    },
+    {
+      "tpo": "date",
+      "moods": ["lovely", "casual", "editorial"],
+      "required": [["니트", "블라우스", "원피스"], ["스커트", "슬랙스"]],
+      "optional": ["가디건", "힐", "크로스백"],
+      "forbidden": ["패딩", "조거팬츠", "후드"],
+      "formality_range": [2, 4],
+      "silhouette_prefer": ["fitted", "slim", "regular"],
+      "target_count": 10
+    },
+    {
+      "tpo": "weekend",
+      "moods": ["casual", "street"],
+      "required": [["티셔츠", "맨투맨", "니트"], ["청바지", "와이드팬츠"]],
+      "optional": ["가디건", "스니커즈"],
+      "forbidden": ["자켓", "힐", "블라우스"],
+      "formality_range": [1, 3],
+      "silhouette_prefer": ["regular", "oversized"],
+      "target_count": 10
+    },
+    {
+      "tpo": "campus",
+      "moods": ["casual", "street"],
+      "required": [["티셔츠", "맨투맨", "후드"], ["청바지", "조거팬츠"]],
+      "optional": ["스니커즈", "크로스백"],
+      "forbidden": ["코트", "힐", "토트백"],
+      "formality_range": [1, 2],
+      "silhouette_prefer": ["regular", "oversized"],
+      "target_count": 10
+    },
+    {
+      "tpo": "travel",
+      "moods": ["casual"],
+      "required": [["티셔츠", "니트"], ["와이드팬츠", "청바지"]],
+      "optional": ["점퍼", "스니커즈"],
+      "forbidden": ["힐", "자켓", "블라우스"],
+      "formality_range": [1, 3],
+      "silhouette_prefer": ["regular", "oversized", "wide"],
+      "target_count": 10
+    },
+    {
+      "tpo": "event",
+      "moods": ["classic", "editorial"],
+      "required": [["블라우스", "원피스"], ["스커트", "슬랙스"]],
+      "optional": ["코트", "힐", "크로스백"],
+      "forbidden": ["후드", "스니커즈", "크로스백"],
+      "formality_range": [4, 5],
+      "silhouette_prefer": ["slim", "fitted"],
+      "target_count": 10
+    },
+    {
+      "tpo": "workout",
+      "moods": ["street"],
+      "required": [["티셔츠", "크롭탑", "탱크탑"], ["레깅스", "숏팬츠"]],
+      "optional": ["스니커즈"],
+      "forbidden": ["블라우스", "힐", "코트", "자켓"],
+      "formality_range": [1, 1],
+      "silhouette_prefer": ["fitted", "slim", "regular"],
+      "target_count": 8
+    }
+  ],
+  "male": [
+    {
+      "tpo": "interview",
+      "moods": ["classic", "dandy"],
+      "required": [["셔츠"], ["슬랙스"]],
+      "optional": ["자켓", "로퍼", "부츠"],
+      "forbidden": ["후드", "맨투맨", "스니커즈", "숏팬츠", "조거팬츠"],
+      "formality_range": [4, 5],
+      "silhouette_prefer": ["slim", "fitted", "regular"],
+      "target_count": 10
+    },
+    {
+      "tpo": "commute",
+      "moods": ["classic", "minimal"],
+      "required": [["셔츠", "니트"], ["슬랙스", "치노"]],
+      "optional": ["자켓", "로퍼", "토트백"],
+      "forbidden": ["후드", "조거팬츠", "샌들"],
+      "formality_range": [3, 4],
+      "silhouette_prefer": ["slim", "regular"],
+      "target_count": 10
+    },
+    {
+      "tpo": "date",
+      "moods": ["dandy", "minimal", "casual"],
+      "required": [["니트", "셔츠"], ["슬랙스", "청바지"]],
+      "optional": ["자켓", "부츠", "크로스백"],
+      "forbidden": ["조거팬츠", "숏팬츠", "후드"],
+      "formality_range": [2, 4],
+      "silhouette_prefer": ["slim", "fitted", "regular"],
+      "target_count": 10
+    },
+    {
+      "tpo": "weekend",
+      "moods": ["casual", "amekaji"],
+      "required": [["티셔츠", "맨투맨"], ["청바지", "치노"]],
+      "optional": ["가디건", "스니커즈"],
+      "forbidden": ["자켓", "슬랙스"],
+      "formality_range": [1, 3],
+      "silhouette_prefer": ["regular", "oversized"],
+      "target_count": 10
+    },
+    {
+      "tpo": "campus",
+      "moods": ["casual", "street"],
+      "required": [["맨투맨", "후드", "티셔츠"], ["청바지", "조거팬츠"]],
+      "optional": ["스니커즈", "크로스백"],
+      "forbidden": ["자켓", "로퍼", "슬랙스"],
+      "formality_range": [1, 2],
+      "silhouette_prefer": ["regular", "oversized"],
+      "target_count": 10
+    },
+    {
+      "tpo": "travel",
+      "moods": ["casual"],
+      "required": [["티셔츠", "반팔"], ["숏팬츠", "청바지"]],
+      "optional": ["점퍼", "스니커즈", "샌들"],
+      "forbidden": ["자켓", "슬랙스"],
+      "formality_range": [1, 2],
+      "silhouette_prefer": ["regular", "oversized"],
+      "target_count": 10
+    },
+    {
+      "tpo": "event",
+      "moods": ["classic", "dandy"],
+      "required": [["셔츠"], ["슬랙스"]],
+      "optional": ["자켓", "코트", "부츠"],
+      "forbidden": ["후드", "스니커즈", "크로스백"],
+      "formality_range": [4, 5],
+      "silhouette_prefer": ["slim", "fitted"],
+      "target_count": 10
+    },
+    {
+      "tpo": "workout",
+      "moods": ["street"],
+      "required": [["반팔", "머슬핏", "티셔츠"], ["숏팬츠", "조거팬츠"]],
+      "optional": ["스니커즈"],
+      "forbidden": ["셔츠", "로퍼", "자켓", "슬랙스"],
+      "formality_range": [1, 1],
+      "silhouette_prefer": ["fitted", "regular"],
+      "target_count": 8
+    }
+  ]
+}
