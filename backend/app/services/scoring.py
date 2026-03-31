@@ -203,3 +203,71 @@ def calculate_pcf(
 
     # 3단계: 코디 전체 PCF = 아이템 평균
     return round(sum(item_scores) / len(item_scores), 2)
+
+
+# ──────────────────────────────────────────────
+# OF 스코어링 (TPO 적합도)
+# 기획서 섹션 5.5.2
+# ──────────────────────────────────────────────
+
+# TPO 동의어 확장 매핑
+# 기획서: commute↔office, weekend↔casual↔daily, interview→office(단방향 확장 아님, interview쪽에서만)
+TPO_SYNONYMS: dict[str, set[str]] = {
+    "commute": {"office", "commute"},
+    "office": {"office", "commute"},
+    "weekend": {"casual", "weekend", "daily"},
+    "casual": {"casual", "weekend", "daily"},
+    "daily": {"casual", "daily", "weekend"},
+    "interview": {"interview", "office"},
+    "campus": {"campus", "casual"},
+    "event": {"party", "wedding", "event"},
+    "party": {"party", "event"},
+    "wedding": {"wedding", "event"},
+    "workout": {"workout"},
+}
+
+
+def calculate_of(
+    outfit_tags: list[str],
+    user_tpo_list: list[str],
+) -> float:
+    """코디의 OF(Occasion Fit) 점수를 계산한다.
+
+    Args:
+        outfit_tags: 코디에 부여된 TPO 태그 리스트
+        user_tpo_list: 사용자가 설정한 TPO 리스트
+
+    Returns:
+        30~100 사이의 OF 점수 (30점 하한)
+
+    계산 로직 (기획서 5.5.2):
+        1. 사용자 TPO를 동의어 확장 → expanded_tpos 집합
+        2. outfit_tags와 교집합 크기(match_count) 산출
+        3. match_count 기반 점수 변환
+    """
+    if not outfit_tags or not user_tpo_list:
+        return 30.0
+
+    # 1. 사용자 TPO 동의어 확장
+    expanded_tpos: set[str] = set()
+    for tpo in user_tpo_list:
+        tpo_lower = tpo.lower()
+        expanded_tpos.update(TPO_SYNONYMS.get(tpo_lower, {tpo_lower}))
+
+    # 2. 매칭 수 산출
+    outfit_tag_set = {t.lower() for t in outfit_tags}
+    match_count = len(outfit_tag_set & expanded_tpos)
+    total_tags = len(outfit_tag_set)
+
+    if total_tags == 0:
+        return 30.0
+
+    # 3. 점수 변환
+    if match_count >= 2:
+        score = 80.0 + (match_count / total_tags) * 20.0
+    elif match_count == 1:
+        score = 60.0 + (1.0 / total_tags) * 20.0
+    else:
+        score = 30.0
+
+    return round(min(score, 100.0), 2)
