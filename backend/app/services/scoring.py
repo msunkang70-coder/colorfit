@@ -136,6 +136,8 @@ def _load_palette(tone_id: str) -> list[tuple[int, int, int]]:
 def _hex_to_rgb(hex_color: str) -> tuple[int, int, int]:
     """HEX 색상 코드를 RGB 튜플로 변환한다."""
     h = hex_color.lstrip("#")
+    if len(h) < 6:
+        return (128, 128, 128)  # fallback: 중간 회색
     return (int(h[0:2], 16), int(h[2:4], 16), int(h[4:6], 16))
 
 
