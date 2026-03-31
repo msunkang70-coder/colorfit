@@ -22,6 +22,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ko" className={nanumMyeongjo.variable}>
+      <head>
+        <meta name="referrer" content="no-referrer" />
+      </head>
       <body>
         {children}
         <BottomTabBar />
