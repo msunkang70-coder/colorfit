@@ -347,3 +347,52 @@ def calculate_ch(item_hex_colors: list[str]) -> float:
             score += 5.0
 
     return round(min(max(score, 0.0), 100.0), 2)
+
+
+# ──────────────────────────────────────────────
+# PE 스코어링 (가격 효율성)
+# 기획서 섹션 5.5.4
+# ──────────────────────────────────────────────
+
+def calculate_pe(
+    total_price: int | float,
+    budget_min: int | float,
+    budget_max: int | float,
+) -> float:
+    """코디의 PE(Price Efficiency) 점수를 계산한다.
+
+    Args:
+        total_price: 코디 총 가격
+        budget_min: 사용자 최소 예산
+        budget_max: 사용자 최대 예산
+
+    Returns:
+        0~100 사이의 PE 점수
+
+    계산 로직 (기획서 5.5.4):
+        Case 1: 예산 범위 내 → 중앙 가까울수록 높은 점수 (최대 100)
+        Case 2: 예산 초과 → 감점 (70점 기반, 70% 초과 시 0점)
+        Case 3: 예산 미만 → 완만 감점 (최저 40점)
+    """
+    if budget_max <= 0 or budget_min < 0:
+        return 50.0
+
+    budget_mid = (budget_min + budget_max) / 2
+
+    if budget_min <= total_price <= budget_max:
+        # Case 1: 예산 범위 내
+        if budget_mid == 0:
+            return 100.0
+        score = 100.0 - abs(total_price - budget_mid) / budget_mid * 30
+    elif total_price > budget_max:
+        # Case 2: 예산 초과
+        over_ratio = (total_price - budget_max) / budget_max
+        score = max(0.0, 70.0 - over_ratio * 100)
+    else:
+        # Case 3: 예산 미만
+        if budget_min == 0:
+            return 80.0
+        under_ratio = (budget_min - total_price) / budget_min
+        score = max(40.0, 80.0 - under_ratio * 80)
+
+    return round(min(max(score, 0.0), 100.0), 2)
