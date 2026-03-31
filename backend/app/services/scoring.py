@@ -175,7 +175,7 @@ def calculate_pcf(
         2단계 - 색상 레벨 매칭: 톤 매칭 불가 시 RGB 거리 기반 점수
         3단계 - 모든 아이템 평균 → 코디 PCF
     """
-    if not item_hex_colors:
+    if not item_hex_colors or not user_tone_id:
         return 0.0
 
     user_palette = _load_palette(user_tone_id)
