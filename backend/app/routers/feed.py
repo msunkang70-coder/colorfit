@@ -12,7 +12,7 @@ from typing import Optional
 
 from fastapi import APIRouter, Query
 
-from app.schemas.outfit import FeedResponse, OutfitResponse, ScoresResponse, ItemResponse
+from app.schemas.outfit import FeedResponse, OutfitResponse, ScoresResponse, ItemResponse, ReasonResponse
 from app.services.feed_builder import apply_hard_filters, score_and_rerank
 from app.services.reason_generator import generate_reasons
 
@@ -22,14 +22,13 @@ _DATA_DIR = Path(__file__).resolve().parents[2] / "data"
 
 
 def _load_outfits_from_json() -> list[dict]:
-    """outfits_evaluated.json에서 코디 데이터를 로드한다 (MVP용)."""
-    path = _DATA_DIR / "outfits_evaluated.json"
-    if not path.exists():
-        path = _DATA_DIR / "outfits.json"
-    if not path.exists():
-        return []
-    with open(path, "r", encoding="utf-8") as f:
-        return json.load(f)
+    """코디 데이터를 로드한다 (MVP용). scored > evaluated > raw 순."""
+    for name in ("outfits_scored.json", "outfits_evaluated.json", "outfits.json"):
+        path = _DATA_DIR / name
+        if path.exists():
+            with open(path, "r", encoding="utf-8") as f:
+                return json.load(f)
+    return []
 
 
 def _outfit_to_response(outfit: dict) -> OutfitResponse:
@@ -62,11 +61,21 @@ def _outfit_to_response(outfit: dict) -> OutfitResponse:
             total=scores_dict.get("reranked_total", scores_dict.get("total", 0)),
         )
 
+    # reasons: ReasonResult dict → ReasonResponse
+    raw_reasons = outfit.get("reasons")
+    reason_resp = None
+    if isinstance(raw_reasons, dict):
+        reason_resp = ReasonResponse(
+            core=raw_reasons.get("core", ""),
+            evidence=raw_reasons.get("evidence", ""),
+            risk_guard=raw_reasons.get("risk_guard", ""),
+        )
+
     return OutfitResponse(
         outfit_id=outfit.get("outfit_id", outfit.get("id", "")),
         items=items,
         scores=scores,
-        reasons=outfit.get("reasons", []),
+        reasons=reason_resp,
         tags=outfit.get("tags", []),
         is_complete_outfit=outfit.get("is_complete_outfit", False),
         total_price=outfit.get("total_price", 0),
@@ -115,8 +124,10 @@ async def get_feed(
 
     for outfit in page_outfits:
         scores = outfit.get("scores", {})
+        outfit_items = outfit.get("items", [])
         reasons = generate_reasons(
             scores,
+            items=outfit_items,
             user_tone_id=tone_id,
             user_tpo_list=tpo_list,
         )

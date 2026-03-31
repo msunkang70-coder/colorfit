@@ -1,128 +1,149 @@
-"""Task 2.10 — 추천 이유 생성 테스트."""
+"""Task 2.10v2 — 결정 이유 생성 테스트 (3파트, 각 문자열 1개)."""
 
 import pytest
 from app.services.reason_generator import (
     generate_reasons,
-    _select_top_axes,
+    _select_top_axis,
+    _build_core,
+    _build_evidence,
+    _build_risk_guard,
+    _particle,
+    ReasonResult,
     TONE_NAMES_KO,
-    TPO_NAMES_KO,
 )
 
 
-class TestSelectTopAxes:
+class TestParticle:
+
+    def test_no_batchim(self):
+        assert _particle("니트", "과", "와") == "니트와"
+        assert _particle("코트", "과", "와") == "코트와"
+
+    def test_with_batchim(self):
+        assert _particle("원피스", "과", "와") == "원피스와"
+
+    def test_eun_neun(self):
+        assert _particle("슬랙스", "은", "는") == "슬랙스는"
+
+    def test_empty(self):
+        assert _particle("", "과", "와") == "과"
+
+
+class TestSelectTopAxis:
 
     def test_pcf_highest(self):
-        """PCF 기여도 최고 → 첫 번째 선택."""
         scores = {"pcf": 95, "of": 60, "ch": 50, "pe": 40, "sf": 70}
-        top = _select_top_axes(scores)
-        assert top[0][0] == "pcf"
+        axis, _ = _select_top_axis(scores)
+        assert axis == "pcf"
 
     def test_of_highest(self):
-        """OF 기여도 최고."""
         scores = {"pcf": 30, "of": 100, "ch": 50, "pe": 40, "sf": 30}
-        top = _select_top_axes(scores)
-        assert top[0][0] == "of"
+        axis, _ = _select_top_axis(scores)
+        assert axis == "of"
 
-    def test_returns_two(self):
+    def test_returns_score(self):
         scores = {"pcf": 90, "of": 80, "ch": 70, "pe": 60, "sf": 85}
-        top = _select_top_axes(scores)
-        assert len(top) == 2
+        _, raw = _select_top_axis(scores)
+        assert raw > 0
 
-    def test_tie_breaking(self):
-        """동점 시 두 축 모두 포함."""
-        # pcf*0.25=25, sf*0.25=25 → 동점, 둘 다 상위
-        scores = {"pcf": 100, "of": 0, "ch": 0, "pe": 0, "sf": 100}
-        top = _select_top_axes(scores)
-        axes = {t[0] for t in top}
-        assert "pcf" in axes
-        assert "sf" in axes
 
-    def test_contribution_weighted(self):
-        """기여도 = 점수 × 가중치."""
-        scores = {"pcf": 80, "of": 90, "ch": 70, "pe": 60, "sf": 80}
-        top = _select_top_axes(scores)
-        # pcf: 80*0.25=20, of: 90*0.20=18, sf: 80*0.25=20
-        axes = [t[0] for t in top]
-        assert "pcf" in axes or "sf" in axes
+class TestBuildCore:
+
+    def test_upper_and_lower(self):
+        items = [{"category": "니트"}, {"category": "슬랙스"}]
+        core = _build_core(items, "spring_warm_light", ["commute"])
+        assert "니트" in core
+        assert "슬랙스" in core
+        assert "봄웜라이트" in core
+
+    def test_onepiece(self):
+        items = [{"category": "원피스"}]
+        core = _build_core(items, "summer_cool_soft", ["date"])
+        assert "원피스" in core
+
+    def test_empty(self):
+        core = _build_core([], "", [])
+        assert "내 퍼스널컬러" in core
+
+
+class TestBuildEvidence:
+
+    def test_returns_string(self):
+        scores = {"pcf": 90, "of": 80, "ch": 70, "pe": 60, "sf": 85}
+        ev = _build_evidence(scores, [{"category": "니트"}], "spring_warm_light", ["commute"])
+        assert isinstance(ev, str)
+        assert len(ev) > 0
+
+    def test_pcf_high_mentions_tone(self):
+        scores = {"pcf": 95, "of": 30, "ch": 30, "pe": 30, "sf": 30}
+        ev = _build_evidence(scores, [{"category": "니트"}], "summer_cool_soft", ["office"])
+        assert "여름쿨소프트" in ev
+
+    def test_of_high_mentions_tpo(self):
+        scores = {"pcf": 30, "of": 95, "ch": 30, "pe": 30, "sf": 30}
+        ev = _build_evidence(scores, [{"category": "셔츠"}], "summer_cool_soft", ["date"])
+        assert "데이트" in ev
+
+    def test_pe_high_mentions_price(self):
+        scores = {"pcf": 30, "of": 30, "ch": 30, "pe": 95, "sf": 30}
+        items = [{"category": "니트", "price": 30000}, {"category": "슬랙스", "price": 20000}]
+        ev = _build_evidence(scores, items, "spring_warm_light", ["commute"])
+        assert "50,000" in ev or "가성비" in ev
+
+    def test_empty_scores(self):
+        ev = _build_evidence({}, [], "", [])
+        assert isinstance(ev, str)
+        assert len(ev) > 0
+
+
+class TestBuildRiskGuard:
+
+    def test_returns_string(self):
+        scores = {"pcf": 90, "of": 80, "ch": 75, "pe": 60, "sf": 85}
+        items = [{"category": "니트", "formality": 3}, {"category": "슬랙스", "formality": 4}]
+        rg = _build_risk_guard(scores, items, ["commute"])
+        assert isinstance(rg, str)
+        assert len(rg) > 0
+
+    def test_ch_high_mentions_color(self):
+        scores = {"pcf": 50, "of": 50, "ch": 85, "pe": 50, "sf": 50}
+        items = [{"category": "니트"}, {"category": "슬랙스"}]
+        rg = _build_risk_guard(scores, items, ["commute"])
+        assert "색상" in rg or "대비" in rg
+
+    def test_tpo_guard(self):
+        scores = {"pcf": 50, "of": 80, "ch": 50, "pe": 50, "sf": 50}
+        rg = _build_risk_guard(scores, [{"formality": 3}], ["interview"])
+        assert "면접" in rg or "범위" in rg
+
+    def test_fallback(self):
+        scores = {"pcf": 30, "of": 30, "ch": 30, "pe": 30, "sf": 30}
+        rg = _build_risk_guard(scores, [], [])
+        assert len(rg) > 0
 
 
 class TestGenerateReasons:
 
-    def test_returns_two_reasons(self):
+    def test_returns_reason_result(self):
         scores = {"pcf": 90, "of": 80, "ch": 70, "pe": 60, "sf": 85}
-        reasons = generate_reasons(scores, "summer_cool_soft", ["office"])
-        assert len(reasons) == 2
-        assert all(isinstance(r, str) for r in reasons)
+        items = [{"category": "니트", "price": 35000}, {"category": "슬랙스", "price": 42000}]
+        r = generate_reasons(scores, items, "summer_cool_soft", ["office"])
+        assert isinstance(r["core"], str)
+        assert isinstance(r["evidence"], str)
+        assert isinstance(r["risk_guard"], str)
+        assert len(r["core"]) > 0
+        assert len(r["evidence"]) > 0
+        assert len(r["risk_guard"]) > 0
 
-    def test_pcf_high_includes_tone_name(self):
-        """PCF high → 톤 이름 포함."""
-        scores = {"pcf": 95, "of": 30, "ch": 30, "pe": 30, "sf": 30}
-        reasons = generate_reasons(scores, "summer_cool_soft", ["office"])
-        assert "여름쿨소프트" in reasons[0]
+    def test_empty_everything(self):
+        r = generate_reasons({})
+        assert len(r["core"]) > 0
+        assert len(r["evidence"]) > 0
+        assert len(r["risk_guard"]) > 0
 
-    def test_of_high_includes_tpo(self):
-        """OF high → TPO 이름 포함."""
-        scores = {"pcf": 30, "of": 95, "ch": 30, "pe": 30, "sf": 30}
-        reasons = generate_reasons(scores, "summer_cool_soft", ["date"])
-        # OF가 최고 기여
-        has_tpo = any("데이트" in r for r in reasons)
-        assert has_tpo
-
-    def test_mid_template_under_75(self):
-        """75점 미만 → mid 템플릿 (적극적 표현 아님)."""
-        scores = {"pcf": 60, "of": 50, "ch": 40, "pe": 50, "sf": 60}
-        reasons = generate_reasons(scores, "summer_cool_soft", ["office"])
-        # mid 템플릿은 "핵심 컬러"나 "딱 맞는" 같은 적극 표현 없음
-        assert all("핵심 컬러" not in r for r in reasons)
-
-    def test_high_template_over_75(self):
-        """75점 이상 → high 템플릿."""
-        scores = {"pcf": 95, "of": 30, "ch": 30, "pe": 30, "sf": 30}
-        reasons = generate_reasons(scores, "summer_cool_soft")
-        # PCF high 템플릿
-        assert any("핵심 컬러" in r or "딱 맞는" in r for r in reasons)
-
-    def test_no_tone_id_fallback(self):
-        """톤 ID 없으면 '내 퍼스널컬러' 사용."""
-        scores = {"pcf": 95, "of": 30, "ch": 30, "pe": 30, "sf": 30}
-        reasons = generate_reasons(scores, "", [])
-        assert any("내 퍼스널컬러" in r for r in reasons)
-
-    def test_no_tpo_fallback(self):
-        """TPO 없으면 '일상' 사용."""
-        scores = {"pcf": 30, "of": 95, "ch": 30, "pe": 30, "sf": 30}
-        reasons = generate_reasons(scores, "summer_cool_soft", [])
-        has_daily = any("일상" in r for r in reasons)
-        has_generic = any("다양한 상황" in r or "여러 상황" in r for r in reasons)
-        assert has_daily or has_generic
-
-    def test_all_tone_names_mapped(self):
-        """12톤 모두 한글 매핑 존재."""
+    def test_all_tone_names(self):
         assert len(TONE_NAMES_KO) == 12
 
-    def test_empty_scores(self):
-        """빈 점수 → 에러 없이 2줄 반환."""
-        scores = {"pcf": 0, "of": 0, "ch": 0, "pe": 0, "sf": 0}
-        reasons = generate_reasons(scores)
-        assert len(reasons) == 2
-
-    def test_sf_highest(self):
-        """SF 최고 기여 → SF 템플릿."""
-        scores = {"pcf": 30, "of": 30, "ch": 30, "pe": 30, "sf": 95}
-        reasons = generate_reasons(scores)
-        has_sf = any("스타일" in r or "실루엣" in r for r in reasons)
-        assert has_sf
-
-    def test_pe_highest(self):
-        """PE 최고 기여 → PE 템플릿."""
-        scores = {"pcf": 30, "of": 30, "ch": 30, "pe": 95, "sf": 30}
-        reasons = generate_reasons(scores)
-        has_pe = any("예산" in r or "가격" in r or "가성비" in r for r in reasons)
-        assert has_pe
-
-    def test_ch_highest(self):
-        """CH 최고 기여 → CH 템플릿."""
-        scores = {"pcf": 30, "of": 30, "ch": 95, "pe": 30, "sf": 30}
-        reasons = generate_reasons(scores)
-        has_ch = any("컬러" in r or "색상" in r or "조화" in r for r in reasons)
-        assert has_ch
+    def test_no_items(self):
+        r = generate_reasons({"pcf": 80, "of": 70}, user_tone_id="winter_cool_deep")
+        assert isinstance(r["core"], str)

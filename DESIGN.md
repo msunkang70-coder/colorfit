@@ -114,10 +114,17 @@ Score bar track (미충전): #E5E1DA (Border)
 - **Inputs:** bg-primary, border, rounded-md, focus시 border → Marsala
 - **Alerts:** 웜 톤 시맨틱 (위 Semantic Colors 참조)
 
+## Card Variants (v3)
+- **Full Card:** 기본 코디 카드. 3:4 이미지 + core(Nanum Myeongjo 16px) + price + evidence + risk_guard. padding 0 20px.
+- **Compact Card:** Explore Mode 축소 카드. Surface bg(#F0EDE8), rounded-lg(8px), padding 12px. 가로 배치: 썸네일(80x100, rounded-md) + 텍스트(core 14px + price 14px + evidence 12px 1줄). 탭 시 해당 코디 선택.
+- **Axis Label Badge:** 축 라벨 필 뱃지. Marsala bg(#964F4C), white text, rounded-full, fontSize 10~11px, padding 2-3px 8-10px. Full/Compact 모두 사용.
+
 ## Decisions Log
 | Date | Decision | Rationale |
 |------|----------|-----------|
 | 2026-03-28 | Nanum Myeongjo로 헤드라인 서체 변경 | Noto Serif KR이 "애매"하다는 피드백. Nanum Myeongjo는 한국 패션 매거진의 실제 서체로 에디토리얼 무드를 강화한다 |
+| 2026-03-31 | Compact Card variant 추가 | Explore Mode Top2~3 표시용. Surface bg + 가로 배치로 Full Card 대비 시각적 위계 구분 |
+| 2026-03-31 | Axis Label Badge 정의 | Top3 차별화 인지용. Marsala pill로 디자인 시스템 내 Pills/Tags Active 스타일 재사용 |
 | 2026-03-28 | Alert 색상 웜 톤으로 교체 | 표준 시맨틱 컬러(초록/노랑/빨강/파랑)가 웜 팔레트와 동떨어진다는 피드백. Marsala/Ocean Blue 계열로 통일 |
 | 2026-03-28 | Marsala #964F4C를 Accent으로 확정 | 모든 경쟁 퍼스널컬러 앱이 핑크/퍼플을 쓰는 가운데, 와인 적갈색은 즉각적인 차별화. REFERENCE X Vol.1 기반 |
 | 2026-03-28 | Initial design system created | /design-consultation 리서치(mycolor.kr, Fits, SSENSE/COS 레퍼런스) + 기획서 v1.3 디자인 시스템 검증 기반 |

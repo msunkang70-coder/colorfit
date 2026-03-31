@@ -25,15 +25,17 @@ def _load_outfits_map() -> dict[str, dict]:
     if _outfits_cache is not None:
         return _outfits_cache
 
-    path = _DATA_DIR / "outfits_evaluated.json"
-    if not path.exists():
-        path = _DATA_DIR / "outfits.json"
-    if not path.exists():
+    data = []
+    for name in ("outfits_scored.json", "outfits_evaluated.json", "outfits.json"):
+        path = _DATA_DIR / name
+        if path.exists():
+            with open(path, "r", encoding="utf-8") as f:
+                data = json.load(f)
+            break
+
+    if not data:
         _outfits_cache = {}
         return _outfits_cache
-
-    with open(path, "r", encoding="utf-8") as f:
-        data = json.load(f)
 
     _outfits_cache = {}
     for o in data:
@@ -84,7 +86,6 @@ async def get_outfit(outfit_id: str) -> OutfitResponse:
         outfit_id=outfit.get("outfit_id", outfit.get("id", "")),
         items=items,
         scores=scores,
-        reasons=outfit.get("reasons", []),
         tags=outfit.get("tags", []),
         is_complete_outfit=outfit.get("is_complete_outfit", False),
         total_price=outfit.get("total_price", 0),

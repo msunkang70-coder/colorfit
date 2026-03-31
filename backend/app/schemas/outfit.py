@@ -29,11 +29,18 @@ class ScoresResponse(BaseModel):
     model_config = {"populate_by_name": True}
 
 
+class ReasonResponse(BaseModel):
+    """결정 이유 3파트 — 각 파트 문자열 1개."""
+    core: str = ""
+    evidence: str = ""
+    risk_guard: str = ""
+
+
 class OutfitResponse(BaseModel):
     outfit_id: str
     items: list[ItemResponse] = []
     scores: ScoresResponse | None = None
-    reasons: list[str] = []
+    reasons: ReasonResponse | None = None
     tags: list[str] = []
     is_complete_outfit: bool = False
     total_price: int = 0
