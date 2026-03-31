@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { motion } from "framer-motion";
+import { useState, useRef } from "react";
+import { motion, useMotionValue, useTransform, PanInfo } from "framer-motion";
 
 interface OutfitScore {
   pcf: number;
@@ -19,6 +19,7 @@ interface OutfitCardProps {
   isSaved?: boolean;
   onTap?: (outfitId: string) => void;
   onSaveToggle?: (outfitId: string) => void;
+  onDislike?: (outfitId: string) => void;
   index?: number;
 }
 
@@ -31,6 +32,8 @@ const SCORE_COLORS: Record<string, string> = {
   OF: "#4F97A3",
 };
 
+const SWIPE_THRESHOLD = -100;
+
 export default function OutfitCard({
   outfitId,
   imageUrl,
@@ -42,36 +45,83 @@ export default function OutfitCard({
   isSaved: initialSaved = false,
   onTap,
   onSaveToggle,
+  onDislike,
   index = 0,
 }: OutfitCardProps) {
   const [saved, setSaved] = useState(initialSaved);
   const [heartScale, setHeartScale] = useState(1);
+  const [dismissed, setDismissed] = useState(false);
+  const [showBigHeart, setShowBigHeart] = useState(false);
+  const lastTapRef = useRef(0);
 
-  const handleSave = (e: React.MouseEvent) => {
+  const x = useMotionValue(0);
+  const opacity = useTransform(x, [-200, 0], [0, 1]);
+
+  const triggerSave = () => {
+    if (!saved) {
+      setSaved(true);
+      setHeartScale(0.8);
+      setTimeout(() => setHeartScale(1.4), 100);
+      setTimeout(() => setHeartScale(1), 300);
+      setShowBigHeart(true);
+      setTimeout(() => setShowBigHeart(false), 600);
+      onSaveToggle?.(outfitId);
+    }
+  };
+
+  const handleHeartClick = (e: React.MouseEvent) => {
     e.stopPropagation();
-    setSaved((prev) => !prev);
+    const next = !saved;
+    setSaved(next);
     setHeartScale(0.8);
     setTimeout(() => setHeartScale(1.2), 100);
     setTimeout(() => setHeartScale(1), 250);
     onSaveToggle?.(outfitId);
   };
 
-  const handleTap = () => {
-    onTap?.(outfitId);
+  const handleClick = () => {
+    const now = Date.now();
+    if (now - lastTapRef.current < 300) {
+      // Double tap → save
+      triggerSave();
+      lastTapRef.current = 0;
+    } else {
+      lastTapRef.current = now;
+      setTimeout(() => {
+        if (lastTapRef.current !== 0) {
+          onTap?.(outfitId);
+          lastTapRef.current = 0;
+        }
+      }, 300);
+    }
   };
+
+  const handleDragEnd = (_: unknown, info: PanInfo) => {
+    if (info.offset.x < SWIPE_THRESHOLD) {
+      setDismissed(true);
+      onDislike?.(outfitId);
+    }
+  };
+
+  if (dismissed) return null;
 
   return (
     <motion.article
       initial={{ opacity: 0, y: 30 }}
       animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, x: -300 }}
       transition={{
         delay: index * 0.1,
         duration: 0.4,
         ease: "easeOut" as const,
       }}
-      onClick={handleTap}
+      style={{ x, opacity, padding: "0 20px", marginBottom: 20 }}
+      drag="x"
+      dragConstraints={{ left: 0, right: 0 }}
+      dragElastic={0.3}
+      onDragEnd={handleDragEnd}
+      onClick={handleClick}
       className="w-full cursor-pointer"
-      style={{ padding: "0 20px", marginBottom: 20 }}
     >
       {/* Image container */}
       <div className="relative w-full rounded-lg overflow-hidden" style={{ aspectRatio: "3 / 4" }}>
@@ -92,6 +142,26 @@ export default function OutfitCard({
           </div>
         )}
 
+        {/* Big heart animation on double tap */}
+        {showBigHeart && (
+          <motion.div
+            initial={{ scale: 0, opacity: 1 }}
+            animate={{ scale: 1.2, opacity: 0 }}
+            transition={{ duration: 0.6, ease: "easeOut" as const }}
+            className="absolute inset-0 flex items-center justify-center pointer-events-none"
+          >
+            <svg
+              width="80"
+              height="80"
+              viewBox="0 0 24 24"
+              fill="#964F4C"
+              stroke="none"
+            >
+              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+            </svg>
+          </motion.div>
+        )}
+
         {/* Item count badge — bottom left */}
         <span
           className="absolute bottom-3 left-3 rounded-full text-white"
@@ -106,7 +176,7 @@ export default function OutfitCard({
 
         {/* Heart icon — top right */}
         <button
-          onClick={handleSave}
+          onClick={handleHeartClick}
           className="absolute top-3 right-3"
           aria-label={saved ? "저장 취소" : "저장"}
           style={{ transform: `scale(${heartScale})`, transition: "transform 0.15s" }}

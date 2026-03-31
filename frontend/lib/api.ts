@@ -25,3 +25,15 @@ export async function postOnboarding(body: {
 
   return res.json();
 }
+
+export async function postReaction(body: {
+  user_id: string;
+  outfit_id: string;
+  reaction_type: "save" | "dislike";
+}): Promise<void> {
+  await fetch(`${API_BASE}/api/reaction`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+}

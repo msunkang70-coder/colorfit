@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import OutfitCard from "@/components/OutfitCard";
 import { getOnboardingData } from "@/lib/onboarding-store";
+import { postReaction } from "@/lib/api";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
 
@@ -54,8 +55,10 @@ export default function FeedPage() {
   const [page, setPage] = useState(1);
   const [hasNext, setHasNext] = useState(false);
   const [status, setStatus] = useState<FeedStatus>("idle");
+  const [toastMsg, setToastMsg] = useState<string | null>(null);
   const sentinelRef = useRef<HTMLDivElement>(null);
   const loadingRef = useRef(false);
+  const userId = useRef("");
 
   const fetchFeed = useCallback(
     async (pageNum: number, reset = false) => {
@@ -120,6 +123,28 @@ export default function FeedPage() {
 
   const handleCardTap = (outfitId: string) => {
     router.push(`/outfit/${outfitId}`);
+  };
+
+  const showToast = (msg: string) => {
+    setToastMsg(msg);
+    setTimeout(() => setToastMsg(null), 2000);
+  };
+
+  const handleSaveToggle = (outfitId: string) => {
+    postReaction({
+      user_id: userId.current,
+      outfit_id: outfitId,
+      reaction_type: "save",
+    }).catch(() => {});
+  };
+
+  const handleDislike = (outfitId: string) => {
+    showToast("관심없음");
+    postReaction({
+      user_id: userId.current,
+      outfit_id: outfitId,
+      reaction_type: "dislike",
+    }).catch(() => {});
   };
 
   // Today's top pick (first outfit)
@@ -324,6 +349,8 @@ export default function FeedPage() {
                 of: topPick.scores?.of ?? 0,
               }}
               onTap={handleCardTap}
+              onSaveToggle={handleSaveToggle}
+              onDislike={handleDislike}
               index={0}
             />
           </section>
@@ -345,6 +372,8 @@ export default function FeedPage() {
                 of: outfit.scores?.of ?? 0,
               }}
               onTap={handleCardTap}
+              onSaveToggle={handleSaveToggle}
+              onDislike={handleDislike}
               index={i + 1}
             />
           ))}
@@ -355,6 +384,25 @@ export default function FeedPage() {
         {/* Bottom padding for tab bar */}
         <div style={{ height: 80 }} />
       </main>
+
+      {/* Dislike toast */}
+      <AnimatePresence>
+        {toastMsg && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0 }}
+            className="fixed bottom-24 left-1/2 -translate-x-1/2 px-lg py-sm rounded-full z-50"
+            style={{
+              backgroundColor: "rgba(34, 34, 34, 0.85)",
+              color: "#FFFFFF",
+              fontSize: "14px",
+            }}
+          >
+            {toastMsg}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
