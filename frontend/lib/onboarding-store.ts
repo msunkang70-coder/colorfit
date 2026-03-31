@@ -1,6 +1,6 @@
 /**
- * 온보딩 5 Step 상태를 메모리에 누적한 뒤 마지막에 API로 전송한다.
- * 단순 모듈 스코프 싱글턴 — 외부 상태 라이브러리 불필요.
+ * 온보딩 5 Step 상태를 localStorage에 영속 저장한다.
+ * 새로고침/페이지 이동 후에도 프로필 유지.
  */
 
 export interface StyleSeedChoice {
@@ -18,6 +18,8 @@ export interface OnboardingData {
   style_seed_choices: StyleSeedChoice[];
 }
 
+const STORAGE_KEY = "colorfit_onboarding";
+
 const DEFAULT_DATA: OnboardingData = {
   gender: "female",
   tone_id: "",
@@ -28,16 +30,36 @@ const DEFAULT_DATA: OnboardingData = {
   style_seed_choices: [],
 };
 
-let _data: OnboardingData = { ...DEFAULT_DATA };
+function load(): OnboardingData {
+  if (typeof window === "undefined") return { ...DEFAULT_DATA };
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) return { ...DEFAULT_DATA, ...JSON.parse(raw) };
+  } catch {
+    // SSR or parse error
+  }
+  return { ...DEFAULT_DATA };
+}
+
+function save(data: OnboardingData): void {
+  if (typeof window === "undefined") return;
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  } catch {
+    // quota exceeded 등 무시
+  }
+}
 
 export function getOnboardingData(): OnboardingData {
-  return _data;
+  return load();
 }
 
 export function updateOnboarding(partial: Partial<OnboardingData>): void {
-  _data = { ..._data, ...partial };
+  const current = load();
+  const updated = { ...current, ...partial };
+  save(updated);
 }
 
 export function resetOnboarding(): void {
-  _data = { ...DEFAULT_DATA };
+  save({ ...DEFAULT_DATA });
 }
