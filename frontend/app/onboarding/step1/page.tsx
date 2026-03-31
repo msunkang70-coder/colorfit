@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
+import { updateOnboarding } from "@/lib/onboarding-store";
 
 const GENDERS = [
   { id: "female", label: "여성", letter: "W" },
@@ -25,6 +26,7 @@ export default function Step1Page() {
   const handleSelect = (genderId: string) => {
     if (selected) return;
     setSelected(genderId);
+    updateOnboarding({ gender: genderId });
     setTimeout(() => {
       router.push("/onboarding/step2");
     }, 300);

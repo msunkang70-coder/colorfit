@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
+import { updateOnboarding } from "@/lib/onboarding-store";
 
 const TPO_OPTIONS = [
   { id: "commute", label: "출근" },
@@ -79,6 +80,10 @@ export default function Step3Page() {
 
   const handleNext = () => {
     if (canProceed) {
+      updateOnboarding({
+        tpo_list: Array.from(selectedTpo),
+        style_moods: Array.from(selectedMood),
+      });
       router.push("/onboarding/step4");
     }
   };

@@ -1,8 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
+import { updateOnboarding, getOnboardingData } from "@/lib/onboarding-store";
+import { postOnboarding } from "@/lib/api";
 
 interface StyleImage {
   id: string;
@@ -45,12 +47,24 @@ export default function Step5Page() {
   const [round, setRound] = useState(0);
   const [selected, setSelected] = useState<string | null>(null);
   const [showToast, setShowToast] = useState(false);
+  const choices = useRef<{ round: number; image_id: string }[]>([]);
 
   const isLastRound = round === TOTAL_ROUNDS - 1;
   const images = ROUNDS[round];
 
-  const goToFeed = () => {
+  const submitOnboarding = async () => {
+    updateOnboarding({ style_seed_choices: choices.current });
+    const data = getOnboardingData();
+    try {
+      await postOnboarding(data);
+    } catch {
+      // API 실패해도 피드로 전환 (MVP graceful degradation)
+    }
+  };
+
+  const goToFeed = async () => {
     setShowToast(true);
+    await submitOnboarding();
     setTimeout(() => {
       router.push("/feed");
     }, 1200);
@@ -68,6 +82,7 @@ export default function Step5Page() {
   const handleSelect = (imageId: string) => {
     if (selected) return;
     setSelected(imageId);
+    choices.current.push({ round: round + 1, image_id: imageId });
     setTimeout(advanceRound, 500);
   };
 
@@ -76,7 +91,8 @@ export default function Step5Page() {
     advanceRound();
   };
 
-  const handleSkipAll = () => {
+  const handleSkipAll = async () => {
+    await submitOnboarding();
     router.push("/feed");
   };
 

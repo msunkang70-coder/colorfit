@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
+import { updateOnboarding } from "@/lib/onboarding-store";
 
 interface ToneChip {
   id: string;
@@ -97,6 +98,7 @@ export default function Step2Page() {
 
   const handleNext = () => {
     if (selectedTone) {
+      updateOnboarding({ tone_id: selectedTone });
       router.push("/onboarding/step3");
     }
   };

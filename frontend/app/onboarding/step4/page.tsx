@@ -3,6 +3,7 @@
 import { useState, useCallback, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { motion, useAnimation } from "framer-motion";
+import { updateOnboarding } from "@/lib/onboarding-store";
 
 const MIN_BUDGET = 0;
 const MAX_BUDGET = 300000;
@@ -85,6 +86,7 @@ export default function Step4Page() {
   }, [budgetMin, budgetMax, ctaControls]);
 
   const handleNext = () => {
+    updateOnboarding({ budget_min: budgetMin, budget_max: budgetMax });
     router.push("/onboarding/step5");
   };
 
