@@ -1,0 +1,19 @@
+{
+  "_description": "실루엣 조합 규칙 (15개). key: 'top_silhouette|bottom_silhouette', value: {score, line}",
+  "_source": "기획서 섹션 6.6 — Y/A/I/X 라인 이론",
+  "oversized|slim": {"score": 95, "line": "Y"},
+  "oversized|skinny": {"score": 95, "line": "Y"},
+  "oversized|straight": {"score": 80, "line": "Y"},
+  "oversized|wide": {"score": 60, "line": "I_volume"},
+  "oversized|flared": {"score": 65, "line": "mixed"},
+  "fitted|wide": {"score": 95, "line": "A"},
+  "fitted|flared": {"score": 92, "line": "A"},
+  "fitted|slim": {"score": 85, "line": "I"},
+  "fitted|skinny": {"score": 85, "line": "I"},
+  "fitted|straight": {"score": 82, "line": "I"},
+  "crop|high_waist": {"score": 90, "line": "X"},
+  "crop|wide": {"score": 85, "line": "A_crop"},
+  "crop|slim": {"score": 82, "line": "X"},
+  "regular|straight": {"score": 78, "line": "I"},
+  "regular|slim": {"score": 80, "line": "I"}
+}

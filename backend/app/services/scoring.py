@@ -396,3 +396,122 @@ def calculate_pe(
         score = max(40.0, 80.0 - under_ratio * 80)
 
     return round(min(max(score, 0.0), 100.0), 2)
+
+
+# ──────────────────────────────────────────────
+# SF 스코어링 (스타일 적합도)
+# 기획서 섹션 5.5.5, 6.6
+# ──────────────────────────────────────────────
+
+_DATA_DIR = Path(__file__).resolve().parents[2] / "data"
+
+
+@lru_cache(maxsize=1)
+def _load_style_compat() -> dict[str, int]:
+    """카테고리 궁합 매트릭스 로드. 양방향 조회 지원 (키를 알파벳순 정규화)."""
+    with open(_DATA_DIR / "style_compat.json", "r", encoding="utf-8") as f:
+        raw = json.load(f)
+    normalized: dict[str, int] = {}
+    for k, v in raw.items():
+        if k.startswith("_"):
+            continue
+        parts = k.split("|")
+        if len(parts) == 2:
+            key = "|".join(sorted(parts))
+            normalized[key] = v
+    return normalized
+
+
+@lru_cache(maxsize=1)
+def _load_silhouette_rules() -> dict[str, dict]:
+    """실루엣 조합 규칙 로드."""
+    with open(_DATA_DIR / "silhouette_rules.json", "r", encoding="utf-8") as f:
+        raw = json.load(f)
+    return {k: v for k, v in raw.items() if not k.startswith("_")}
+
+
+@lru_cache(maxsize=1)
+def _load_formality_map() -> dict[str, int]:
+    """아이템별 포멀도 매핑 로드."""
+    with open(_DATA_DIR / "formality_map.json", "r", encoding="utf-8") as f:
+        raw = json.load(f)
+    return {k: v for k, v in raw.items() if not k.startswith("_")}
+
+
+def _compat_key(cat1: str, cat2: str) -> str:
+    """두 카테고리를 알파벳순으로 정렬하여 키 생성."""
+    a, b = sorted([cat1.lower(), cat2.lower()])
+    return f"{a}|{b}"
+
+
+def _category_compat_score(categories: list[str]) -> float:
+    """카테고리 궁합 점수 (0~100). 모든 쌍의 평균."""
+    if len(categories) < 2:
+        return 70.0
+
+    compat = _load_style_compat()
+    scores: list[float] = []
+
+    for i in range(len(categories)):
+        for j in range(i + 1, len(categories)):
+            key = _compat_key(categories[i], categories[j])
+            scores.append(float(compat.get(key, 60.0)))  # 미등록 조합 → 60점
+
+    return sum(scores) / len(scores)
+
+
+def _silhouette_score(top_silhouette: Optional[str], bottom_silhouette: Optional[str]) -> float:
+    """실루엣 밸런스 점수 (0~100)."""
+    if not top_silhouette or not bottom_silhouette:
+        return 70.0  # 정보 없으면 중립
+
+    rules = _load_silhouette_rules()
+    key = f"{top_silhouette.lower()}|{bottom_silhouette.lower()}"
+    rule = rules.get(key)
+    if rule:
+        return float(rule["score"])
+
+    return 65.0  # 미등록 조합 → 중간 점수
+
+
+def _formality_score(categories: list[str]) -> float:
+    """포멀도 일관성 점수 (0~100). 표준편차 × 40 감점."""
+    if len(categories) < 2:
+        return 100.0
+
+    fmap = _load_formality_map()
+    formalities = [float(fmap.get(c.lower(), 3)) for c in categories]  # 미등록 → 3(중간)
+
+    mean_f = sum(formalities) / len(formalities)
+    std_f = math.sqrt(sum((f - mean_f) ** 2 for f in formalities) / len(formalities))
+
+    return round(max(0.0, 100.0 - std_f * 40), 2)
+
+
+def calculate_sf(
+    categories: list[str],
+    top_silhouette: Optional[str] = None,
+    bottom_silhouette: Optional[str] = None,
+) -> float:
+    """코디의 SF(Style Fit) 점수를 계산한다.
+
+    Args:
+        categories: 코디 아이템들의 카테고리 리스트
+        top_silhouette: 상의 실루엣 (oversized/fitted/crop/regular)
+        bottom_silhouette: 하의 실루엣 (slim/skinny/wide/flared/straight/high_waist)
+
+    Returns:
+        0~100 사이의 SF 점수
+
+    계산 로직 (기획서 5.5.5):
+        SF = category_score × 0.50 + silhouette_score × 0.25 + formality_score × 0.25
+    """
+    if not categories:
+        return 50.0
+
+    cat_score = _category_compat_score(categories)
+    sil_score = _silhouette_score(top_silhouette, bottom_silhouette)
+    form_score = _formality_score(categories)
+
+    sf = cat_score * 0.50 + sil_score * 0.25 + form_score * 0.25
+    return round(min(max(sf, 0.0), 100.0), 2)
