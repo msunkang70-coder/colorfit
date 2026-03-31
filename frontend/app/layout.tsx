@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Nanum_Myeongjo } from "next/font/google";
 import "./globals.css";
+import BottomTabBar from "@/components/BottomTabBar";
 
 const nanumMyeongjo = Nanum_Myeongjo({
   subsets: ["latin"],
@@ -21,7 +22,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ko" className={nanumMyeongjo.variable}>
-      <body>{children}</body>
+      <body>
+        {children}
+        <BottomTabBar />
+      </body>
     </html>
   );
 }
