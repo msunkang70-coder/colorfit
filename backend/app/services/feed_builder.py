@@ -10,7 +10,10 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any, Optional
 
-from app.services.scoring import TONE_COMPAT, TPO_SYNONYMS
+from app.services.scoring import (
+    TONE_COMPAT, TPO_SYNONYMS,
+    calculate_pcf, calculate_of, calculate_ch, calculate_pe, calculate_sf,
+)
 from app.services.style_filter import filter_outfit
 
 _DATA_DIR = Path(__file__).resolve().parents[2] / "data"
@@ -241,3 +244,262 @@ def apply_hard_filters(
         passed.append(outfit)
 
     return passed
+
+
+# ──────────────────────────────────────────────
+# 5축 기본 가중치 (기획서 5.5)
+# ──────────────────────────────────────────────
+DEFAULT_WEIGHTS = {
+    "pcf": 0.25,
+    "of": 0.20,
+    "ch": 0.15,
+    "pe": 0.15,
+    "sf": 0.25,
+}
+
+
+# ──────────────────────────────────────────────
+# Soft Score 계산
+# ──────────────────────────────────────────────
+
+def compute_soft_scores(
+    outfit: dict,
+    user_tone_id: str,
+    user_tpo_list: list[str],
+    budget_min: float,
+    budget_max: float,
+    weight_overrides: dict[str, float] | None = None,
+) -> dict:
+    """코디에 5축 스코어를 계산하여 부착한다.
+
+    Args:
+        outfit: 코디 딕셔너리 (items 포함)
+        user_tone_id: 사용자 톤 ID
+        user_tpo_list: 사용자 TPO 리스트
+        budget_min / budget_max: 예산 범위
+        weight_overrides: 개인화 가중치 오버라이드
+
+    Returns:
+        scores 딕셔너리 (pcf, of, ch, pe, sf, total)
+    """
+    items = outfit.get("items", [])
+
+    # PCF
+    item_tone_ids = [it.get("tone_id") for it in items]
+    item_hex_colors = [it.get("color_hex", "#808080") for it in items]
+    pcf = calculate_pcf(item_tone_ids, item_hex_colors, user_tone_id)
+
+    # OF
+    outfit_tags = outfit.get("designed_tpo", outfit.get("tags", []))
+    of = calculate_of(outfit_tags, user_tpo_list)
+
+    # CH
+    ch = calculate_ch(item_hex_colors)
+
+    # PE
+    total_price = outfit.get("total_price", 0)
+    pe = calculate_pe(total_price, budget_min, budget_max)
+
+    # SF — 프리컴퓨팅된 style_details 활용 또는 새로 계산
+    style_details = outfit.get("style_details", {})
+    sf = style_details.get("sf_score")
+    if sf is None:
+        categories = [it.get("category", "unknown") for it in items]
+        sf = calculate_sf(categories)
+
+    # 가중합
+    w = dict(DEFAULT_WEIGHTS)
+    if weight_overrides:
+        for k, v in weight_overrides.items():
+            if k in w:
+                w[k] = v
+        # 정규화
+        total_w = sum(w.values())
+        if total_w > 0:
+            w = {k: v / total_w for k, v in w.items()}
+
+    total = (
+        pcf * w["pcf"]
+        + of * w["of"]
+        + ch * w["ch"]
+        + pe * w["pe"]
+        + sf * w["sf"]
+    )
+
+    scores = {
+        "pcf": round(pcf, 2),
+        "of": round(of, 2),
+        "ch": round(ch, 2),
+        "pe": round(pe, 2),
+        "sf": round(sf, 2),
+        "total": round(total, 2),
+    }
+    return scores
+
+
+# ──────────────────────────────────────────────
+# 개인화 보정 (-10 ~ +10)
+# ──────────────────────────────────────────────
+
+def _personalization_bonus(
+    outfit: dict,
+    preferences: dict | None,
+) -> float:
+    """사용자 선호 톤/카테고리/브랜드 일치에 따른 보정 점수."""
+    if not preferences:
+        return 0.0
+
+    bonus = 0.0
+
+    # 톤 선호
+    preferred_tones = preferences.get("tone_preferences", {})
+    for item in outfit.get("items", []):
+        tone = item.get("tone_id", "")
+        if tone in preferred_tones:
+            bonus += min(preferred_tones[tone], 3.0)
+
+    # 카테고리 선호
+    preferred_cats = preferences.get("category_preferences", {})
+    for item in outfit.get("items", []):
+        cat = item.get("category", "")
+        if cat in preferred_cats:
+            bonus += min(preferred_cats[cat], 2.0)
+
+    # 브랜드 선호
+    preferred_brands = preferences.get("brand_preferences", {})
+    for item in outfit.get("items", []):
+        brand = item.get("brand", "").lower()
+        if brand in preferred_brands:
+            bonus += min(preferred_brands[brand], 2.0)
+
+    return max(-10.0, min(10.0, bonus))
+
+
+# ──────────────────────────────────────────────
+# 리랭킹
+# ──────────────────────────────────────────────
+
+def rerank(
+    outfits: list[dict],
+    disliked_ids: set[str] | None = None,
+    preferences: dict | None = None,
+    max_results: int = 200,
+) -> list[dict]:
+    """Soft Score 기반 리랭킹.
+
+    기획서 6.1 5단계:
+    - 완성 코디 가산 (+3점)
+    - dislike 제외
+    - 톤 다양성 (동일 톤 3개 제한)
+    - 메인아이템 중복 제거 (1개 제한)
+    - 개인화 보정 (-10 ~ +10)
+
+    Returns:
+        리랭킹된 코디 리스트 (상위 max_results개)
+    """
+    if disliked_ids is None:
+        disliked_ids = set()
+
+    # 1. dislike 제외
+    candidates = [
+        o for o in outfits
+        if o.get("outfit_id", "") not in disliked_ids
+    ]
+
+    # 2. 점수 보정
+    for outfit in candidates:
+        scores = outfit.get("scores", {})
+        total = scores.get("total", 0.0)
+
+        # 완성 코디 가산: 상의+하의+아우터 있으면 +3점
+        if outfit.get("is_complete_outfit", False):
+            total += 3.0
+
+        # 개인화 보정
+        total += _personalization_bonus(outfit, preferences)
+
+        scores["reranked_total"] = round(min(total, 100.0), 2)
+        outfit["scores"] = scores
+
+    # 3. 총점 기준 내림차순 정렬
+    candidates.sort(key=lambda o: o.get("scores", {}).get("reranked_total", 0), reverse=True)
+
+    # 4. 다양성 보장: 톤 다양성 + 메인아이템 중복 제거
+    result: list[dict] = []
+    tone_counts: dict[str, int] = {}
+    main_item_ids: set[str] = set()
+
+    for outfit in candidates:
+        if len(result) >= max_results:
+            break
+
+        # 톤 다양성: 코디의 대표 톤 기준 동일 톤 3개 제한
+        dominant_tone = _get_dominant_tone(outfit)
+        if dominant_tone:
+            count = tone_counts.get(dominant_tone, 0)
+            if count >= 3:
+                continue
+            tone_counts[dominant_tone] = count + 1
+
+        # 메인아이템 중복 제거: 동일 메인 아이템 1개 제한
+        main_id = _get_main_item_id(outfit)
+        if main_id:
+            if main_id in main_item_ids:
+                continue
+            main_item_ids.add(main_id)
+
+        result.append(outfit)
+
+    return result
+
+
+def _get_dominant_tone(outfit: dict) -> str | None:
+    """코디의 대표 톤 (가장 많이 등장하는 톤)."""
+    tones: dict[str, int] = {}
+    for item in outfit.get("items", []):
+        tone = item.get("tone_id")
+        if tone:
+            tones[tone] = tones.get(tone, 0) + 1
+    if not tones:
+        return None
+    return max(tones, key=tones.get)
+
+
+def _get_main_item_id(outfit: dict) -> str | None:
+    """코디의 메인 아이템 ID (첫 번째 아이템)."""
+    items = outfit.get("items", [])
+    if items:
+        return items[0].get("product_id")
+    return None
+
+
+# ──────────────────────────────────────────────
+# 전체 Soft Score + 리랭킹 파이프라인
+# ──────────────────────────────────────────────
+
+def score_and_rerank(
+    outfits: list[dict],
+    user_tone_id: str,
+    user_tpo_list: list[str],
+    budget_min: float,
+    budget_max: float,
+    weight_overrides: dict[str, float] | None = None,
+    disliked_ids: set[str] | None = None,
+    preferences: dict | None = None,
+    max_results: int = 200,
+) -> list[dict]:
+    """Hard Filter 통과 코디에 Soft Score 계산 + 리랭킹.
+
+    Returns:
+        스코어링 + 리랭킹된 상위 max_results개 코디 리스트
+    """
+    # 4단계: Scoring
+    for outfit in outfits:
+        scores = compute_soft_scores(
+            outfit, user_tone_id, user_tpo_list,
+            budget_min, budget_max, weight_overrides,
+        )
+        outfit["scores"] = scores
+
+    # 5단계: Re-ranking
+    return rerank(outfits, disliked_ids, preferences, max_results)
