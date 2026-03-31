@@ -27,4 +27,16 @@ app.add_middleware(
 
 @app.get("/health")
 async def health_check():
-    return {"status": "ok", "service": "colorfit-api"}
+    import os
+    from pathlib import Path
+    data_dir = Path(__file__).resolve().parents[1] / "data"
+    files = []
+    if data_dir.exists():
+        files = [f"{f.name} ({f.stat().st_size})" for f in sorted(data_dir.iterdir()) if f.is_file()]
+    return {
+        "status": "ok",
+        "service": "colorfit-api",
+        "data_dir": str(data_dir),
+        "data_files": files[:10],
+        "cwd": os.getcwd(),
+    }
