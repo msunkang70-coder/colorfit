@@ -271,3 +271,79 @@ def calculate_of(
         score = 30.0
 
     return round(min(score, 100.0), 2)
+
+
+# ──────────────────────────────────────────────
+# CH 스코어링 (색상 조화도)
+# 기획서 섹션 5.5.3
+# ──────────────────────────────────────────────
+
+def _rgb_to_hsv(rgb: tuple[int, int, int]) -> tuple[float, float, float]:
+    """RGB → HSV 변환. S, V는 0~1 범위."""
+    r, g, b = rgb[0] / 255.0, rgb[1] / 255.0, rgb[2] / 255.0
+    mx = max(r, g, b)
+    mn = min(r, g, b)
+    diff = mx - mn
+
+    # Hue
+    if diff == 0:
+        h = 0.0
+    elif mx == r:
+        h = (60 * ((g - b) / diff) + 360) % 360
+    elif mx == g:
+        h = (60 * ((b - r) / diff) + 120) % 360
+    else:
+        h = (60 * ((r - g) / diff) + 240) % 360
+
+    # Saturation
+    s = 0.0 if mx == 0 else diff / mx
+
+    return (h, s, mx)
+
+
+def calculate_ch(item_hex_colors: list[str]) -> float:
+    """코디의 CH(Color Harmony) 점수를 계산한다.
+
+    Args:
+        item_hex_colors: 코디 아이템들의 HEX 색상 리스트
+
+    Returns:
+        0~100 사이의 CH 점수
+
+    계산 로직 (기획서 5.5.3):
+        1. 모든 아이템 쌍의 RGB 유클리드 거리 → 평균 d_avg
+        2. d_avg 구간별 점수 변환
+        3. 채도 보너스 (+5점, 아이템≥3 & 채도 표준편차 0.15~0.40)
+    """
+    if len(item_hex_colors) < 2:
+        return 70.0  # 단일 아이템은 중립 점수
+
+    rgbs = [_hex_to_rgb(c) for c in item_hex_colors]
+
+    # 1. 모든 쌍의 RGB 거리 → 평균
+    distances: list[float] = []
+    for i in range(len(rgbs)):
+        for j in range(i + 1, len(rgbs)):
+            distances.append(_rgb_distance(rgbs[i], rgbs[j]))
+
+    d_avg = sum(distances) / len(distances)
+
+    # 2. 구간별 점수
+    if d_avg < 30:
+        score = 60.0
+    elif d_avg < 80:
+        score = 80.0 + (d_avg - 30) / 50 * 20
+    elif d_avg < 150:
+        score = 100.0 - (d_avg - 80) / 70 * 21
+    else:
+        score = max(30.0, 79.0 - (d_avg - 150) / 290 * 49)
+
+    # 3. 채도 보너스
+    if len(item_hex_colors) >= 3:
+        saturations = [_rgb_to_hsv(rgb)[1] for rgb in rgbs]
+        mean_s = sum(saturations) / len(saturations)
+        std_s = math.sqrt(sum((s - mean_s) ** 2 for s in saturations) / len(saturations))
+        if 0.15 <= std_s <= 0.40:
+            score += 5.0
+
+    return round(min(max(score, 0.0), 100.0), 2)
