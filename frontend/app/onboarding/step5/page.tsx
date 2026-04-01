@@ -15,28 +15,28 @@ interface StyleImage {
 // Placeholder images per round — will be replaced with real style images
 const ROUNDS: StyleImage[][] = [
   [
-    { id: "r1-1", src: "/images/style/무신사1.png", alt: "스타일 1-1" },
-    { id: "r1-2", src: "/images/style/무신사2.png", alt: "스타일 1-2" },
-    { id: "r1-3", src: "/images/style/무신사3.png", alt: "스타일 1-3" },
-    { id: "r1-4", src: "/images/style/무신사4.png", alt: "스타일 1-4" },
+    { id: "r1-1", src: "/images/style/style_1.jpg", alt: "미니멀" },
+    { id: "r1-2", src: "/images/style/style_2.jpg", alt: "캐주얼" },
+    { id: "r1-3", src: "/images/style/style_3.jpg", alt: "스트릿" },
+    { id: "r1-4", src: "/images/style/style_4.jpg", alt: "페미닌" },
   ],
   [
-    { id: "r2-1", src: "/images/style/무신사5.png", alt: "스타일 2-1" },
-    { id: "r2-2", src: "/images/style/무신사6.png", alt: "스타일 2-2" },
-    { id: "r2-3", src: "/images/style/무신사7.png", alt: "스타일 2-3" },
-    { id: "r2-4", src: "/images/style/무신사8.png", alt: "스타일 2-4" },
+    { id: "r2-1", src: "/images/style/style_5.jpg", alt: "모던 오피스" },
+    { id: "r2-2", src: "/images/style/style_6.jpg", alt: "빈티지" },
+    { id: "r2-3", src: "/images/style/style_7.jpg", alt: "스포티" },
+    { id: "r2-4", src: "/images/style/style_8.jpg", alt: "클래식" },
   ],
   [
-    { id: "r3-1", src: "/images/style/무신사9.png", alt: "스타일 3-1" },
-    { id: "r3-2", src: "/images/style/무신사10.png", alt: "스타일 3-2" },
-    { id: "r3-3", src: "/images/style/무신사11.png", alt: "스타일 3-3" },
-    { id: "r3-4", src: "/images/style/무신사12.png", alt: "스타일 3-4" },
+    { id: "r3-1", src: "/images/style/style_9.jpg", alt: "오버사이즈" },
+    { id: "r3-2", src: "/images/style/style_10.jpg", alt: "슬림핏" },
+    { id: "r3-3", src: "/images/style/style_11.jpg", alt: "A라인" },
+    { id: "r3-4", src: "/images/style/style_12.jpg", alt: "레이어드" },
   ],
   [
-    { id: "r4-1", src: "/images/style/무신사13.png", alt: "스타일 4-1" },
-    { id: "r4-2", src: "/images/style/무신사14.png", alt: "스타일 4-2" },
-    { id: "r4-3", src: "/images/style/무신사15.png", alt: "스타일 4-3" },
-    { id: "r4-4", src: "/images/style/무신사16.png", alt: "스타일 4-4" },
+    { id: "r4-1", src: "/images/style/style_13.jpg", alt: "뉴트럴톤" },
+    { id: "r4-2", src: "/images/style/style_14.jpg", alt: "비비드" },
+    { id: "r4-3", src: "/images/style/style_15.jpg", alt: "파스텔" },
+    { id: "r4-4", src: "/images/style/style_16.jpg", alt: "모노톤" },
   ],
 ];
 
