@@ -163,16 +163,26 @@ function selectDiverseTop3(outfits: FeedOutfit[]): RankedOutfit[] {
 
 export default function FeedPage() {
   const router = useRouter();
-  const profile = getOnboardingData();
+  const [mounted, setMounted] = useState(false);
+  const profileRef = useRef(getOnboardingData());
 
   const [activeTpo, setActiveTpo] = useState("");
   const [budgetExpanded, setBudgetExpanded] = useState(false);
-  const [budgetMin, setBudgetMin] = useState(profile.budget_min);
-  const [budgetMax, setBudgetMax] = useState(profile.budget_max);
+  const [budgetMin, setBudgetMin] = useState(30000);
+  const [budgetMax, setBudgetMax] = useState(100000);
   const [status, setStatus] = useState<FeedStatus>("idle");
   const [toastMsg, setToastMsg] = useState<string | null>(null);
   const loadingRef = useRef(false);
   const userId = useRef("");
+
+  // 클라이언트 마운트 후 localStorage 읽기 (hydration 불일치 방지)
+  useEffect(() => {
+    const p = getOnboardingData();
+    profileRef.current = p;
+    setBudgetMin(p.budget_min);
+    setBudgetMax(p.budget_max);
+    setMounted(true);
+  }, []);
 
   // ── 결정 상태 ──
   const [decision, setDecision] = useState<FeedOutfit | null>(null);
@@ -200,11 +210,12 @@ export default function FeedPage() {
       loadingRef.current = true;
       setStatus("loading");
 
-      const tpoParam = activeTpo || profile.tpo_list.join(",");
+      const p = profileRef.current;
+      const tpoParam = activeTpo || p.tpo_list.join(",");
       const params = new URLSearchParams({
-        tone_id: profile.tone_id,
+        tone_id: p.tone_id,
         tpo: tpoParam,
-        gender: profile.gender,
+        gender: p.gender,
         budget_min: String(budgetMin),
         budget_max: String(budgetMax),
         page: "1",
@@ -231,14 +242,15 @@ export default function FeedPage() {
         loadingRef.current = false;
       }
     },
-    [activeTpo, budgetMin, budgetMax, profile],
+    [activeTpo, budgetMin, budgetMax, mounted],
   );
 
   useEffect(() => {
+    if (!mounted) return;
     sessionIdRef.current = Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
     pageViewTsRef.current = new Date().toISOString();
     fetchDecision();
-  }, [fetchDecision]);
+  }, [fetchDecision, mounted]);
 
   const handleTpoChange = (tpo: string) => {
     setActiveTpo(tpo);
@@ -300,8 +312,8 @@ export default function FeedPage() {
       cta_clicked: true,
       trust_score: skipped ? 0 : trustScore,
       confidence: skipped ? "skip" : confidence || "skip",
-      tone_id: profile.tone_id,
-      tpo: activeTpo || profile.tpo_list.join(","),
+      tone_id: profileRef.current.tone_id,
+      tpo: activeTpo || profileRef.current.tpo_list.join(","),
       timestamp: new Date().toISOString(),
       expanded: expandedRef.current,
       expand_level: maxExpandLevelRef.current,
