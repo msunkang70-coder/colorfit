@@ -119,7 +119,7 @@ export default function OutfitCard({
           {/* Thumbnail */}
           <div className="shrink-0 rounded-md overflow-hidden" style={{ width: 80, height: 100 }}>
             {imageUrl ? (
-              <img src={imageUrl} alt={core} loading="lazy" width={80} height={100} className="w-full h-full object-cover" />
+              <img src={imageUrl} alt={core} loading="lazy" width={80} height={100} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
             ) : (
               <div className="w-full h-full bg-surface flex items-center justify-center">
                 <span className="text-text-tertiary" style={{ fontSize: "10px" }}>이미지</span>
@@ -192,6 +192,7 @@ export default function OutfitCard({
             width={400}
             height={533}
             className="w-full h-full object-cover"
+            referrerPolicy="no-referrer"
           />
         ) : (
           <div className="w-full h-full bg-surface flex items-center justify-center">
