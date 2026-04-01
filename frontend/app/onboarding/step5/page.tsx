@@ -15,28 +15,28 @@ interface StyleImage {
 // Placeholder images per round — will be replaced with real style images
 const ROUNDS: StyleImage[][] = [
   [
-    { id: "r1-1", src: "/images/style/round1-1.jpg", alt: "스타일 1-1" },
-    { id: "r1-2", src: "/images/style/round1-2.jpg", alt: "스타일 1-2" },
-    { id: "r1-3", src: "/images/style/round1-3.jpg", alt: "스타일 1-3" },
-    { id: "r1-4", src: "/images/style/round1-4.jpg", alt: "스타일 1-4" },
+    { id: "r1-1", src: "/images/style/무신사1.png", alt: "스타일 1-1" },
+    { id: "r1-2", src: "/images/style/무신사2.png", alt: "스타일 1-2" },
+    { id: "r1-3", src: "/images/style/무신사3.png", alt: "스타일 1-3" },
+    { id: "r1-4", src: "/images/style/무신사4.png", alt: "스타일 1-4" },
   ],
   [
-    { id: "r2-1", src: "/images/style/round2-1.jpg", alt: "스타일 2-1" },
-    { id: "r2-2", src: "/images/style/round2-2.jpg", alt: "스타일 2-2" },
-    { id: "r2-3", src: "/images/style/round2-3.jpg", alt: "스타일 2-3" },
-    { id: "r2-4", src: "/images/style/round2-4.jpg", alt: "스타일 2-4" },
+    { id: "r2-1", src: "/images/style/무신사5.png", alt: "스타일 2-1" },
+    { id: "r2-2", src: "/images/style/무신사6.png", alt: "스타일 2-2" },
+    { id: "r2-3", src: "/images/style/무신사7.png", alt: "스타일 2-3" },
+    { id: "r2-4", src: "/images/style/무신사8.png", alt: "스타일 2-4" },
   ],
   [
-    { id: "r3-1", src: "/images/style/round3-1.jpg", alt: "스타일 3-1" },
-    { id: "r3-2", src: "/images/style/round3-2.jpg", alt: "스타일 3-2" },
-    { id: "r3-3", src: "/images/style/round3-3.jpg", alt: "스타일 3-3" },
-    { id: "r3-4", src: "/images/style/round3-4.jpg", alt: "스타일 3-4" },
+    { id: "r3-1", src: "/images/style/무신사9.png", alt: "스타일 3-1" },
+    { id: "r3-2", src: "/images/style/무신사10.png", alt: "스타일 3-2" },
+    { id: "r3-3", src: "/images/style/무신사11.png", alt: "스타일 3-3" },
+    { id: "r3-4", src: "/images/style/무신사12.png", alt: "스타일 3-4" },
   ],
   [
-    { id: "r4-1", src: "/images/style/round4-1.jpg", alt: "스타일 4-1" },
-    { id: "r4-2", src: "/images/style/round4-2.jpg", alt: "스타일 4-2" },
-    { id: "r4-3", src: "/images/style/round4-3.jpg", alt: "스타일 4-3" },
-    { id: "r4-4", src: "/images/style/round4-4.jpg", alt: "스타일 4-4" },
+    { id: "r4-1", src: "/images/style/무신사13.png", alt: "스타일 4-1" },
+    { id: "r4-2", src: "/images/style/무신사14.png", alt: "스타일 4-2" },
+    { id: "r4-3", src: "/images/style/무신사15.png", alt: "스타일 4-3" },
+    { id: "r4-4", src: "/images/style/무신사16.png", alt: "스타일 4-4" },
   ],
 ];
 
