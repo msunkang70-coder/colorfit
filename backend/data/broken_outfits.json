@@ -1,0 +1,145 @@
+[
+  {
+    "outfit_id": "spring_warm_light_female_interview_005",
+    "designed_tpo": [
+      "interview"
+    ],
+    "categories": [
+      "셔츠",
+      "스커트",
+      "코트",
+      "힐"
+    ],
+    "issues": [
+      "interview에 금지 카테고리: {'코트'}"
+    ]
+  },
+  {
+    "outfit_id": "spring_warm_light_female_interview_010",
+    "designed_tpo": [
+      "interview"
+    ],
+    "categories": [
+      "자켓",
+      "스커트",
+      "코트",
+      "로퍼"
+    ],
+    "issues": [
+      "interview에 금지 카테고리: {'코트'}"
+    ]
+  },
+  {
+    "outfit_id": "spring_warm_bright_male_interview_010",
+    "designed_tpo": [
+      "interview"
+    ],
+    "categories": [
+      "코트",
+      "슬랙스"
+    ],
+    "issues": [
+      "interview에 금지 카테고리: {'코트'}"
+    ]
+  },
+  {
+    "outfit_id": "spring_warm_mute_female_interview_004",
+    "designed_tpo": [
+      "interview"
+    ],
+    "categories": [
+      "원피스",
+      "스커트",
+      "코트"
+    ],
+    "issues": [
+      "interview에 금지 카테고리: {'코트'}"
+    ]
+  },
+  {
+    "outfit_id": "summer_cool_soft_female_interview_004",
+    "designed_tpo": [
+      "interview"
+    ],
+    "categories": [
+      "원피스",
+      "슬랙스",
+      "코트",
+      "로퍼"
+    ],
+    "issues": [
+      "interview에 금지 카테고리: {'코트'}"
+    ]
+  },
+  {
+    "outfit_id": "summer_cool_mute_female_interview_006",
+    "designed_tpo": [
+      "interview"
+    ],
+    "categories": [
+      "셔츠",
+      "조거팬츠",
+      "자켓",
+      "로퍼"
+    ],
+    "issues": [
+      "interview에 금지 카테고리: {'조거팬츠'}"
+    ]
+  },
+  {
+    "outfit_id": "autumn_warm_deep_female_interview_004",
+    "designed_tpo": [
+      "interview"
+    ],
+    "categories": [
+      "패딩",
+      "슬랙스",
+      "로퍼",
+      "힐"
+    ],
+    "issues": [
+      "interview에 금지 카테고리: {'패딩'}"
+    ]
+  },
+  {
+    "outfit_id": "autumn_warm_bright_male_interview_004",
+    "designed_tpo": [
+      "interview"
+    ],
+    "categories": [
+      "코트",
+      "슬랙스"
+    ],
+    "issues": [
+      "interview에 금지 카테고리: {'코트'}"
+    ]
+  },
+  {
+    "outfit_id": "winter_cool_deep_male_interview_006",
+    "designed_tpo": [
+      "interview"
+    ],
+    "categories": [
+      "셔츠",
+      "슬랙스",
+      "코트"
+    ],
+    "issues": [
+      "interview에 금지 카테고리: {'코트'}"
+    ]
+  },
+  {
+    "outfit_id": "winter_cool_deep_male_interview_010",
+    "designed_tpo": [
+      "interview"
+    ],
+    "categories": [
+      "셔츠",
+      "슬랙스",
+      "코트"
+    ],
+    "issues": [
+      "interview에 금지 카테고리: {'코트'}"
+    ]
+  }
+]
