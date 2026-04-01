@@ -48,8 +48,17 @@ def detect_correct_category(name: str, current_cat: str) -> str | None:
     return None
 
 
+
+# TPO별 상품명 금지 키워드 (카테고리는 맞지만 상품 자체가 부적합)
+TPO_NAME_BLACKLIST: dict[str, list[str]] = {
+    "interview": ["후드", "후디", "스웨트", "조거", "트레이닝", "레깅스", "크롭", "캐주얼 반팔", "트랙"],
+    "commute": ["후드", "후디", "트레이닝", "조거", "트랙"],
+    "workout": ["원피스", "드레스", "블라우스", "코트", "자켓", "패딩"],
+}
+
+
 def check_outfit_validity(outfit: dict) -> list[str]:
-    """코디의 카테고리 구성이 레시피에 맞는지 검사. 위반 사항 반환."""
+    """코디의 카테고리 구성 + 상품명 적합성 검사. 위반 사항 반환."""
     tpo_list = outfit.get("designed_tpo", [])
     items = outfit.get("items", [])
     cats = {it.get("category", "") for it in items}
@@ -66,6 +75,17 @@ def check_outfit_validity(outfit: dict) -> list[str]:
         elif tpo == "commute":
             if cats & {"숏팬츠", "레깅스", "크롭탑", "탱크탑"}:
                 issues.append(f"commute에 금지 카테고리: {cats & {'숏팬츠','레깅스','크롭탑','탱크탑'}}")
+
+        # 상품명 키워드 블랙리스트 검사
+        blacklist = TPO_NAME_BLACKLIST.get(tpo, [])
+        if blacklist:
+            for it in items:
+                name_lower = it.get("name", "").lower()
+                for kw in blacklist:
+                    if kw in name_lower:
+                        issues.append(f"{tpo}에 부적합 상품명: '{kw}' in '{it['name'][:40]}'")
+                        break
+
     return issues
 
 

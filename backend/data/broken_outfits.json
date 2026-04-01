@@ -1,145 +1,505 @@
 [
   {
-    "outfit_id": "spring_warm_light_female_interview_005",
+    "outfit_id": "spring_warm_bright_female_interview_001",
     "designed_tpo": [
       "interview"
     ],
     "categories": [
       "셔츠",
       "스커트",
-      "코트",
-      "힐"
+      "자켓"
     ],
     "issues": [
-      "interview에 금지 카테고리: {'코트'}"
+      "interview에 부적합 상품명: '트레이닝' in '아디다스 퍼포먼스 키즈 트랙자켓 슈트 트레이닝 티로 24 컴피티션 트랙 '"
     ]
   },
   {
-    "outfit_id": "spring_warm_light_female_interview_010",
+    "outfit_id": "spring_warm_bright_female_workout_004",
+    "designed_tpo": [
+      "workout"
+    ],
+    "categories": [
+      "크롭탑",
+      "숏팬츠"
+    ],
+    "issues": [
+      "workout에 부적합 상품명: '드레스' in '럭셔리 웨딩드레스 블랙 햅번 리본 벨벳 라인 셀프웨딩 롱 수박레드 재킷+'"
+    ]
+  },
+  {
+    "outfit_id": "spring_warm_bright_female_workout_008",
+    "designed_tpo": [
+      "workout"
+    ],
+    "categories": [
+      "탱크탑",
+      "숏팬츠"
+    ],
+    "issues": [
+      "workout에 부적합 상품명: '드레스' in '럭셔리 웨딩드레스 블랙 햅번 리본 벨벳 라인 셀프웨딩 롱 수박레드 재킷+'"
+    ]
+  },
+  {
+    "outfit_id": "spring_warm_bright_male_interview_006",
+    "designed_tpo": [
+      "interview"
+    ],
+    "categories": [
+      "셔츠",
+      "슬랙스"
+    ],
+    "issues": [
+      "interview에 부적합 상품명: '후디' in '컬럼비아 빅 &amp; 톨 Terminal Tackle 후디 비비드 블루'"
+    ]
+  },
+  {
+    "outfit_id": "spring_warm_bright_male_commute_002",
+    "designed_tpo": [
+      "commute"
+    ],
+    "categories": [
+      "맨투맨",
+      "슬랙스"
+    ],
+    "issues": [
+      "commute에 부적합 상품명: '트레이닝' in '긴팔티 남자 맨투맨 GASP 트레이닝 근육 긴팔 티셔츠 머슬핏 플레임 오'"
+    ]
+  },
+  {
+    "outfit_id": "spring_warm_bright_male_commute_004",
+    "designed_tpo": [
+      "commute"
+    ],
+    "categories": [
+      "후드",
+      "슬랙스"
+    ],
+    "issues": [
+      "commute에 부적합 상품명: '후드' in '[BLUETAIL] AXG6TS02SB 비비드 블루 오버핏 후드티셔츠'"
+    ]
+  },
+  {
+    "outfit_id": "spring_warm_bright_male_commute_010",
+    "designed_tpo": [
+      "commute"
+    ],
+    "categories": [
+      "셔츠",
+      "슬랙스",
+      "로퍼"
+    ],
+    "issues": [
+      "commute에 부적합 상품명: '후디' in '커버낫 남성 후디 C로고 터콰이즈 AS858105'"
+    ]
+  },
+  {
+    "outfit_id": "spring_warm_mute_female_commute_006",
+    "designed_tpo": [
+      "commute"
+    ],
+    "categories": [
+      "맨투맨",
+      "슬랙스"
+    ],
+    "issues": [
+      "commute에 부적합 상품명: '후디' in '그레이스 시크릿 여성 소프트 플리스 후디 스웨트셔츠 캐주얼 긴팔 셔츠 초'"
+    ]
+  },
+  {
+    "outfit_id": "summer_cool_light_female_interview_009",
+    "designed_tpo": [
+      "interview"
+    ],
+    "categories": [
+      "셔츠",
+      "슬랙스"
+    ],
+    "issues": [
+      "interview에 부적합 상품명: '크롭' in '그레이데시온 언밸런스 헴라인 크롭셔츠 LAVENDER 셔츠 블라우스'"
+    ]
+  },
+  {
+    "outfit_id": "summer_cool_light_female_commute_009",
+    "designed_tpo": [
+      "commute"
+    ],
+    "categories": [
+      "맨투맨",
+      "슬랙스"
+    ],
+    "issues": [
+      "commute에 부적합 상품명: '트레이닝' in '보풀X 변형없는 부츠컷 밴딩 하이웨스트 슬랙스 트레이닝 팬츠 3color'"
+    ]
+  },
+  {
+    "outfit_id": "summer_cool_light_male_commute_002",
+    "designed_tpo": [
+      "commute"
+    ],
+    "categories": [
+      "후드",
+      "슬랙스"
+    ],
+    "issues": [
+      "commute에 부적합 상품명: '후드' in '베이비파우더 밑단 스트링 후드 니트 가디건 SkyBlue Free'"
+    ]
+  },
+  {
+    "outfit_id": "summer_cool_light_male_commute_010",
+    "designed_tpo": [
+      "commute"
+    ],
+    "categories": [
+      "니트",
+      "슬랙스",
+      "자켓"
+    ],
+    "issues": [
+      "commute에 부적합 상품명: '트랙' in '세터 SATUR 로턴 올 데이 트랙 집업 자켓 스카이 블루 SA243MT'"
+    ]
+  },
+  {
+    "outfit_id": "summer_cool_soft_female_interview_006",
     "designed_tpo": [
       "interview"
     ],
     "categories": [
       "자켓",
-      "스커트",
-      "코트",
-      "로퍼"
+      "스커트"
     ],
     "issues": [
-      "interview에 금지 카테고리: {'코트'}"
+      "interview에 부적합 상품명: '후디' in '[무신사 스탠다드 우먼] 우먼즈 체크 후디드 셔츠 재킷 [더스티 블루] '"
     ]
   },
   {
-    "outfit_id": "spring_warm_bright_male_interview_010",
-    "designed_tpo": [
-      "interview"
-    ],
-    "categories": [
-      "코트",
-      "슬랙스"
-    ],
-    "issues": [
-      "interview에 금지 카테고리: {'코트'}"
-    ]
-  },
-  {
-    "outfit_id": "spring_warm_mute_female_interview_004",
-    "designed_tpo": [
-      "interview"
-    ],
-    "categories": [
-      "원피스",
-      "스커트",
-      "코트"
-    ],
-    "issues": [
-      "interview에 금지 카테고리: {'코트'}"
-    ]
-  },
-  {
-    "outfit_id": "summer_cool_soft_female_interview_004",
-    "designed_tpo": [
-      "interview"
-    ],
-    "categories": [
-      "원피스",
-      "슬랙스",
-      "코트",
-      "로퍼"
-    ],
-    "issues": [
-      "interview에 금지 카테고리: {'코트'}"
-    ]
-  },
-  {
-    "outfit_id": "summer_cool_mute_female_interview_006",
+    "outfit_id": "summer_cool_soft_male_interview_002",
     "designed_tpo": [
       "interview"
     ],
     "categories": [
       "셔츠",
-      "조거팬츠",
+      "슬랙스",
+      "자켓"
+    ],
+    "issues": [
+      "interview에 부적합 상품명: '조거' in 'PGP 소프트 쭈리 조거팬츠 블랙'"
+    ]
+  },
+  {
+    "outfit_id": "summer_cool_soft_male_commute_003",
+    "designed_tpo": [
+      "commute"
+    ],
+    "categories": [
+      "후드",
+      "슬랙스"
+    ],
+    "issues": [
+      "commute에 부적합 상품명: '후드' in '널디 공용 범피 N 풀오버 후드티 더스티블루 PNEF24HD13(54)'"
+    ]
+  },
+  {
+    "outfit_id": "summer_cool_mute_female_interview_001",
+    "designed_tpo": [
+      "interview"
+    ],
+    "categories": [
+      "셔츠",
+      "스커트"
+    ],
+    "issues": [
+      "interview에 부적합 상품명: '크롭' in '국내정품 노스페이스 아웃도어 조끼 여성용 세미 크롭 경량 데일리 베스트 '"
+    ]
+  },
+  {
+    "outfit_id": "summer_cool_mute_female_commute_002",
+    "designed_tpo": [
+      "commute"
+    ],
+    "categories": [
+      "니트",
+      "조거팬츠"
+    ],
+    "issues": [
+      "commute에 부적합 상품명: '조거' in 'Huukeay 3팩 여성용 라운지 팬츠, 주머니가 있는 아늑한 와이드 레'"
+    ]
+  },
+  {
+    "outfit_id": "autumn_warm_deep_female_interview_003",
+    "designed_tpo": [
+      "interview"
+    ],
+    "categories": [
+      "셔츠",
+      "슬랙스"
+    ],
+    "issues": [
+      "interview에 부적합 상품명: '스웨트' in '아디다스 오리지널 에센셜 리니어 크롭 스웨트 셔츠 마룬 155546026'"
+    ]
+  },
+  {
+    "outfit_id": "autumn_warm_deep_female_commute_006",
+    "designed_tpo": [
+      "commute"
+    ],
+    "categories": [
+      "자켓",
+      "슬랙스",
       "자켓",
       "로퍼"
     ],
     "issues": [
-      "interview에 금지 카테고리: {'조거팬츠'}"
+      "commute에 부적합 상품명: '후디' in '더 짐 피플 여성용 풀집업 후디 재킷 플리스 운동 크롭탑 포켓 엄지 구멍'"
     ]
   },
   {
-    "outfit_id": "autumn_warm_deep_female_interview_004",
+    "outfit_id": "autumn_warm_deep_female_workout_001",
     "designed_tpo": [
-      "interview"
+      "workout"
     ],
     "categories": [
-      "패딩",
-      "슬랙스",
-      "로퍼",
-      "힐"
+      "탱크탑",
+      "숏팬츠"
     ],
     "issues": [
-      "interview에 금지 카테고리: {'패딩'}"
+      "workout에 부적합 상품명: '자켓' in '여자 체크 자켓 버건디 재킷 여성 미니 투피스 반바지 캐주얼 수트 패션'"
     ]
   },
   {
-    "outfit_id": "autumn_warm_bright_male_interview_004",
+    "outfit_id": "autumn_warm_deep_female_workout_003",
+    "designed_tpo": [
+      "workout"
+    ],
+    "categories": [
+      "크롭탑",
+      "숏팬츠"
+    ],
+    "issues": [
+      "workout에 부적합 상품명: '자켓' in '여자 체크 자켓 버건디 재킷 여성 미니 투피스 반바지 캐주얼 수트 패션'"
+    ]
+  },
+  {
+    "outfit_id": "autumn_warm_deep_female_workout_007",
+    "designed_tpo": [
+      "workout"
+    ],
+    "categories": [
+      "크롭탑",
+      "숏팬츠"
+    ],
+    "issues": [
+      "workout에 부적합 상품명: '자켓' in '여자 체크 자켓 버건디 재킷 여성 미니 투피스 반바지 캐주얼 수트 패션'"
+    ]
+  },
+  {
+    "outfit_id": "autumn_warm_deep_male_workout_001",
+    "designed_tpo": [
+      "workout"
+    ],
+    "categories": [
+      "머슬핏",
+      "숏팬츠"
+    ],
+    "issues": [
+      "workout에 부적합 상품명: '자켓' in '폴러스터프 비숍 슬리브리스 자켓 CHOCOLATE'"
+    ]
+  },
+  {
+    "outfit_id": "autumn_warm_deep_male_workout_002",
+    "designed_tpo": [
+      "workout"
+    ],
+    "categories": [
+      "머슬핏",
+      "숏팬츠"
+    ],
+    "issues": [
+      "workout에 부적합 상품명: '자켓' in '폴러스터프 비숍 슬리브리스 자켓 CHOCOLATE'"
+    ]
+  },
+  {
+    "outfit_id": "autumn_warm_deep_male_workout_003",
+    "designed_tpo": [
+      "workout"
+    ],
+    "categories": [
+      "머슬핏",
+      "숏팬츠"
+    ],
+    "issues": [
+      "workout에 부적합 상품명: '자켓' in '폴러스터프 비숍 슬리브리스 자켓 CHOCOLATE'"
+    ]
+  },
+  {
+    "outfit_id": "autumn_warm_deep_male_workout_004",
+    "designed_tpo": [
+      "workout"
+    ],
+    "categories": [
+      "머슬핏",
+      "숏팬츠"
+    ],
+    "issues": [
+      "workout에 부적합 상품명: '자켓' in '폴러스터프 비숍 슬리브리스 자켓 CHOCOLATE'"
+    ]
+  },
+  {
+    "outfit_id": "autumn_warm_deep_male_workout_005",
+    "designed_tpo": [
+      "workout"
+    ],
+    "categories": [
+      "머슬핏",
+      "숏팬츠"
+    ],
+    "issues": [
+      "workout에 부적합 상품명: '자켓' in '폴러스터프 비숍 슬리브리스 자켓 CHOCOLATE'"
+    ]
+  },
+  {
+    "outfit_id": "autumn_warm_deep_male_workout_006",
+    "designed_tpo": [
+      "workout"
+    ],
+    "categories": [
+      "머슬핏",
+      "숏팬츠"
+    ],
+    "issues": [
+      "workout에 부적합 상품명: '자켓' in '폴러스터프 비숍 슬리브리스 자켓 CHOCOLATE'"
+    ]
+  },
+  {
+    "outfit_id": "autumn_warm_deep_male_workout_007",
+    "designed_tpo": [
+      "workout"
+    ],
+    "categories": [
+      "머슬핏",
+      "숏팬츠"
+    ],
+    "issues": [
+      "workout에 부적합 상품명: '자켓' in '폴러스터프 비숍 슬리브리스 자켓 CHOCOLATE'"
+    ]
+  },
+  {
+    "outfit_id": "autumn_warm_deep_male_workout_008",
+    "designed_tpo": [
+      "workout"
+    ],
+    "categories": [
+      "머슬핏",
+      "조거팬츠"
+    ],
+    "issues": [
+      "workout에 부적합 상품명: '자켓' in '폴러스터프 비숍 슬리브리스 자켓 CHOCOLATE'"
+    ]
+  },
+  {
+    "outfit_id": "autumn_warm_mute_male_interview_009",
     "designed_tpo": [
       "interview"
     ],
     "categories": [
-      "코트",
+      "자켓",
       "슬랙스"
     ],
     "issues": [
-      "interview에 금지 카테고리: {'코트'}"
+      "interview에 부적합 상품명: '후드' in 'L 아디다스 Z.N.E. 풀집 후드 트랙 자켓 웜 샌드스톤 클레이 브라운'"
     ]
   },
   {
-    "outfit_id": "winter_cool_deep_male_interview_006",
+    "outfit_id": "autumn_warm_mute_male_commute_007",
+    "designed_tpo": [
+      "commute"
+    ],
+    "categories": [
+      "자켓",
+      "치노",
+      "로퍼"
+    ],
+    "issues": [
+      "commute에 부적합 상품명: '후드' in '무스너클 퍼 후드 집업 스웨터 자켓 M32MS600'"
+    ]
+  },
+  {
+    "outfit_id": "autumn_warm_bright_male_interview_001",
     "designed_tpo": [
       "interview"
     ],
     "categories": [
       "셔츠",
-      "슬랙스",
-      "코트"
+      "슬랙스"
     ],
     "issues": [
-      "interview에 금지 카테고리: {'코트'}"
+      "interview에 부적합 상품명: '스웨트' in 'DISCUS ATHLETIC 기모 레귤러 핏 아치 스웨트 셔츠 브릭 레드'"
     ]
   },
   {
-    "outfit_id": "winter_cool_deep_male_interview_010",
+    "outfit_id": "autumn_warm_bright_male_interview_003",
     "designed_tpo": [
       "interview"
     ],
     "categories": [
       "셔츠",
-      "슬랙스",
-      "코트"
+      "슬랙스"
     ],
     "issues": [
-      "interview에 금지 카테고리: {'코트'}"
+      "interview에 부적합 상품명: '스웨트' in '디스커스애슬레틱 DISCUS ATHLETIC 기모 레귤러 핏 고양이 스웨'"
+    ]
+  },
+  {
+    "outfit_id": "winter_cool_deep_male_interview_003",
+    "designed_tpo": [
+      "interview"
+    ],
+    "categories": [
+      "셔츠",
+      "슬랙스"
+    ],
+    "issues": [
+      "interview에 부적합 상품명: '스웨트' in 'Superdry 슈퍼드라이 칼리지 스크립 루즈 스웨트 - 딥 인디고 네이'"
+    ]
+  },
+  {
+    "outfit_id": "winter_cool_deep_male_interview_007",
+    "designed_tpo": [
+      "interview"
+    ],
+    "categories": [
+      "셔츠",
+      "슬랙스"
+    ],
+    "issues": [
+      "interview에 부적합 상품명: '스웨트' in 'Superdry 슈퍼드라이 칼리지 스크립 루즈 스웨트 - 딥 인디고 마를'"
+    ]
+  },
+  {
+    "outfit_id": "winter_cool_bright_male_commute_007",
+    "designed_tpo": [
+      "commute"
+    ],
+    "categories": [
+      "니트",
+      "슬랙스",
+      "자켓"
+    ],
+    "issues": [
+      "commute에 부적합 상품명: '트랙' in '아디다스 리버풀 FC 트랙 탑 95 KA8094'"
+    ]
+  },
+  {
+    "outfit_id": "winter_cool_light_female_interview_004",
+    "designed_tpo": [
+      "interview"
+    ],
+    "categories": [
+      "셔츠",
+      "스커트",
+      "자켓"
+    ],
+    "issues": [
+      "interview에 부적합 상품명: '트랙' in '[푸마]여성용 아이코닉 T7 트랙 재킷/아이시 블루/530079-69'"
     ]
   }
 ]
