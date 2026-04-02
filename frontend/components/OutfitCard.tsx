@@ -9,12 +9,19 @@ interface ReasonData {
   risk_guard: string;
 }
 
+interface OutfitItem {
+  image_url: string;
+  name: string;
+  price: number;
+}
+
 interface OutfitCardProps {
   outfitId: string;
   imageUrl: string;
   totalPrice: number;
   itemCount: number;
   reasons: ReasonData | null;
+  items?: OutfitItem[];
   variant?: "full" | "compact";
   label?: string;
   onTap?: (outfitId: string) => void;
@@ -35,6 +42,7 @@ export default function OutfitCard({
   totalPrice,
   itemCount,
   reasons,
+  items,
   variant = "full",
   label,
   onTap,
@@ -43,6 +51,8 @@ export default function OutfitCard({
   index = 0,
 }: OutfitCardProps) {
   const isCompact = variant === "compact";
+  const [activeImageIdx, setActiveImageIdx] = useState(0);
+  const activeImageUrl = items?.[activeImageIdx]?.image_url ?? imageUrl;
   const [saved, setSaved] = useState(false);
   const [heartScale, setHeartScale] = useState(1);
   const [dismissed, setDismissed] = useState(false);
@@ -183,14 +193,14 @@ export default function OutfitCard({
       )}
 
       {/* Image */}
-      <div className="relative w-full rounded-lg overflow-hidden" style={{ aspectRatio: "3 / 4" }}>
-        {imageUrl ? (
+      <div className="relative w-full rounded-lg overflow-hidden" style={{ aspectRatio: "4 / 5", maxHeight: "60vh" }}>
+        {activeImageUrl ? (
           <img
-            src={imageUrl}
+            src={activeImageUrl}
             alt={core}
             loading="lazy"
             width={400}
-            height={533}
+            height={500}
             className="w-full h-full object-cover"
             referrerPolicy="no-referrer"
           />
@@ -215,12 +225,18 @@ export default function OutfitCard({
           </motion.div>
         )}
 
-        <span
-          className="absolute bottom-3 left-3 rounded-full text-white"
-          style={{ fontSize: "11px", padding: "4px 10px", backgroundColor: "rgba(0,0,0,0.5)" }}
+        {/* Core + Price overlay */}
+        <div
+          className="absolute bottom-0 left-0 right-0 px-[16px] pb-[12px] pt-[32px]"
+          style={{ background: "linear-gradient(transparent, rgba(0,0,0,0.5))" }}
         >
-          {itemCount}pcs
-        </span>
+          <h3 className="text-white truncate" style={{ fontFamily: "var(--font-display)", fontSize: "16px", fontWeight: 700, lineHeight: 1.3 }}>
+            {core}
+          </h3>
+          <p className="text-white font-bold mt-[2px]" style={{ fontSize: "15px" }}>
+            {formatPrice(totalPrice)}
+          </p>
+        </div>
 
         <button
           onClick={handleHeartClick}
@@ -239,22 +255,37 @@ export default function OutfitCard({
         </button>
       </div>
 
-      {/* Core */}
-      <h3
-        className="mt-[12px] text-primary truncate"
-        style={{ fontFamily: "var(--font-display)", fontSize: "16px", fontWeight: 700, lineHeight: 1.3 }}
-      >
-        {core}
-      </h3>
-
-      {/* Price */}
-      <p className="mt-[4px] text-primary font-bold" style={{ fontSize: "15px" }}>
-        {formatPrice(totalPrice)}
-      </p>
+      {/* Item thumbnails */}
+      {items && items.length > 1 && (
+        <div className="flex gap-[8px] mt-[8px] overflow-x-auto scrollbar-hide" style={{ padding: "8px 0" }}>
+          {items.map((it, i) => (
+            <button
+              key={i}
+              onClick={(e) => { e.stopPropagation(); setActiveImageIdx(i); }}
+              className="shrink-0 flex flex-col items-center"
+              style={{ width: 56 }}
+            >
+              <div
+                className="rounded-md overflow-hidden"
+                style={{
+                  width: 48, height: 48,
+                  border: activeImageIdx === i ? "2px solid #964F4C" : "2px solid transparent",
+                }}
+              >
+                <img src={it.image_url} alt={it.name} width={48} height={48}
+                  className="w-full h-full object-cover" referrerPolicy="no-referrer" loading="lazy" />
+              </div>
+              <span className="text-text-secondary truncate w-full text-center mt-[2px]" style={{ fontSize: "10px" }}>
+                {formatPrice(it.price)}
+              </span>
+            </button>
+          ))}
+        </div>
+      )}
 
       {/* Evidence */}
       {evidence && (
-        <p className="mt-[6px] text-text-secondary" style={{ fontSize: "13px", lineHeight: 1.5 }}>
+        <p className="mt-[4px] text-text-secondary" style={{ fontSize: "13px", lineHeight: 1.5 }}>
           {evidence}
         </p>
       )}

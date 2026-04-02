@@ -459,6 +459,7 @@ export default function FeedPage() {
               totalPrice={decision.total_price}
               itemCount={decision.items.length}
               reasons={decision.reasons}
+              items={decision.items}
               variant="full"
               label={expandLevel === 0 ? undefined : "1위 추천"}
               onSaveToggle={handleSaveToggle}

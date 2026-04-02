@@ -140,9 +140,25 @@ def _build_core(
     items: list[dict],
     user_tone_id: str,
     user_tpo_list: list[str],
+    scores: dict[str, float] | None = None,
 ) -> str:
     tone = TONE_NAMES_KO.get(user_tone_id, "내 퍼스널컬러")
     tpo = TPO_NAMES_KO.get(user_tpo_list[0], "데일리") if user_tpo_list else "데일리"
+
+    # 축 1순위에 따라 core 표현 차별화
+    if scores:
+        axis, _ = _select_top_axis(scores)
+        if axis == "pcf":
+            return f"{tone}에 딱 맞는 {tpo} 코디"
+        if axis == "of":
+            return f"{tpo}에 최적화된 깔끔한 조합"
+        if axis == "ch":
+            return f"색감 조화가 돋보이는 {tpo} 코디"
+        if axis == "pe":
+            return f"가성비 좋은 {tpo} 코디"
+        if axis == "sf":
+            return f"실루엣이 깔끔한 {tpo} 조합"
+
     upper, lower = _extract_item_names(items)
     if upper and lower:
         return f"{upper} + {lower} — {tone} {tpo}룩"
@@ -157,38 +173,65 @@ def _build_evidence(
     user_tone_id: str,
     user_tpo_list: list[str],
     weights: dict[str, float] | None = None,
+    variant: int = 0,
 ) -> str:
-    """1순위 축 기반 설득 문장 1개."""
+    """1순위 축 기반 설득 문장 1개. variant로 문구 변형."""
     axis, raw = _select_top_axis(scores, weights)
     tone = TONE_NAMES_KO.get(user_tone_id, "내 퍼스널컬러")
     tpo = TPO_NAMES_KO.get(user_tpo_list[0], "데일리") if user_tpo_list else "데일리"
     upper, lower = _extract_item_names(items)
     high = raw >= 75
+    v = variant % 3
 
     if axis == "pcf":
         if high and upper:
-            return f"{upper}의 색감이 {tone} 톤과 자연스럽게 어울려서 피부가 밝아 보여요"
+            opts = [
+                f"{upper}의 색감이 {tone} 톤과 자연스럽게 어울려서 피부가 밝아 보여요",
+                f"{tone}의 시원한 톤에 맞춘 색상이라 얼굴이 화사해 보여요",
+                f"피부 톤과 조화로운 색상 선택으로 자연스러운 분위기가 나요",
+            ]
+            return opts[v]
         return f"전체적으로 {tone}에 어울리는 색상 구성이에요"
 
     if axis == "of":
         if high:
-            return f"{tpo} 상황에 맞는 격식과 분위기를 갖춘 조합이에요"
+            opts = [
+                f"{tpo} 상황에 맞는 격식과 분위기를 갖춘 조합이에요",
+                f"{tpo}에 딱 맞는 무드를 연출할 수 있는 스타일이에요",
+                f"{tpo} 자리에서 자연스럽게 어울리는 코디예요",
+            ]
+            return opts[v]
         return f"다양한 상황에 활용하기 좋은 범용적인 스타일이에요"
 
     if axis == "ch":
         if high and upper and lower:
-            return f"{_particle(upper, '과', '와')} {lower}의 색상 배합이 안정적이고 세련돼요"
+            opts = [
+                f"{_particle(upper, '과', '와')} {lower}의 색상 배합이 안정적이고 세련돼요",
+                f"아이템 간 컬러 매칭이 자연스러워서 완성도가 높아요",
+                f"색감이 통일감 있게 어우러져서 깔끔한 인상을 줘요",
+            ]
+            return opts[v]
         return f"아이템 간 색상 조화가 좋은 코디예요"
 
     if axis == "pe":
         total = sum(it.get("price", 0) for it in items)
         if high and total:
-            return f"총 {total:,}원으로 예산 범위 안에서 가성비 좋은 조합이에요"
+            opts = [
+                f"총 {total:,}원으로 예산 범위 안에서 가성비 좋은 조합이에요",
+                f"합리적인 가격에 스타일까지 챙긴 효율적인 코디예요",
+                f"부담 없는 가격대로 구성된 실용적인 조합이에요",
+            ]
+            return opts[v]
         return f"가격 대비 만족스러운 구성이에요"
 
     if axis == "sf":
         if high and upper and lower:
-            return f"{_particle(upper, '과', '와')} {lower}의 실루엣 밸런스가 좋아서 깔끔한 라인이 나와요"
+            opts = [
+                f"{_particle(upper, '과', '와')} {lower}의 실루엣 밸런스가 좋아서 깔끔한 라인이 나와요",
+                f"상의와 하의의 핏 조합이 자연스러워서 체형이 깔끔하게 보여요",
+                f"아이템 간 스타일이 잘 맞아서 세련된 분위기가 나요",
+            ]
+            return opts[v]
         return f"아이템 간 스타일 조화가 좋은 코디예요"
 
     return f"{tone}에 어울리는 코디예요"
@@ -239,8 +282,11 @@ def generate_reasons(
     if user_tpo_list is None:
         user_tpo_list = []
 
+    # variant: 아이템 가격 합으로 해시 생성 → 같은 코디라도 다른 문구 변형
+    variant = sum(it.get("price", 0) for it in items) % 3
+
     return ReasonResult(
-        core=_build_core(items, user_tone_id, user_tpo_list),
-        evidence=_build_evidence(scores, items, user_tone_id, user_tpo_list, weights),
+        core=_build_core(items, user_tone_id, user_tpo_list, scores),
+        evidence=_build_evidence(scores, items, user_tone_id, user_tpo_list, weights, variant),
         risk_guard=_build_risk_guard(scores, items, user_tpo_list),
     )
