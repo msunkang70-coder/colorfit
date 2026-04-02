@@ -6,6 +6,7 @@ Feed API — GET /api/feed
 
 from __future__ import annotations
 
+import copy
 import json
 from pathlib import Path
 from typing import Optional
@@ -13,21 +14,31 @@ from typing import Optional
 from fastapi import APIRouter, Query
 
 from app.schemas.outfit import FeedResponse, OutfitResponse, ScoresResponse, ItemResponse, ReasonResponse
-from app.services.feed_builder import apply_hard_filters, score_and_rerank
+from app.services.feed_builder import (
+    apply_hard_filters, score_and_rerank,
+    stage1_hard_filter, stage2_eligibility, stage3_soft_score, stage4_expert_rerank,
+)
 from app.services.reason_generator import generate_reasons
 
 router = APIRouter(prefix="/api", tags=["feed"])
 
 _DATA_DIR = Path(__file__).resolve().parents[2] / "data"
 
+_outfits_cache: list[dict] | None = None
+
 
 def _load_outfits_from_json() -> list[dict]:
-    """코디 데이터를 로드한다 (MVP용). scored > evaluated > raw 순."""
+    """코디 데이터를 로드한다 (MVP용). scored > evaluated > raw 순. 캐싱 적용."""
+    global _outfits_cache
+    if _outfits_cache is not None:
+        return copy.deepcopy(_outfits_cache)
+
     for name in ("outfits_scored.json", "outfits_evaluated.json", "outfits.json"):
         path = _DATA_DIR / name
         if path.exists():
             with open(path, "r", encoding="utf-8") as f:
-                return json.load(f)
+                _outfits_cache = json.load(f)
+            return copy.deepcopy(_outfits_cache)
     return []
 
 
@@ -95,26 +106,23 @@ async def get_feed(
     """코디 피드 — 전체 추천 파이프라인 실행."""
     tpo_list = [t.strip() for t in tpo.split(",") if t.strip()] if tpo else []
 
-    # 1. 코디 로드 (MVP: JSON 파일)
+    # 1. 코디 로드 (MVP: JSON 파일, 캐싱)
     all_outfits = _load_outfits_from_json()
 
-    # 2~3. Hard Filter (H1~H8)
-    filtered = apply_hard_filters(
-        all_outfits,
-        user_gender=gender,
-        budget_max=budget_max,
-        user_tpo_list=tpo_list,
-        user_tone_id=tone_id,
+    # Stage 1: Hard Filter (성별, 예산, 계절)
+    hard_filtered = stage1_hard_filter(all_outfits, user_gender=gender, budget_max=budget_max)
+
+    # Stage 2: Eligibility (TPO, 브랜드, 톤, 스타일) + 최소 보장
+    eligible = stage2_eligibility(hard_filtered, user_tone_id=tone_id, user_tpo_list=tpo_list)
+
+    # Stage 3: Soft Score (5축 가중합 + 정렬)
+    scored = stage3_soft_score(
+        eligible, user_tone_id=tone_id, user_tpo_list=tpo_list,
+        budget_min=budget_min, budget_max=budget_max,
     )
 
-    # 4~5. Soft Score + Rerank
-    ranked = score_and_rerank(
-        filtered,
-        user_tone_id=tone_id,
-        user_tpo_list=tpo_list,
-        budget_min=budget_min,
-        budget_max=budget_max,
-    )
+    # Stage 4: Expert Rerank (다양성, 중복 제거)
+    ranked = stage4_expert_rerank(scored, user_tpo_list=tpo_list)
 
     # 7. Reason Gen (페이지 단위)
     total_count = len(ranked)

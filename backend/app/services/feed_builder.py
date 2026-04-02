@@ -247,6 +247,113 @@ def apply_hard_filters(
 
 
 # ──────────────────────────────────────────────
+# 4단계 파이프라인 (리팩토링)
+# ──────────────────────────────────────────────
+
+def stage1_hard_filter(
+    outfits: list[dict],
+    user_gender: str = "",
+    budget_max: float = 0,
+    current_month: int | None = None,
+) -> list[dict]:
+    """Stage 1: 객관적 불일치 즉시 제거 (H1 성별, H2 예산, H3 계절)."""
+    passed = []
+    for outfit in outfits:
+        if not filter_h1_gender(outfit, user_gender):
+            continue
+        if not filter_h2_budget(outfit, budget_max):
+            continue
+        if not filter_h3_season(outfit, current_month):
+            continue
+        passed.append(outfit)
+    return passed
+
+
+def stage2_eligibility(
+    outfits: list[dict],
+    user_tone_id: str = "",
+    user_tpo_list: list[str] | None = None,
+    disliked_ids: set[str] | None = None,
+) -> list[dict]:
+    """Stage 2: 적합성 게이트 (H4 TPO, H5 브랜드, H6 LLM, H7 톤, H8 Style).
+    최소 보장: 5개 미만이면 톤/TPO 기준 완화하여 재시도."""
+    if user_tpo_list is None:
+        user_tpo_list = []
+    if disliked_ids is None:
+        disliked_ids = set()
+
+    def _filter(tone_check: bool, tpo_check: bool) -> list[dict]:
+        passed = []
+        for outfit in outfits:
+            oid = outfit.get("outfit_id", "")
+            if oid in disliked_ids:
+                continue
+            if tpo_check and user_tpo_list and not filter_h4_tpo(outfit, user_tpo_list):
+                continue
+            if not filter_h5_brand(outfit):
+                continue
+            if tone_check and not filter_h7_tone(outfit, user_tone_id):
+                continue
+            style_passed, sf_score, style_details = filter_h8_style(outfit)
+            if not style_passed:
+                continue
+            if not filter_h6_llm_quality(outfit):
+                continue
+            outfit["style_details"] = style_details
+            passed.append(outfit)
+        return passed
+
+    # 정상 필터링
+    result = _filter(tone_check=True, tpo_check=True)
+    if len(result) >= 5:
+        return result
+
+    # 톤 완화
+    result = _filter(tone_check=False, tpo_check=True)
+    if len(result) >= 5:
+        return result
+
+    # TPO도 완화
+    result = _filter(tone_check=False, tpo_check=False)
+    return result
+
+
+def stage3_soft_score(
+    outfits: list[dict],
+    user_tone_id: str = "",
+    user_tpo_list: list[str] | None = None,
+    budget_min: float = 0,
+    budget_max: float = 300000,
+    weight_overrides: dict[str, float] | None = None,
+) -> list[dict]:
+    """Stage 3: Soft Score 계산 + 총점순 정렬. 제거 금지."""
+    if user_tpo_list is None:
+        user_tpo_list = []
+
+    _adjust_weights_by_data_quality(outfits)
+
+    for outfit in outfits:
+        scores = compute_soft_scores(
+            outfit, user_tone_id, user_tpo_list,
+            budget_min, budget_max, weight_overrides,
+        )
+        outfit["scores"] = scores
+
+    outfits.sort(key=lambda o: o.get("scores", {}).get("total", 0), reverse=True)
+    return outfits
+
+
+def stage4_expert_rerank(
+    outfits: list[dict],
+    user_tpo_list: list[str] | None = None,
+    preferences: dict | None = None,
+    max_results: int = 200,
+) -> list[dict]:
+    """Stage 4: Expert Rerank — 완성 코디 가산, 다양성, 중복 제거."""
+    return rerank(outfits, preferences=preferences, max_results=max_results)
+
+
+# ──────────────────────────────────────────────
 # 5축 기본 가중치 (기획서 5.5)
 # ──────────────────────────────────────────────
 DEFAULT_WEIGHTS = {
@@ -256,6 +363,44 @@ DEFAULT_WEIGHTS = {
     "pe": 0.15,
     "sf": 0.25,
 }
+
+
+# ──────────────────────────────────────────────
+# 데이터 품질 기반 가중치 동적 조정
+# ──────────────────────────────────────────────
+
+_effective_weights: dict[str, float] | None = None
+
+
+def _adjust_weights_by_data_quality(outfits_sample: list[dict]) -> dict[str, float]:
+    """color_hex 데이터 품질을 검사하여 CH 가중치를 동적 조정."""
+    global _effective_weights
+    if _effective_weights is not None:
+        return _effective_weights
+
+    # 샘플 10개의 color_hex 검사
+    empty_count = 0
+    total_checked = 0
+    for o in outfits_sample[:10]:
+        for it in o.get("items", []):
+            total_checked += 1
+            hex_val = it.get("color_hex", "")
+            if not hex_val or hex_val == "" or hex_val == "#808080":
+                empty_count += 1
+
+    # 80% 이상 비어있으면 CH 가중치 0
+    w = dict(DEFAULT_WEIGHTS)
+    if total_checked > 0 and empty_count / total_checked >= 0.8:
+        w["ch"] = 0.0
+        # 나머지 정규화
+        remaining = sum(v for k, v in w.items() if k != "ch")
+        if remaining > 0:
+            for k in w:
+                if k != "ch":
+                    w[k] = w[k] / remaining
+
+    _effective_weights = w
+    return _effective_weights
 
 
 # ──────────────────────────────────────────────
@@ -307,8 +452,8 @@ def compute_soft_scores(
         categories = [it.get("category", "unknown") for it in items]
         sf = calculate_sf(categories)
 
-    # 가중합
-    w = dict(DEFAULT_WEIGHTS)
+    # 가중합 — 데이터 품질 기반 effective weights 사용
+    w = dict(_effective_weights or DEFAULT_WEIGHTS)
     if weight_overrides:
         for k, v in weight_overrides.items():
             if k in w:
@@ -493,6 +638,9 @@ def score_and_rerank(
     Returns:
         스코어링 + 리랭킹된 상위 max_results개 코디 리스트
     """
+    # 데이터 품질 기반 가중치 조정 (한 번만)
+    _adjust_weights_by_data_quality(outfits)
+
     # 4단계: Scoring
     for outfit in outfits:
         scores = compute_soft_scores(

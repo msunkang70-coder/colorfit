@@ -83,7 +83,11 @@ class TestFeedEndpoint:
         resp = client.get("/api/feed?tone_id=summer_cool_soft&tpo=office")
         data = resp.json()
         if data["outfits"]:
-            assert len(data["outfits"][0]["reasons"]) == 2
+            reasons = data["outfits"][0]["reasons"]
+            assert reasons is not None
+            assert "core" in reasons
+            assert "evidence" in reasons
+            assert "risk_guard" in reasons
 
     def test_feed_pagination(self):
         resp = client.get("/api/feed?page=1&page_size=1")
