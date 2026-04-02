@@ -248,31 +248,44 @@ def calculate_of(
         3. match_count 기반 점수 변환
     """
     if not outfit_tags or not user_tpo_list:
-        return 30.0
+        return 50.0
 
-    # 1. 사용자 TPO 동의어 확장
-    expanded_tpos: set[str] = set()
-    for tpo in user_tpo_list:
-        tpo_lower = tpo.lower()
-        expanded_tpos.update(TPO_SYNONYMS.get(tpo_lower, {tpo_lower}))
+    outfit_tpo = {t.lower() for t in outfit_tags}
+    user_tpo = {t.lower() for t in user_tpo_list}
 
-    # 2. 매칭 수 산출
-    outfit_tag_set = {t.lower() for t in outfit_tags}
-    match_count = len(outfit_tag_set & expanded_tpos)
-    total_tags = len(outfit_tag_set)
+    # 1. 직접 매칭 (designed_tpo에 정확히 일치)
+    if outfit_tpo & user_tpo:
+        return 100.0
 
-    if total_tags == 0:
-        return 30.0
+    # 2. 동의어 매칭
+    user_expanded: set[str] = set()
+    for tpo in user_tpo:
+        user_expanded.update(TPO_SYNONYMS.get(tpo, {tpo}))
+    if outfit_tpo & user_expanded:
+        return 85.0
 
-    # 3. 점수 변환
-    if match_count >= 2:
-        score = 80.0 + (match_count / total_tags) * 20.0
-    elif match_count == 1:
-        score = 60.0 + (1.0 / total_tags) * 20.0
-    else:
-        score = 30.0
+    # 3. 분위기 유사 매칭 (같은 그룹)
+    TPO_GROUPS = {
+        "formal": {"interview", "office", "commute", "meeting"},
+        "casual": {"weekend", "casual", "daily", "campus"},
+        "special": {"date", "event", "party"},
+        "outdoor": {"travel", "workout", "outdoor"},
+    }
+    user_groups: set[str] = set()
+    for tpo in user_tpo:
+        for group, members in TPO_GROUPS.items():
+            if tpo in members:
+                user_groups.add(group)
+    outfit_groups: set[str] = set()
+    for tpo in outfit_tpo:
+        for group, members in TPO_GROUPS.items():
+            if tpo in members:
+                outfit_groups.add(group)
+    if user_groups & outfit_groups:
+        return 65.0
 
-    return round(min(score, 100.0), 2)
+    # 4. 완전 불일치
+    return 30.0
 
 
 # ──────────────────────────────────────────────

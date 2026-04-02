@@ -19,6 +19,8 @@ from app.services.feed_builder import (
     stage1_hard_filter, stage2_eligibility, stage3_soft_score, stage4_expert_rerank,
 )
 from app.services.reason_generator import generate_reasons
+from app.services.stylist_rules import apply_stylist_rules
+from app.services.qa_gate import qa_check
 
 router = APIRouter(prefix="/api", tags=["feed"])
 
@@ -115,20 +117,26 @@ async def get_feed(
     # Stage 2: Eligibility (TPO, 브랜드, 톤, 스타일) + 최소 보장
     eligible = stage2_eligibility(hard_filtered, user_tone_id=tone_id, user_tpo_list=tpo_list)
 
+    # Stylist Rules: TPO별 금기/포멀도 적용
+    styled = apply_stylist_rules(eligible, tpo_list)
+
     # Stage 3: Soft Score (5축 가중합 + 정렬)
     scored = stage3_soft_score(
-        eligible, user_tone_id=tone_id, user_tpo_list=tpo_list,
+        styled, user_tone_id=tone_id, user_tpo_list=tpo_list,
         budget_min=budget_min, budget_max=budget_max,
     )
 
     # Stage 4: Expert Rerank (다양성, 중복 제거)
     ranked = stage4_expert_rerank(scored, user_tpo_list=tpo_list)
 
+    # QA Gate: 성별/시즌/포멀도 최종 검증
+    qa_passed = qa_check(ranked, user_gender=gender, user_tpo_list=tpo_list)
+
     # 7. Reason Gen (페이지 단위)
-    total_count = len(ranked)
+    total_count = len(qa_passed)
     start = (page - 1) * page_size
     end = start + page_size
-    page_outfits = ranked[start:end]
+    page_outfits = qa_passed[start:end]
 
     for outfit in page_outfits:
         scores = outfit.get("scores", {})

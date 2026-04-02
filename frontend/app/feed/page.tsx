@@ -66,6 +66,7 @@ interface FeedOutfit {
   }[];
   scores: FeedScores | null;
   reasons: ReasonData | null;
+  tags: string[];
   total_price: number;
 }
 
@@ -102,12 +103,40 @@ function getTopAxis(scores: FeedScores | null): string {
   return best;
 }
 
+const TPO_SET = new Set(["commute", "interview", "date", "weekend", "campus", "travel", "event", "workout"]);
+const SEASON_SET = new Set(["spring", "summer", "autumn", "winter"]);
+
+function calcSimilarity(anchor: FeedOutfit, candidate: FeedOutfit): number {
+  let score = 0;
+  const anchorTags = anchor.tags ?? [];
+  const candTags = candidate.tags ?? [];
+
+  // 같은 TPO
+  const aTpo = anchorTags.filter(t => TPO_SET.has(t));
+  const cTpo = candTags.filter(t => TPO_SET.has(t));
+  if (aTpo.some(t => cTpo.includes(t))) score += 1.5;
+
+  // 같은 시즌
+  const aSeason = anchorTags.filter(t => SEASON_SET.has(t));
+  const cSeason = candTags.filter(t => SEASON_SET.has(t));
+  if (aSeason.some(t => cSeason.includes(t))) score += 1.0;
+
+  // 비슷한 가격대 (±30%)
+  if (anchor.total_price > 0 && candidate.total_price > 0) {
+    const ratio = candidate.total_price / anchor.total_price;
+    if (ratio >= 0.7 && ratio <= 1.3) score += 0.5;
+  }
+
+  // 같은 분위기 (비TPO/비시즌 태그)
+  const aMood = anchorTags.filter(t => !TPO_SET.has(t) && !SEASON_SET.has(t));
+  const cMood = candTags.filter(t => !TPO_SET.has(t) && !SEASON_SET.has(t));
+  if (aMood.some(t => cMood.includes(t))) score += 1.0;
+
+  return score / 4;
+}
+
 function selectDiverseTop3(outfits: FeedOutfit[]): RankedOutfit[] {
   if (outfits.length === 0) return [];
-  if (outfits.length === 1) {
-    const axis = getTopAxis(outfits[0].scores);
-    return [{ outfit: outfits[0], topAxis: axis, label: "1위 추천", rank: 1 }];
-  }
 
   const top1 = outfits[0];
   const top1Axis = getTopAxis(top1.scores);
@@ -115,45 +144,43 @@ function selectDiverseTop3(outfits: FeedOutfit[]): RankedOutfit[] {
     { outfit: top1, topAxis: top1Axis, label: "1위 추천", rank: 1 },
   ];
 
+  if (outfits.length === 1) return result;
+
+  // 앵커 기반 유사도 계산
+  const candidates = outfits.slice(1).map(o => ({
+    outfit: o,
+    axis: getTopAxis(o.scores),
+    similarity: calcSimilarity(top1, o),
+  }));
+
+  // 유사도 0.5+ 후보 우선
+  const similar = candidates.filter(c => c.similarity >= 0.5);
+  const pool = similar.length >= 2 ? similar : candidates;
+
   const usedAxes = new Set([top1Axis]);
   const usedIds = new Set([top1.outfit_id]);
 
-  // Top2: top1과 다른 축
-  for (const o of outfits.slice(1)) {
-    const axis = getTopAxis(o.scores);
-    if (!usedAxes.has(axis)) {
-      result.push({ outfit: o, topAxis: axis, label: AXIS_LABELS[axis] ?? axis, rank: 2 });
-      usedAxes.add(axis);
-      usedIds.add(o.outfit_id);
-      break;
+  // Top2: 유사 pool에서 다른 축 우선
+  const diffAxis = pool.find(c => !usedAxes.has(c.axis) && !usedIds.has(c.outfit.outfit_id));
+  if (diffAxis) {
+    result.push({ outfit: diffAxis.outfit, topAxis: diffAxis.axis, label: AXIS_LABELS[diffAxis.axis] ?? diffAxis.axis, rank: 2 });
+    usedAxes.add(diffAxis.axis);
+    usedIds.add(diffAxis.outfit.outfit_id);
+  } else if (pool.length > 0) {
+    const fb = pool.find(c => !usedIds.has(c.outfit.outfit_id));
+    if (fb) {
+      result.push({ outfit: fb.outfit, topAxis: fb.axis, label: AXIS_LABELS[fb.axis] ?? fb.axis, rank: 2 });
+      usedIds.add(fb.outfit.outfit_id);
     }
   }
 
-  // Top3: top1, top2와 다른 축
-  for (const o of outfits.slice(1)) {
-    if (usedIds.has(o.outfit_id)) continue;
-    const axis = getTopAxis(o.scores);
-    if (!usedAxes.has(axis)) {
-      result.push({ outfit: o, topAxis: axis, label: AXIS_LABELS[axis] ?? axis, rank: 3 });
-      usedAxes.add(axis);
-      usedIds.add(o.outfit_id);
-      break;
-    }
-  }
-
-  // fallback: 축이 모두 같으면 순서대로
-  if (result.length < Math.min(3, outfits.length)) {
-    for (const o of outfits.slice(1)) {
-      if (usedIds.has(o.outfit_id)) continue;
-      result.push({
-        outfit: o,
-        topAxis: getTopAxis(o.scores),
-        label: `${result.length + 1}위 추천`,
-        rank: result.length + 1,
-      });
-      usedIds.add(o.outfit_id);
-      if (result.length >= 3) break;
-    }
+  // Top3
+  const remaining = pool.filter(c => !usedIds.has(c.outfit.outfit_id));
+  const diffAxis3 = remaining.find(c => !usedAxes.has(c.axis));
+  if (diffAxis3) {
+    result.push({ outfit: diffAxis3.outfit, topAxis: diffAxis3.axis, label: AXIS_LABELS[diffAxis3.axis] ?? diffAxis3.axis, rank: 3 });
+  } else if (remaining.length > 0) {
+    result.push({ outfit: remaining[0].outfit, topAxis: remaining[0].axis, label: AXIS_LABELS[remaining[0].axis] ?? remaining[0].axis, rank: 3 });
   }
 
   return result;
