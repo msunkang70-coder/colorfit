@@ -136,52 +136,56 @@ function calcSimilarity(anchor: FeedOutfit, candidate: FeedOutfit): number {
   return score / 4;
 }
 
+function getCatComboKey(outfit: FeedOutfit): string {
+  return outfit.items.map(it => it.category || "").sort().join("+");
+}
+
 function selectDiverseTop3(outfits: FeedOutfit[]): RankedOutfit[] {
   if (outfits.length === 0) return [];
 
   const top1 = outfits[0];
   const top1Axis = getTopAxis(top1.scores);
+  const top1Combo = getCatComboKey(top1);
   const result: RankedOutfit[] = [
     { outfit: top1, topAxis: top1Axis, label: "1위 추천", rank: 1 },
   ];
 
   if (outfits.length === 1) return result;
 
-  // 앵커 기반 유사도 계산
   const candidates = outfits.slice(1).map(o => ({
     outfit: o,
     axis: getTopAxis(o.scores),
     similarity: calcSimilarity(top1, o),
+    combo: getCatComboKey(o),
   }));
 
-  // 유사도 0.5+ 후보 우선
   const similar = candidates.filter(c => c.similarity >= 0.5);
   const pool = similar.length >= 2 ? similar : candidates;
 
   const usedAxes = new Set([top1Axis]);
   const usedIds = new Set([top1.outfit_id]);
+  const usedCombos = new Set([top1Combo]);
 
-  // Top2: 유사 pool에서 다른 축 우선
-  const diffAxis = pool.find(c => !usedAxes.has(c.axis) && !usedIds.has(c.outfit.outfit_id));
-  if (diffAxis) {
-    result.push({ outfit: diffAxis.outfit, topAxis: diffAxis.axis, label: AXIS_LABELS[diffAxis.axis] ?? diffAxis.axis, rank: 2 });
-    usedAxes.add(diffAxis.axis);
-    usedIds.add(diffAxis.outfit.outfit_id);
-  } else if (pool.length > 0) {
-    const fb = pool.find(c => !usedIds.has(c.outfit.outfit_id));
-    if (fb) {
-      result.push({ outfit: fb.outfit, topAxis: fb.axis, label: AXIS_LABELS[fb.axis] ?? fb.axis, rank: 2 });
-      usedIds.add(fb.outfit.outfit_id);
-    }
+  // Top2: 다른 조합 + 다른 축 우선
+  const diffComboAxis = pool.find(c => !usedCombos.has(c.combo) && !usedAxes.has(c.axis) && !usedIds.has(c.outfit.outfit_id));
+  const diffCombo = pool.find(c => !usedCombos.has(c.combo) && !usedIds.has(c.outfit.outfit_id));
+  const pick2 = diffComboAxis ?? diffCombo ?? pool.find(c => !usedIds.has(c.outfit.outfit_id));
+
+  if (pick2) {
+    result.push({ outfit: pick2.outfit, topAxis: pick2.axis, label: AXIS_LABELS[pick2.axis] ?? pick2.axis, rank: 2 });
+    usedAxes.add(pick2.axis);
+    usedIds.add(pick2.outfit.outfit_id);
+    usedCombos.add(pick2.combo);
   }
 
-  // Top3
+  // Top3: 다른 조합 + 다른 축
   const remaining = pool.filter(c => !usedIds.has(c.outfit.outfit_id));
-  const diffAxis3 = remaining.find(c => !usedAxes.has(c.axis));
-  if (diffAxis3) {
-    result.push({ outfit: diffAxis3.outfit, topAxis: diffAxis3.axis, label: AXIS_LABELS[diffAxis3.axis] ?? diffAxis3.axis, rank: 3 });
-  } else if (remaining.length > 0) {
-    result.push({ outfit: remaining[0].outfit, topAxis: remaining[0].axis, label: AXIS_LABELS[remaining[0].axis] ?? remaining[0].axis, rank: 3 });
+  const pick3combo = remaining.find(c => !usedCombos.has(c.combo) && !usedAxes.has(c.axis));
+  const pick3any = remaining.find(c => !usedCombos.has(c.combo));
+  const pick3 = pick3combo ?? pick3any ?? remaining[0];
+
+  if (pick3) {
+    result.push({ outfit: pick3.outfit, topAxis: pick3.axis, label: AXIS_LABELS[pick3.axis] ?? pick3.axis, rank: 3 });
   }
 
   return result;
