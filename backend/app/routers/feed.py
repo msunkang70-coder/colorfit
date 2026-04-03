@@ -20,6 +20,7 @@ from app.services.feed_builder import (
 )
 from app.services.reason_generator import generate_reasons
 from app.services.stylist_rules import apply_stylist_rules
+from app.services.quality_filters import apply_quality_filters
 from app.services.qa_gate import qa_check
 
 router = APIRouter(prefix="/api", tags=["feed"])
@@ -117,8 +118,11 @@ async def get_feed(
     # Stage 2: Eligibility (TPO, 브랜드, 톤, 스타일) + 최소 보장
     eligible = stage2_eligibility(hard_filtered, user_tone_id=tone_id, user_tpo_list=tpo_list)
 
+    # Quality Filters: 비의류/브랜드등급/연령키워드
+    quality_filtered = apply_quality_filters(eligible, tpo_list)
+
     # Stylist Rules: TPO별 금기/포멀도 적용
-    styled = apply_stylist_rules(eligible, tpo_list)
+    styled = apply_stylist_rules(quality_filtered, tpo_list)
 
     # Stage 3: Soft Score (5축 가중합 + 정렬)
     scored = stage3_soft_score(
