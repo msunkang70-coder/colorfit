@@ -343,13 +343,55 @@ def stage3_soft_score(
     return outfits
 
 
+# TPO별 대표 스타일 (순서 = 우선순위)
+TPO_REPRESENTATIVE_STYLES: dict[str, list[str]] = {
+    "interview": ["formal", "minimal"],
+    "commute": ["minimal", "formal"],
+    "date": ["feminine", "minimal", "casual"],
+    "campus": ["casual", "sporty", "minimal"],
+    "weekend": ["casual", "minimal"],
+    "travel": ["casual", "sporty"],
+    "event": ["formal", "feminine"],
+    "workout": ["sporty"],
+}
+
+
 def stage4_expert_rerank(
     outfits: list[dict],
     user_tpo_list: list[str] | None = None,
     preferences: dict | None = None,
     max_results: int = 200,
 ) -> list[dict]:
-    """Stage 4: Expert Rerank — 완성 코디 가산, 다양성, 중복 제거."""
+    """Stage 4: Expert Rerank — TPO 대표 스타일 보너스 + 완성 코디 가산 + 중복 제거."""
+    if user_tpo_list is None:
+        user_tpo_list = []
+
+    # TPO 대표 스타일 보너스
+    tpo_key = user_tpo_list[0].lower() if user_tpo_list else ""
+    rep_styles = TPO_REPRESENTATIVE_STYLES.get(tpo_key, [])
+
+    for outfit in outfits:
+        scores = outfit.get("scores", {})
+        style = outfit.get("style_tag", "")
+        bonus = 0.0
+
+        # 대표 스타일 보너스 (1순위 +12, 2순위 +5, 3순위 +2)
+        if style and rep_styles:
+            if style == rep_styles[0]:
+                bonus += 12.0
+            elif len(rep_styles) > 1 and style == rep_styles[1]:
+                bonus += 5.0
+            elif len(rep_styles) > 2 and style == rep_styles[2]:
+                bonus += 2.0
+
+        # 품질 점수 보너스
+        quality = outfit.get("quality_score", 0)
+        if quality >= 70:
+            bonus += 3.0
+
+        scores["style_bonus"] = bonus
+        outfit["scores"] = scores
+
     return rerank(outfits, preferences=preferences, max_results=max_results)
 
 
@@ -562,6 +604,9 @@ def rerank(
 
         # 개인화 보정
         total += _personalization_bonus(outfit, preferences)
+
+        # TPO 대표 스타일 보너스
+        total += scores.get("style_bonus", 0.0)
 
         scores["reranked_total"] = round(min(total, 100.0), 2)
         outfit["scores"] = scores
