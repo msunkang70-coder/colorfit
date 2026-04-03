@@ -13,6 +13,7 @@ interface OutfitItem {
   image_url: string;
   name: string;
   price: number;
+  category?: string;
 }
 
 interface OutfitCardProps {
@@ -51,8 +52,6 @@ export default function OutfitCard({
   index = 0,
 }: OutfitCardProps) {
   const isCompact = variant === "compact";
-  const [activeImageIdx, setActiveImageIdx] = useState(0);
-  const activeImageUrl = items?.[activeImageIdx]?.image_url ?? imageUrl;
   const [saved, setSaved] = useState(false);
   const [heartScale, setHeartScale] = useState(1);
   const [dismissed, setDismissed] = useState(false);
@@ -193,10 +192,10 @@ export default function OutfitCard({
       )}
 
       {/* Image */}
-      <div className="relative w-full rounded-lg overflow-hidden" style={{ aspectRatio: "4 / 5", maxHeight: "60vh" }}>
-        {activeImageUrl ? (
+      <div className="relative w-full rounded-lg overflow-hidden" style={{ aspectRatio: "4 / 5", maxHeight: "45vh" }}>
+        {imageUrl ? (
           <img
-            src={activeImageUrl}
+            src={imageUrl}
             alt={core}
             loading="lazy"
             width={400}
@@ -255,45 +254,38 @@ export default function OutfitCard({
         </button>
       </div>
 
-      {/* Item thumbnails */}
+      {/* 코디 구성 */}
       {items && items.length > 1 && (
-        <div className="flex gap-[8px] mt-[8px] overflow-x-auto scrollbar-hide" style={{ padding: "8px 0" }}>
-          {items.map((it, i) => (
-            <button
-              key={i}
-              onClick={(e) => { e.stopPropagation(); setActiveImageIdx(i); }}
-              className="shrink-0 flex flex-col items-center"
-              style={{ width: 56 }}
-            >
-              <div
-                className="rounded-md overflow-hidden"
-                style={{
-                  width: 48, height: 48,
-                  border: activeImageIdx === i ? "2px solid #964F4C" : "2px solid transparent",
-                }}
-              >
-                <img src={it.image_url} alt={it.name} width={48} height={48}
-                  className="w-full h-full object-cover" referrerPolicy="no-referrer" loading="lazy" />
-              </div>
-              <span className="text-text-secondary truncate w-full text-center mt-[2px]" style={{ fontSize: "10px" }}>
-                {formatPrice(it.price)}
-              </span>
-            </button>
-          ))}
+        <div className="mt-[8px]">
+          <p style={{ fontSize: "11px", fontWeight: 600, color: "#8C8578", marginBottom: 4 }}>
+            코디 구성 {items.length}pcs
+          </p>
+          <div className="flex gap-[8px] overflow-x-auto scrollbar-hide">
+            {items.map((it, i) => {
+              const catName = it.category || it.name.slice(0, 4);
+              return (
+                <div key={i} className="shrink-0 flex flex-col items-center" style={{ width: 56 }}>
+                  <div
+                    className="rounded-md overflow-hidden"
+                    style={{ width: 48, height: 48, border: "1px solid #E5E1DA" }}
+                  >
+                    <img src={it.image_url} alt={catName} width={48} height={48}
+                      className="w-full h-full object-cover" referrerPolicy="no-referrer" loading="lazy" />
+                  </div>
+                  <span className="text-text-secondary truncate w-full text-center mt-[2px]" style={{ fontSize: "10px" }}>
+                    {catName}
+                  </span>
+                </div>
+              );
+            })}
+          </div>
         </div>
       )}
 
       {/* Evidence */}
       {evidence && (
-        <p className="mt-[4px] text-text-secondary" style={{ fontSize: "13px", lineHeight: 1.5 }}>
-          {evidence}
-        </p>
-      )}
-
-      {/* Risk Guard */}
-      {riskGuard && (
-        <p className="mt-[4px]" style={{ fontSize: "13px", lineHeight: 1.5, color: "#6B7F5E" }}>
-          {riskGuard}
+        <p className="mt-[6px] text-text-secondary" style={{ fontSize: "13px", lineHeight: 1.5 }}>
+          💡 {evidence}
         </p>
       )}
     </motion.article>

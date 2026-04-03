@@ -60,6 +60,7 @@ interface FeedOutfit {
   items: {
     product_id: string;
     name: string;
+    category: string;
     image_url: string;
     price: number;
     mall_url: string;
@@ -199,7 +200,6 @@ export default function FeedPage() {
   const [budgetMax, setBudgetMax] = useState(100000);
   const [status, setStatus] = useState<FeedStatus>("idle");
   const [toastMsg, setToastMsg] = useState<string | null>(null);
-  const loadingRef = useRef(false);
   const userId = useRef("");
 
   // 클라이언트 마운트 후 localStorage 읽기 (hydration 불일치 방지)
@@ -231,53 +231,56 @@ export default function FeedPage() {
   const decisionClickTsRef = useRef("");
   const ttdRef = useRef(0);
 
-  const fetchDecision = useCallback(
-    async () => {
-      if (loadingRef.current) return;
-      loadingRef.current = true;
-      setStatus("loading");
+  // TPO/예산/마운트 변경 시 자동 fetch — AbortController로 이전 요청 취소
+  useEffect(() => {
+    if (!mounted) return;
 
-      const p = profileRef.current;
-      const tpoParam = activeTpo || p.tpo_list.join(",");
-      const params = new URLSearchParams({
-        tone_id: p.tone_id,
-        tpo: tpoParam,
-        gender: p.gender,
-        budget_min: String(budgetMin),
-        budget_max: String(budgetMax),
-        page: "1",
-        page_size: "5",
-      });
+    const abortController = new AbortController();
 
-      try {
-        const res = await fetch(`${API_BASE}/api/feed?${params}`);
+    sessionIdRef.current = Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+    pageViewTsRef.current = new Date().toISOString();
+
+    // 즉시 loading + 이전 결과 초기화
+    setStatus("loading");
+    setDecision(null);
+    setAllOutfits([]);
+    setTop3([]);
+    setExpandLevel(0);
+    setSelectedRank(1);
+    expandedRef.current = false;
+    maxExpandLevelRef.current = 0;
+
+    const p = profileRef.current;
+    const tpoParam = activeTpo || p.tpo_list.join(",");
+    const params = new URLSearchParams({
+      tone_id: p.tone_id,
+      tpo: tpoParam,
+      gender: p.gender,
+      budget_min: String(budgetMin),
+      budget_max: String(budgetMax),
+      page: "1",
+      page_size: "5",
+    });
+
+    fetch(`${API_BASE}/api/feed?${params}`, { signal: abortController.signal })
+      .then((res) => {
         if (!res.ok) throw new Error(`${res.status}`);
-        const data: FeedResponse = await res.json();
-
+        return res.json();
+      })
+      .then((data: FeedResponse) => {
         const outfits = data.outfits;
         setAllOutfits(outfits);
         setDecision(outfits[0] ?? null);
         setTop3(selectDiverseTop3(outfits));
-        setExpandLevel(0);
-        setSelectedRank(1);
-        expandedRef.current = false;
-        maxExpandLevelRef.current = 0;
         setStatus("idle");
-      } catch {
+      })
+      .catch((err) => {
+        if (err.name === "AbortError") return; // 취소된 요청 무시
         setStatus("error");
-      } finally {
-        loadingRef.current = false;
-      }
-    },
-    [activeTpo, budgetMin, budgetMax, mounted],
-  );
+      });
 
-  useEffect(() => {
-    if (!mounted) return;
-    sessionIdRef.current = Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
-    pageViewTsRef.current = new Date().toISOString();
-    fetchDecision();
-  }, [fetchDecision, mounted]);
+    return () => abortController.abort(); // cleanup: 이전 요청 취소
+  }, [activeTpo, budgetMin, budgetMax, mounted]);
 
   const handleTpoChange = (tpo: string) => {
     setActiveTpo(tpo);
@@ -451,7 +454,7 @@ export default function FeedPage() {
         {status === "error" && (
           <div className="flex flex-col items-center justify-center py-3xl">
             <p style={{ fontSize: "16px" }}>불러오지 못했어요</p>
-            <button onClick={() => fetchDecision()} className="mt-md px-lg py-sm rounded-lg"
+            <button onClick={() => { setMounted(false); setTimeout(() => setMounted(true), 0); }} className="mt-md px-lg py-sm rounded-lg"
               style={{ fontSize: "14px", border: "1.5px solid #964F4C", color: "#964F4C" }}>
               다시 시도
             </button>
@@ -527,17 +530,22 @@ export default function FeedPage() {
               )}
             </AnimatePresence>
 
-            {/* CTA */}
+            {/* Risk Guard + CTA */}
             <div
-              className="fixed bottom-[60px] left-0 right-0 z-20 px-[20px] pb-[12px] pt-[12px]"
-              style={{ background: "linear-gradient(transparent, #F8F6F3 30%)", maxWidth: 768, margin: "0 auto" }}
+              className="fixed bottom-[60px] left-0 right-0 z-20 px-[20px] pb-[12px] pt-[8px]"
+              style={{ background: "linear-gradient(transparent, #F8F6F3 20%)", maxWidth: 768, margin: "0 auto" }}
             >
+              {decision.reasons?.risk_guard && (
+                <p className="text-center mb-[8px]" style={{ fontSize: "12px", lineHeight: 1.4, color: "#6B7F5E" }}>
+                  ✓ {decision.reasons.risk_guard}
+                </p>
+              )}
               <button
                 onClick={handleDecide}
                 className="w-full py-[14px] rounded-xl text-white font-bold"
                 style={{ fontSize: "16px", backgroundColor: "#964F4C" }}
               >
-                이걸로 결정
+                이 코디로 결정
               </button>
               {showExploreButton && (
                 <button

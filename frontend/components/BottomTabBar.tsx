@@ -32,8 +32,13 @@ export default function BottomTabBar() {
   const pathname = usePathname();
   const router = useRouter();
 
-  // Don't show on onboarding or outfit detail
-  if (pathname.startsWith("/onboarding") || pathname.startsWith("/outfit/")) {
+  // Don't show on onboarding, outfit detail, or demo page
+  if (pathname.startsWith("/onboarding") || pathname.startsWith("/outfit/") || pathname.startsWith("/demo")) {
+    return null;
+  }
+
+  // iframe 내부에서는 탭바 숨김
+  if (typeof window !== "undefined" && window.self !== window.top) {
     return null;
   }
 
