@@ -404,7 +404,7 @@ export default function FeedPage() {
               {showExploreButton && (
                 <button
                   onClick={handleExpand}
-                  className="w-full mt-[6px] py-[8px] text-text-secondary"
+                  className="w-full mt-[6px] py-[14px] text-text-secondary"
                   style={{ fontSize: "13px" }}
                 >
                   비슷한 선택 보기
@@ -445,7 +445,7 @@ export default function FeedPage() {
                   <button
                     key={n}
                     onClick={() => setTrustScore(n)}
-                    className="flex-1 py-[10px] rounded-lg font-semibold"
+                    className="flex-1 py-[12px] rounded-lg font-semibold"
                     style={{
                       fontSize: "16px",
                       backgroundColor: trustScore === n ? "#964F4C" : "#F0EDE8",
@@ -469,7 +469,7 @@ export default function FeedPage() {
                   <button
                     key={val}
                     onClick={() => setConfidence(val)}
-                    className="flex-1 py-[10px] rounded-lg font-semibold"
+                    className="flex-1 py-[12px] rounded-lg font-semibold"
                     style={{
                       fontSize: "15px",
                       backgroundColor: confidence === val ? "#964F4C" : "#F0EDE8",
