@@ -649,22 +649,26 @@ def rerank(
         if o.get("outfit_id", "") not in disliked_ids
     ]
 
-    # 2. 점수 보정
+    # 2. 점수 보정 (보너스는 순위용, 표시 점수는 원본 유지)
     for outfit in candidates:
         scores = outfit.get("scores", {})
-        total = scores.get("total", 0.0)
+        base_total = scores.get("total", 0.0)
+        bonus = 0.0
 
         # 완성 코디 가산: 상의+하의+아우터 있으면 +3점
         if outfit.get("is_complete_outfit", False):
-            total += 3.0
+            bonus += 3.0
 
         # 개인화 보정
-        total += _personalization_bonus(outfit, preferences)
+        bonus += _personalization_bonus(outfit, preferences)
 
         # TPO 대표 스타일 보너스
-        total += scores.get("style_bonus", 0.0)
+        bonus += scores.get("style_bonus", 0.0)
 
-        scores["reranked_total"] = round(min(total, 100.0), 2)
+        # 순위용 점수 (cap 없음, 정렬에만 사용)
+        scores["reranked_total"] = round(base_total + bonus, 2)
+        # 표시용 점수 (원본 기반, 0~100 범위)
+        scores["total"] = round(min(base_total, 100.0), 2)
         outfit["scores"] = scores
 
     # 3. 총점 기준 내림차순 정렬

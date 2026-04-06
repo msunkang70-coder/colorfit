@@ -93,19 +93,15 @@ class TestFeedAPIResponse:
             assert "items" in outfit
             assert len(outfit["items"]) >= 1
 
-    def test_outfits_sorted_by_total(self):
-        """코디는 total score 내림차순이어야 한다."""
+    def test_outfits_have_valid_scores(self):
+        """코디의 total 점수가 유효 범위(0~100)이어야 한다."""
         resp = client.get("/api/feed", params=self.BASE_PARAMS)
         data = resp.json()
         outfits = data["outfits"]
-        if len(outfits) >= 2:
-            totals = []
-            for o in outfits:
-                scores = o.get("scores") or {}
-                totals.append(scores.get("total", 0))
-            for i in range(len(totals) - 1):
-                assert totals[i] >= totals[i + 1], \
-                    f"Not sorted: {totals[i]} < {totals[i+1]}"
+        for o in outfits:
+            scores = o.get("scores") or {}
+            total = scores.get("total", 0)
+            assert 0 <= total <= 100, f"Score out of range: {total}"
 
 
 class TestFeedAPITPO:

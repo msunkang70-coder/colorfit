@@ -72,7 +72,7 @@ def _outfit_to_response(outfit: dict) -> OutfitResponse:
             ch=scores_dict.get("ch", 0),
             pe=scores_dict.get("pe", 0),
             sf=scores_dict.get("sf", 0),
-            total=scores_dict.get("reranked_total", scores_dict.get("total", 0)),
+            total=scores_dict.get("total", 0),
         )
 
     # reasons: ReasonResult dict → ReasonResponse
