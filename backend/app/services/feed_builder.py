@@ -375,14 +375,16 @@ def stage4_expert_rerank(
         style = outfit.get("style_tag", "")
         bonus = 0.0
 
-        # 대표 스타일 보너스 (1순위 +12, 2순위 +5, 3순위 +2)
+        # 대표 스타일 보너스 (1순위 +15, 2순위 +8, 3순위 +3, 비매칭 -5)
         if style and rep_styles:
             if style == rep_styles[0]:
-                bonus += 12.0
+                bonus += 15.0
             elif len(rep_styles) > 1 and style == rep_styles[1]:
-                bonus += 5.0
+                bonus += 8.0
             elif len(rep_styles) > 2 and style == rep_styles[2]:
-                bonus += 2.0
+                bonus += 3.0
+            else:
+                bonus -= 5.0
 
         # 품질 점수 보너스
         quality = outfit.get("quality_score", 0)
@@ -399,9 +401,9 @@ def stage4_expert_rerank(
 # 5축 기본 가중치 (기획서 5.5)
 # ──────────────────────────────────────────────
 DEFAULT_WEIGHTS = {
-    "pcf": 0.20,
-    "of": 0.30,
-    "ch": 0.10,
+    "pcf": 0.10,
+    "of": 0.35,
+    "ch": 0.15,
     "pe": 0.15,
     "sf": 0.25,
 }
@@ -449,6 +451,59 @@ def _adjust_weights_by_data_quality(outfits_sample: list[dict]) -> dict[str, flo
 # Soft Score 계산
 # ──────────────────────────────────────────────
 
+def _cross_tpo_penalty(outfit_tags: list[str], user_tpo_list: list[str]) -> float:
+    """Cross-TPO penalty multiplier for OF score.
+
+    designed_tpo가 사용자 요청 TPO와 얼마나 직접적으로 매칭되는지에 따라
+    OF 점수에 적용할 감쇄 계수를 반환한다.
+
+    Returns:
+        1.0  — 직접 매칭 (동일 TPO)
+        0.85 — 동의어 매칭
+        0.65 — 같은 그룹 매칭
+        0.30 — 완전 불일치
+    """
+    if not outfit_tags or not user_tpo_list:
+        return 1.0
+
+    outfit_tpo = {t.lower() for t in outfit_tags}
+    user_tpo = {t.lower() for t in user_tpo_list}
+
+    # 직접 매칭
+    if outfit_tpo & user_tpo:
+        return 1.0
+
+    # 동의어 매칭
+    user_expanded: set[str] = set()
+    for tpo in user_tpo:
+        user_expanded.update(TPO_SYNONYMS.get(tpo, {tpo}))
+    if outfit_tpo & user_expanded:
+        return 0.85
+
+    # 그룹 매칭
+    _TPO_GROUPS = {
+        "formal": {"interview", "office", "commute", "meeting"},
+        "casual": {"weekend", "casual", "daily", "campus"},
+        "special": {"date", "event", "party"},
+        "outdoor": {"travel", "workout", "outdoor"},
+    }
+    user_groups: set[str] = set()
+    for tpo in user_tpo:
+        for group, members in _TPO_GROUPS.items():
+            if tpo in members:
+                user_groups.add(group)
+    outfit_groups: set[str] = set()
+    for tpo in outfit_tpo:
+        for group, members in _TPO_GROUPS.items():
+            if tpo in members:
+                outfit_groups.add(group)
+    if user_groups & outfit_groups:
+        return 0.65
+
+    # 완전 불일치
+    return 0.30
+
+
 def compute_soft_scores(
     outfit: dict,
     user_tone_id: str,
@@ -476,9 +531,10 @@ def compute_soft_scores(
     item_hex_colors = [it.get("color_hex", "#808080") for it in items]
     pcf = calculate_pcf(item_tone_ids, item_hex_colors, user_tone_id)
 
-    # OF
+    # OF — cross-TPO penalty 적용
     outfit_tags = outfit.get("designed_tpo", outfit.get("tags", []))
     of = calculate_of(outfit_tags, user_tpo_list)
+    of *= _cross_tpo_penalty(outfit_tags, user_tpo_list)
 
     # CH
     ch = calculate_ch(item_hex_colors)
