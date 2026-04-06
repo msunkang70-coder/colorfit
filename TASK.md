@@ -1,7 +1,7 @@
 # ColorFit Task Tracker
 
 **프로젝트 기간:** 5주 (W1: 3/24~3/28 ~ W5: 4/21~4/25)
-**현재 상태:** W1 완료, W2 시작 전 (2026-03-30)
+**현재 상태:** W1 진행 중 (2026-03-30)
 **Fallback 기준:** W3 금요일에 가격비교 미완이면 Fallback 발동
 
 **사용법:** Claude Code에게 `"Task 1.3을 진행해줘"` 처럼 번호로 지시하세요.
@@ -162,17 +162,9 @@ W5 ─── 단독 실행 (통합 작업)
 - [ ] 배포 확인: 프론트 + 백엔드 둘 다 접속 가능 ⚠️ 실제 배포는 수동 필요
 
 ### W1 완료 기준
-- [x] 상품 수집 83,842건 (목표 20,000 대비 335%) ✅
-- [x] 코디 1,670개 생성, 품질 평가 통과 ✅
-- [x] 프론트(Next.js)/백엔드(FastAPI) 프로젝트 초기화 완료 ✅
-- [ ] Vercel/Railway 실제 배포는 수동 진행 필요 ⚠️
-
-### W1 파이프라인 실행 결과 (2026-03-30)
-- 정규화: 83,842개 완료
-- 카테고리 분류: keyword 92.7% + fallback 7.3%
-- 성별 분포: 여성 67.7%, 남성 23.7%, 유니섹스 8.6%
-- 코디 생성: 1,670개 (남성 workout 일부 톤 상품 풀 부족으로 미생성)
-- 테스트: 77개 전체 통과
+- [ ] 상품 DB 20,000건 이상 (Task 1.5)
+- [ ] 코디 1,500개 이상, Gemini 평가 통과 (Task 1.11)
+- [ ] 프론트/백엔드 빈 프로젝트 배포 성공 (Task 1.16)
 
 ---
 
@@ -180,179 +172,180 @@ W5 ─── 단독 실행 (통합 작업)
 
 ### 🅐 Lane C: 추천 엔진 — 스코어링 (Task 2.1~2.6)
 
-**Task 2.1 — PCF 스코어링 (퍼스널컬러 적합도)**
-- [ ] `backend/app/services/scoring.py` 생성
-- [ ] `calculate_pcf(item_tone_ids, item_hex_colors, user_tone_id)` 함수
-- [ ] 톤 레벨 매칭 (동일 100, 호환 95) + 색상 레벨 매칭 (RGB 거리 → 점수)
-- [ ] pytest 테스트: 동일 톤, 호환 톤, 반대 시즌, 경계값
-- [ ] 참조: 기획서 섹션 5.5.1
+**Task 2.1 — PCF 스코어링 (퍼스널컬러 적합도)** ✅ 2026-03-30
+- [x] `backend/app/services/scoring.py` 생성
+- [x] `calculate_pcf(item_tone_ids, item_hex_colors, user_tone_id)` 함수
+- [x] 톤 레벨 매칭 (동일 100, 호환 95) + 색상 레벨 매칭 (RGB 거리 → 점수)
+- [x] pytest 테스트: 동일 톤, 호환 톤, 반대 시즌, 경계값 (19개 통과)
+- [x] 참조: 기획서 섹션 5.5.1
+- ⚠️ 톤 호환성 매트릭스를 depth 유사도 기반으로 세분화 (동일시즌 85~95, 같은온도 60~75, 반대 40~55)
 
-**Task 2.2 — OF 스코어링 (TPO 적합도)**
-- [ ] `calculate_of(outfit_tags, user_tpo_list)` 함수
-- [ ] TPO 동의어 확장 매핑 (commute↔office 등)
-- [ ] match_count 기반 점수 변환 (30점 하한)
-- [ ] pytest 테스트: 정확 매칭, 동의어 매칭, 미매칭
-- [ ] 참조: 기획서 섹션 5.5.2
+**Task 2.2 — OF 스코어링 (TPO 적합도)** ✅ 2026-03-30
+- [x] `calculate_of(outfit_tags, user_tpo_list)` 함수
+- [x] TPO 동의어 확장 매핑 (commute↔office 등)
+- [x] match_count 기반 점수 변환 (30점 하한)
+- [x] pytest 테스트: 정확 매칭, 동의어 매칭, 미매칭 (17개 통과)
+- [x] 참조: 기획서 섹션 5.5.2
 
-**Task 2.3 — CH 스코어링 (색상 조화)**
-- [ ] `calculate_ch(item_hex_colors)` 함수
-- [ ] 모든 아이템 쌍의 RGB 거리 → 구간별 점수 (유사색/보색/과도한 대비)
-- [ ] 채도 보너스 (+5점, 표준편차 0.15~0.40)
-- [ ] pytest 테스트: 올블랙, 톤온톤, 보색, 형광+파스텔
-- [ ] 참조: 기획서 섹션 5.5.3
+**Task 2.3 — CH 스코어링 (색상 조화)** ✅ 2026-03-30
+- [x] `calculate_ch(item_hex_colors)` 함수
+- [x] 모든 아이템 쌍의 RGB 거리 → 구간별 점수 (유사색/보색/과도한 대비)
+- [x] 채도 보너스 (+5점, 표준편차 0.15~0.40)
+- [x] pytest 테스트: 올블랙, 톤온톤, 보색, 형광+파스텔 (15개 통과)
+- [x] 참조: 기획서 섹션 5.5.3
 
-**Task 2.4 — PE 스코어링 (가격 효율)**
-- [ ] `calculate_pe(total_price, budget_min, budget_max)` 함수
-- [ ] 3개 Case: 범위 내 (중앙 가까울수록 높음), 초과 (감점), 미만 (완만 감점, 최저 40점)
-- [ ] pytest 테스트: 중앙, 상한, 하한, 50%+ 초과, 극단 저가
-- [ ] 참조: 기획서 섹션 5.5.4
+**Task 2.4 — PE 스코어링 (가격 효율)** ✅ 2026-03-30
+- [x] `calculate_pe(total_price, budget_min, budget_max)` 함수
+- [x] 3개 Case: 범위 내 (중앙 가까울수록 높음), 초과 (감점), 미만 (완만 감점, 최저 40점)
+- [x] pytest 테스트: 중앙, 상한, 하한, 50%+ 초과, 극단 저가 (16개 통과)
+- [x] 참조: 기획서 섹션 5.5.4
 
-**Task 2.5 — SF 스코어링 (스타일 적합도)**
-- [ ] `calculate_sf(items)` 함수
-- [ ] 카테고리 궁합 점수 (50%) — `data/style_compat.json` 매트릭스 참조
-- [ ] 실루엣 밸런스 점수 (25%) — Y/A/I/X 라인 15개 규칙
-- [ ] 포멀도 일관성 점수 (25%) — 표준편차 x 40 감점
-- [ ] pytest 테스트: 블라우스+슬랙스(높음), 후드+정장(낮음), 경계값 55점
-- [ ] 참조: 기획서 섹션 5.5.5, 6.6
+**Task 2.5 — SF 스코어링 (스타일 적합도)** ✅ 2026-03-30
+- [x] `calculate_sf(items)` 함수
+- [x] 카테고리 궁합 점수 (50%) — `data/style_compat.json` 매트릭스 참조
+- [x] 실루엣 밸런스 점수 (25%) — Y/A/I/X 라인 15개 규칙
+- [x] 포멀도 일관성 점수 (25%) — 표준편차 x 40 감점
+- [x] pytest 테스트: 블라우스+슬랙스(높음), 후드+정장(낮음), 경계값 55점 (23개 통과)
+- [x] 참조: 기획서 섹션 5.5.5, 6.6
 
-**Task 2.6 — 스타일 호환성 데이터 파일**
-- [ ] `backend/data/style_compat.json` 생성 — 카테고리 궁합 227개 조합 점수
-- [ ] `backend/data/silhouette_rules.json` 생성 — 실루엣 15개 조합
-- [ ] `backend/data/formality_map.json` 생성 — 아이템별 포멀도 (1~5) 33개 규칙
-- [ ] 참조: 기획서 섹션 6.6
+**Task 2.6 — 스타일 호환성 데이터 파일** ✅ 2026-03-30
+- [x] `backend/data/style_compat.json` 생성 — 카테고리 궁합 227개 조합 점수
+- [x] `backend/data/silhouette_rules.json` 생성 — 실루엣 15개 조합
+- [x] `backend/data/formality_map.json` 생성 — 아이템별 포멀도 (1~5) 33개+ 규칙
+- [x] 참조: 기획서 섹션 6.6
 
 ### 🅑 Lane C: 추천 엔진 — 필터+파이프라인+API (Task 2.7~2.12, 🅐 2.1~2.5 완료 후 시작)
 
-**Task 2.7 — StyleFilter (규칙 기반 사전 필터)**
-- [ ] `backend/app/services/style_filter.py` 생성
-- [ ] `detect_category(title, category3)` — 키워드 → 캐시 → LLM 3단계
-- [ ] `filter_outfit(items)` — 3축 가중합 계산, 55점 미만 False
-- [ ] pytest 테스트: 통과 코디, 탈락 코디, 55점 경계
-- [ ] 참조: 기획서 섹션 6.6
+**Task 2.7 — StyleFilter (규칙 기반 사전 필터)** ✅ 2026-03-30
+- [x] `backend/app/services/style_filter.py` 생성
+- [x] `detect_category(title, category3)` — 키워드 → 캐시 → LLM 3단계
+- [x] `filter_outfit(items)` — 3축 가중합 계산, 55점 미만 False
+- [x] pytest 테스트: 통과 코디, 탈락 코디, 55점 경계 (13개 통과)
+- [x] 참조: 기획서 섹션 6.6
 
-**Task 2.8 — Hard Filter 체인**
-- [ ] `backend/app/services/feed_builder.py` 생성
-- [ ] Hard Filter 8단계 순차 적용 (H1 성별 → H2 예산 → ... → H8 StyleFilter)
-- [ ] 각 필터는 독립 함수로 분리
-- [ ] pytest 테스트: 각 필터별 통과/탈락 케이스
-- [ ] 참조: 기획서 섹션 5.4 (Hard Filter 상세)
+**Task 2.8 — Hard Filter 체인** ✅ 2026-03-30
+- [x] `backend/app/services/feed_builder.py` 생성
+- [x] Hard Filter 8단계 순차 적용 (H1 성별 → H2 예산 → H3 계절 → H4 TPO → H5 브랜드 → H7 톤 → H8 StyleFilter → H6 LLM)
+- [x] 각 필터는 독립 함수로 분리
+- [x] pytest 테스트: 각 필터별 통과/탈락 케이스 (31개 통과)
+- [x] 참조: 기획서 섹션 5.4 (Hard Filter 상세)
 
-**Task 2.9 — Soft Score + 리랭킹**
-- [ ] feed_builder.py에 Soft Score 계산 추가 (5축 가중합)
-- [ ] 리랭킹: 완성 코디 가산(+3점), dislike 제외, 톤 다양성(동일 톤 3개 제한), 메인아이템 중복 제거
-- [ ] 개인화 보정 (-10 ~ +10)
-- [ ] 상위 200개 반환
-- [ ] 참조: 기획서 섹션 6.1
+**Task 2.9 — Soft Score + 리랭킹** ✅ 2026-03-30
+- [x] feed_builder.py에 Soft Score 계산 추가 (5축 가중합)
+- [x] 리랭킹: 완성 코디 가산(+3점), dislike 제외, 톤 다양성(동일 톤 3개 제한), 메인아이템 중복 제거
+- [x] 개인화 보정 (-10 ~ +10)
+- [x] 상위 200개 반환 (18개 테스트 통과)
+- [x] 참조: 기획서 섹션 6.1
 
-**Task 2.10 — 추천 이유 생성**
-- [ ] `backend/app/services/reason_generator.py` 생성
-- [ ] 5축 가중 기여도 계산 → 상위 2개 축 선택
-- [ ] high(75점+) / mid(75점 미만) 템플릿 분기
-- [ ] 톤별 한글 이름 매핑 ("여름쿨소프트 핵심 컬러...")
-- [ ] pytest 테스트: PCF 최고 기여, OF 최고 기여, 동점 처리
-- [ ] 참조: 기획서 섹션 6.4
+**Task 2.10 — 추천 이유 생성** ✅ 2026-03-30
+- [x] `backend/app/services/reason_generator.py` 생성
+- [x] 5축 가중 기여도 계산 → 상위 2개 축 선택
+- [x] high(75점+) / mid(75점 미만) 템플릿 분기
+- [x] 톤별 한글 이름 매핑 ("여름쿨소프트 핵심 컬러...")
+- [x] pytest 테스트: PCF 최고 기여, OF 최고 기여, 동점 처리 (17개 통과)
+- [x] 참조: 기획서 섹션 6.4
 
-**Task 2.11 — Feed API 엔드포인트**
-- [ ] `backend/app/routers/feed.py` — GET /api/feed
-- [ ] 파라미터: tone_id, tpo, gender, budget_min, budget_max, page
-- [ ] Profile Load → Filter → StyleFilter → Score → Rerank → Reason 전체 파이프라인
-- [ ] 응답: 코디 리스트 + 5축 스코어 + 이유 2줄
-- [ ] `backend/app/routers/outfit.py` — GET /api/outfit/{id}
-- [ ] Pydantic 스키마 정의 (`schemas/outfit.py`)
+**Task 2.11 — Feed API 엔드포인트** ✅ 2026-03-30
+- [x] `backend/app/routers/feed.py` — GET /api/feed
+- [x] 파라미터: tone_id, tpo, gender, budget_min, budget_max, page, page_size
+- [x] Profile Load → Filter → StyleFilter → Score → Rerank → Reason 전체 파이프라인
+- [x] 응답: 코디 리스트 + 5축 스코어 + 이유 2줄
+- [x] `backend/app/routers/outfit.py` — GET /api/outfit/{id}
+- [x] Pydantic 스키마 정의 (`schemas/outfit.py`) — 10개 테스트 통과
 
-**Task 2.12 — 스코어 프리컴퓨팅**
-- [ ] `backend/scripts/precompute_scores.py` 생성
-- [ ] 전체 코디에 대해 기본 5축 스코어 사전 계산
-- [ ] outfits.scores JSONB에 저장
-- [ ] 런타임에는 개인화 보정만 적용
+**Task 2.12 — 스코어 프리컴퓨팅** ✅ 2026-03-30
+- [x] `backend/scripts/precompute_scores.py` 생성
+- [x] 전체 코디에 대해 기본 5축 스코어 사전 계산 (1670개, 평균 79.7점)
+- [x] outfits_scored.json에 저장 (StyleFilter 통과 96.9%)
+- [x] 런타임에는 개인화 보정만 적용
 
 ### 🅒 Lane D: 온보딩 + 피드 UI (🅐🅑와 동시 실행 가능)
 
-**Task 2.13 — 온보딩 공통 레이아웃**
-- [ ] `frontend/app/onboarding/layout.tsx` — 공통 레이아웃
-- [ ] 상단 진행 바 (5단계, Marsala 채움)
-- [ ] 뒤로가기 버튼
-- [ ] 좌→우 슬라이드 전환 (Framer Motion AnimatePresence)
-- [ ] 참조: 기획서 섹션 8.4.1
+**Task 2.13 — 온보딩 공통 레이아웃** ✅ 2026-03-31
+- [x] `frontend/app/onboarding/layout.tsx` — 공통 레이아웃
+- [x] 상단 진행 바 (5단계, Marsala 채움)
+- [x] 뒤로가기 버튼
+- [x] 좌→우 슬라이드 전환 (Framer Motion AnimatePresence)
+- [x] 참조: 기획서 섹션 8.4.1
 
-**Task 2.14 — 온보딩 Step 1: 성별 선택**
-- [ ] `frontend/app/onboarding/step1/page.tsx`
-- [ ] "나에 대해 알려주세요" 헤드라인 (Nanum Myeongjo 28px)
-- [ ] 여성/남성 2개 카드 (가로 배치, 3:4 비율)
-- [ ] 탭 시 scale 1.05 + Marsala 아웃라인 → 자동 다음 Step
-- [ ] "건너뛰기" 텍스트 링크
+**Task 2.14 — 온보딩 Step 1: 성별 선택** ✅ 2026-03-31
+- [x] `frontend/app/onboarding/step1/page.tsx`
+- [x] "나에 대해 알려주세요" 헤드라인 (Nanum Myeongjo 28px)
+- [x] 여성/남성 2개 카드 (가로 배치, 3:4 비율)
+- [x] 탭 시 scale 1.05 + Marsala 아웃라인 → 자동 다음 Step
+- [x] "건너뛰기" 텍스트 링크
 
-**Task 2.15 — 온보딩 Step 2: 퍼스널컬러 선택**
-- [ ] `frontend/app/onboarding/step2/page.tsx`
-- [ ] 시즌별 그라데이션 스트립 4개 (봄/여름/가을/겨울)
-- [ ] 각 스트립 아래 세부 톤 칩 3개
-- [ ] 선택 시 다른 시즌 디밍 (opacity 0.4)
-- [ ] "잘 모르겠어요" → 바텀시트 간이 진단 2문항
+**Task 2.15 — 온보딩 Step 2: 퍼스널컬러 선택** ✅ 2026-03-31
+- [x] `frontend/app/onboarding/step2/page.tsx`
+- [x] 시즌별 그라데이션 스트립 4개 (봄/여름/가을/겨울)
+- [x] 각 스트립 아래 세부 톤 칩 3개
+- [x] 선택 시 다른 시즌 디밍 (opacity 0.4)
+- [x] "잘 모르겠어요" → 바텀시트 간이 진단 2문항
 
-**Task 2.16 — 온보딩 Step 3: TPO + 무드 선택**
-- [ ] `frontend/app/onboarding/step3/page.tsx`
-- [ ] TPO 8종 필 버튼 (성별에 따라 다른 세트)
-- [ ] 무드 태그 클라우드 (성별에 따라 다른 세트)
-- [ ] 복수 선택: TPO 최대 3개, 무드 최대 5개
+**Task 2.16 — 온보딩 Step 3: TPO + 무드 선택** ✅ 2026-03-31
+- [x] `frontend/app/onboarding/step3/page.tsx`
+- [x] TPO 8종 필 버튼 (성별에 따라 다른 세트)
+- [x] 무드 태그 클라우드 (성별에 따라 다른 세트)
+- [x] 복수 선택: TPO 최대 3개, 무드 최대 5개
 
-**Task 2.17 — 온보딩 Step 4: 예산 설정**
-- [ ] `frontend/app/onboarding/step4/page.tsx`
-- [ ] 듀얼 썸 레인지 슬라이더 (min/max)
-- [ ] 빠른 프리셋 4개 버튼 (~3만 / 3~7만 / 7~15만 / 15만~)
-- [ ] "추천 코디 보러가기" CTA (풀와이드, Marsala)
+**Task 2.17 — 온보딩 Step 4: 예산 설정** ✅ 2026-03-31
+- [x] `frontend/app/onboarding/step4/page.tsx`
+- [x] 듀얼 썸 레인지 슬라이더 (min/max)
+- [x] 빠른 프리셋 4개 버튼 (~3만 / 3~7만 / 7~15만 / 15만~)
+- [x] "추천 코디 보러가기" CTA (풀와이드, Marsala)
 
-**Task 2.18 — 온보딩 Step 5: 비주얼 취향 분석**
-- [ ] `frontend/app/onboarding/step5/page.tsx`
-- [ ] 2x2 이미지 그리드, 4라운드
-- [ ] 탭 시 선택 → 0.5s 후 다음 라운드 crossfade
-- [ ] "패스" 링크, 라운드 인디케이터
-- [ ] 완료 후 피드로 전환
+**Task 2.18 — 온보딩 Step 5: 비주얼 취향 분석** ✅ 2026-03-31
+- [x] `frontend/app/onboarding/step5/page.tsx`
+- [x] 2x2 이미지 그리드, 4라운드
+- [x] 탭 시 선택 → 0.5s 후 다음 라운드 crossfade
+- [x] "패스" 링크, 라운드 인디케이터
+- [x] 완료 후 피드로 전환
 
-**Task 2.19 — 온보딩 API 연동**
-- [ ] `backend/app/routers/onboarding.py` — POST /api/onboarding
-- [ ] 프론트에서 5 Step 결과를 모아서 전송
-- [ ] users 테이블 + style_seeds 테이블에 저장
-- [ ] 프론트 → API 호출 연동
+**Task 2.19 — 온보딩 API 연동** ✅ 2026-03-31
+- [x] `backend/app/routers/onboarding.py` — POST /api/onboarding
+- [x] 프론트에서 5 Step 결과를 모아서 전송
+- [x] users.json 파일 저장 (MVP, DB 전환 예정) ⚠️ DB 연동은 W3에서
+- [x] 프론트 → API 호출 연동
 
-**Task 2.20 — 코디 카드 컴포넌트**
-- [ ] `frontend/components/OutfitCard.tsx`
-- [ ] 이미지 (3:4, rounded-lg) + 아이템 수 뱃지 + 하트 아이콘
-- [ ] 제목 (Nanum Myeongjo 16px) + 가격 (bold) + 추천 이유 1줄
-- [ ] 스코어 뱃지 미니 필 2개 ("PCF 95" "OF 80")
-- [ ] fadeInUp 등장 애니메이션
+**Task 2.20 — 코디 카드 컴포넌트** ✅ 2026-03-31
+- [x] `frontend/components/OutfitCard.tsx`
+- [x] 이미지 (3:4, rounded-lg) + 아이템 수 뱃지 + 하트 아이콘
+- [x] 제목 (Nanum Myeongjo 16px) + 가격 (bold) + 추천 이유 1줄
+- [x] 스코어 뱃지 미니 필 2개 ("PCF 95" "OF 80")
+- [x] fadeInUp 등장 애니메이션
 
-**Task 2.21 — 코디 피드 화면**
-- [ ] `frontend/app/feed/page.tsx`
-- [ ] 헤더 (ColorFit 로고 + 프로필 아이콘)
-- [ ] TPO 탭 필터 (가로 스크롤 필 버튼)
-- [ ] 예산 슬라이더 (접힌 상태, 탭 시 펼침)
-- [ ] "오늘의 컬러핏" 특별 카드 (피드 최상단)
-- [ ] OutfitCard 리스트 (무한 스크롤, 커서 기반 페이지네이션)
-- [ ] GET /api/feed 연동
-- [ ] 스켈레톤 로딩 + empty state + error state
+**Task 2.21 — 코디 피드 화면** ✅ 2026-03-31
+- [x] `frontend/app/feed/page.tsx`
+- [x] 헤더 (ColorFit 로고 + 프로필 아이콘)
+- [x] TPO 탭 필터 (가로 스크롤 필 버튼)
+- [x] 예산 슬라이더 (접힌 상태, 탭 시 펼침)
+- [x] "오늘의 컬러핏" 특별 카드 (피드 최상단)
+- [x] OutfitCard 리스트 (무한 스크롤, IntersectionObserver)
+- [x] GET /api/feed 연동
+- [x] 스켈레톤 로딩 + empty state + error state
 
-**Task 2.22 — save/dislike 인터랙션**
-- [ ] 좌 스와이프 → dislike (카드 슬라이드 아웃 + "관심없음" 토스트)
-- [ ] 더블탭 → save (하트 뿅 애니메이션, Marsala 전환)
-- [ ] 우상단 하트 탭 → save 토글
-- [ ] POST /api/reaction 연동 (save/dislike)
-- [ ] `backend/app/routers/reaction.py` — POST /api/reaction
+**Task 2.22 — save/dislike 인터랙션** ✅ 2026-03-31
+- [x] 좌 스와이프 → dislike (카드 슬라이드 아웃 + "관심없음" 토스트)
+- [x] 더블탭 → save (하트 뿅 애니메이션, Marsala 전환)
+- [x] 우상단 하트 탭 → save 토글
+- [x] POST /api/reaction 연동 (save/dislike)
+- [x] `backend/app/routers/reaction.py` — POST /api/reaction
 
-**Task 2.23 — 코디 상세 화면**
-- [ ] `frontend/app/outfit/[id]/page.tsx`
-- [ ] 히어로 이미지 (풀블리드, parallax scroll)
-- [ ] 5축 스코어 바 차트 (width 0% → 실제값, ease-out 0.8s)
-- [ ] 추천 이유 카드 (배경 #F0EDE8)
-- [ ] 아이템 캐러셀 (가로 스크롤, 80px 정사각 이미지)
-- [ ] 코디 합계 가격 + 최저가 합산
-- [ ] 하단 CTA ("저장" + "A vs B 비교")
-- [ ] GET /api/outfit/{id} 연동
+**Task 2.23 — 코디 상세 화면** ✅ 2026-03-31
+- [x] `frontend/app/outfit/[id]/page.tsx`
+- [x] 히어로 이미지 (풀블리드, parallax scroll)
+- [x] 5축 스코어 바 차트 (width 0% → 실제값, ease-out 0.8s)
+- [x] 추천 이유 카드 (배경 #F0EDE8)
+- [x] 아이템 캐러셀 (가로 스크롤, 80px 정사각 이미지)
+- [x] 코디 합계 가격 + 최저가 합산
+- [x] 하단 CTA ("저장" + "A vs B 비교")
+- [x] GET /api/outfit/{id} 연동
 
-**Task 2.24 — 하단 탭바**
-- [ ] `frontend/components/BottomTabBar.tsx`
-- [ ] 홈/저장/Top/마이 4탭
-- [ ] 활성 탭: Marsala 아이콘 + bold 라벨
-- [ ] 전환 모션: 아이콘 scale 0.9→1.1→1.0
+**Task 2.24 — 하단 탭바** ✅ 2026-03-31
+- [x] `frontend/components/BottomTabBar.tsx`
+- [x] 홈/저장/Top/마이 4탭
+- [x] 활성 탭: Marsala 아이콘 + bold 라벨
+- [x] 전환 모션: 아이콘 scale 0.9→1.1→1.0
 
 ### W2 완료 기준
 - [ ] 5 Step 온보딩 → 코디 피드 진입 동작

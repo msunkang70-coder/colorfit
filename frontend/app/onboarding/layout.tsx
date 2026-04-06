@@ -17,106 +17,80 @@ function getCurrentStep(pathname: string): number {
 }
 
 const slideVariants = {
-  enter: (direction: number) => ({
-    x: direction > 0 ? "100%" : "-100%",
-    opacity: 0,
-  }),
-  center: {
-    x: 0,
-    opacity: 1,
-  },
-  exit: (direction: number) => ({
-    x: direction > 0 ? "-100%" : "100%",
-    opacity: 0,
-  }),
-};
-
-const slideTransition = {
-  type: "spring" as const,
-  stiffness: 300,
-  damping: 30,
+  enter: { x: "60%", opacity: 0 },
+  center: { x: 0, opacity: 1 },
+  exit: { x: "-30%", opacity: 0 },
 };
 
 export default function OnboardingLayout({
   children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+}: Readonly<{ children: React.ReactNode }>) {
   const pathname = usePathname();
   const router = useRouter();
   const currentStep = getCurrentStep(pathname);
 
   const handleBack = () => {
-    if (currentStep > 0) {
-      router.push(STEPS[currentStep - 1].path);
-    }
+    if (currentStep > 0) router.push(STEPS[currentStep - 1].path);
   };
 
   return (
     <div className="min-h-dvh bg-bg flex flex-col max-w-[768px] mx-auto">
-      {/* Header: Back button + Progress bar */}
-      <header className="px-md pt-md pb-sm">
-        {/* Back button */}
-        <div className="h-10 flex items-center">
-          {currentStep > 0 && (
+      {/* Header */}
+      <header className="px-[24px] pt-[16px] pb-[8px]">
+        <div className="flex items-center justify-between h-[40px]">
+          {/* Back */}
+          {currentStep > 0 ? (
             <button
               onClick={handleBack}
-              className="flex items-center justify-center w-10 h-10 -ml-2 rounded-full"
-              aria-label="이전 단계"
+              className="flex items-center justify-center w-[36px] h-[36px] rounded-full"
+              style={{ backgroundColor: "rgba(0,0,0,0.04)" }}
+              aria-label="이전"
             >
-              <svg
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+                stroke="#222" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M15 18l-6-6 6-6" />
               </svg>
             </button>
-          )}
+          ) : <div style={{ width: 36 }} />}
+
+          {/* Brand */}
+          <span className="brand-logo">ColorFit</span>
+
+          {/* Step counter */}
+          <span style={{ fontSize: "12px", color: "#B5AFA6", width: 36, textAlign: "right" }}>
+            {currentStep + 1}/{STEPS.length}
+          </span>
         </div>
 
         {/* Progress bar */}
-        <div className="flex gap-[6px] mt-sm">
+        <div className="flex gap-[4px] mt-[12px]">
           {STEPS.map((_, i) => (
             <div
               key={i}
-              className="h-[3px] flex-1 rounded-full transition-colors duration-300"
-              style={{
-                backgroundColor: i <= currentStep ? "#964F4C" : "#E0DCD7",
-              }}
-            />
+              className="h-[3px] flex-1 rounded-full overflow-hidden"
+              style={{ backgroundColor: "#E5E1DA" }}
+            >
+              <motion.div
+                initial={{ width: 0 }}
+                animate={{ width: i <= currentStep ? "100%" : "0%" }}
+                transition={{ duration: 0.4, ease: "easeOut" }}
+                className="h-full rounded-full accent-gradient"
+              />
+            </div>
           ))}
         </div>
-
-        {/* Step label */}
-        <p
-          className="mt-xs text-center"
-          style={{
-            fontFamily: "var(--font-body)",
-            fontSize: "13px",
-            color: "#8C8578",
-          }}
-        >
-          {currentStep + 1} / {STEPS.length} · {STEPS[currentStep].label}
-        </p>
       </header>
 
-      {/* Content with slide transition */}
+      {/* Content */}
       <main className="flex-1 relative overflow-hidden">
-        <AnimatePresence mode="wait" custom={1}>
+        <AnimatePresence mode="wait">
           <motion.div
             key={pathname}
-            custom={1}
             variants={slideVariants}
             initial="enter"
             animate="center"
             exit="exit"
-            transition={slideTransition}
+            transition={{ type: "spring", stiffness: 350, damping: 30 }}
             className="h-full"
           >
             {children}

@@ -2,10 +2,11 @@
 
 개인 취향을 반영해 전문가처럼 추천하고, 빠르게 결정하게 만드는 스타일 서비스.
 
-## 현재 단계: v3 Explore Mode 구현 완료 (2026-03-31)
+## 현재 단계: W3 후반 — 기획서 강화 + PRD 완료, UI 리파인 진행 중 (2026-04-06)
 
 - Task 추적: **TASK_v3.md** (최우선 기준)
-- 기획서: **ColorFit_상세기획서_v2.md**
+- 기획서: **ColorFit_상세기획서_v2.md** — 서비스 정의, 시장 분석(TAM/SAM/SOM, Porter's 5F), 전략(OKR/BSC/SWOT/TOWS), 리스크 레지스터
+- PRD: **PRD.md** — User Stories, 기능 명세, API 스펙, 릴리스 기준
 - TASK.md, TASK_v2.md는 아카이브
 
 ## UX 구조: Guided Decision
@@ -32,7 +33,8 @@
 5. 추천 리스트(무한스크롤) 복귀 금지
 
 ## 핵심 문서
-- **기획서:** `ColorFit_상세기획서_v2.md`
+- **기획서:** `ColorFit_상세기획서_v2.md` — 서비스 정의, 시장 분석, 전략, 심리 설계, KPI, 리스크
+- **PRD:** `PRD.md` — User Stories, 기능 명세, API 스펙, 비기능 요구사항, 릴리스 기준
 - **디자인 시스템:** `DESIGN.md` — 서체, 컬러, 스페이싱, 모션, Card Variants
 - **Task 추적:** `TASK_v3.md`
 

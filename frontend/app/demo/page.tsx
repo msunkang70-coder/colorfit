@@ -47,9 +47,10 @@ export default function DemoPage() {
           }}
         />
 
-        {/* 앱 화면 */}
+        {/* 앱 화면 — 온보딩부터 시작 */}
         <iframe
-          src="/feed"
+          id="colorfit-app"
+          src="/onboarding/step1"
           style={{
             width: "100%",
             height: "100%",
@@ -80,6 +81,20 @@ export default function DemoPage() {
           <p>✓ TPO별 맞춤 스타일링</p>
           <p>✓ 결정 이유 + 리스크 가드</p>
           <p>✓ 10초 안에 결정</p>
+        </div>
+        <div style={{ marginTop: 32, display: "flex", flexDirection: "column", gap: 8 }}>
+          <button
+            onClick={() => { const f = document.getElementById("colorfit-app") as HTMLIFrameElement; if (f) f.src = "/onboarding/step1"; }}
+            style={{ padding: "10px 20px", borderRadius: 8, border: "1px solid #964F4C", color: "#964F4C", backgroundColor: "transparent", cursor: "pointer", fontSize: 13 }}
+          >
+            처음부터 시작
+          </button>
+          <button
+            onClick={() => { const f = document.getElementById("colorfit-app") as HTMLIFrameElement; if (f) f.src = "/feed"; }}
+            style={{ padding: "10px 20px", borderRadius: 8, border: "none", color: "#fff", backgroundColor: "#964F4C", cursor: "pointer", fontSize: 13 }}
+          >
+            피드 바로가기
+          </button>
         </div>
       </div>
     </div>

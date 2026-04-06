@@ -6,107 +6,142 @@ import { motion } from "framer-motion";
 import { updateOnboarding } from "@/lib/onboarding-store";
 
 const GENDERS = [
-  { id: "female", label: "여성", letter: "W" },
-  { id: "male", label: "남성", letter: "M" },
+  {
+    id: "female",
+    label: "Women",
+    sub: "여성 스타일링",
+    gradient: "linear-gradient(160deg, #F5EDEC 0%, #EDE3E1 100%)",
+    accentColor: "#964F4C",
+  },
+  {
+    id: "male",
+    label: "Men",
+    sub: "남성 스타일링",
+    gradient: "linear-gradient(160deg, #EDF0F0 0%, #E3E8E8 100%)",
+    accentColor: "#4F6B6B",
+  },
 ] as const;
-
-const cardVariants = {
-  hidden: { opacity: 0, y: 30 },
-  visible: (i: number) => ({
-    opacity: 1,
-    y: 0,
-    transition: { delay: i * 0.15, duration: 0.4, ease: "easeOut" as const },
-  }),
-};
 
 export default function Step1Page() {
   const router = useRouter();
   const [selected, setSelected] = useState<string | null>(null);
 
-  const handleSelect = (genderId: string) => {
-    if (selected) return;
-    setSelected(genderId);
-    updateOnboarding({ gender: genderId });
-    setTimeout(() => {
-      router.push("/onboarding/step2");
-    }, 300);
+  const handleSelect = (id: string) => {
+    setSelected(id);
+    updateOnboarding({ gender: id });
   };
 
-  const handleSkip = () => {
-    if (selected) return;
-    handleSelect("female");
+  const handleNext = () => {
+    if (!selected) return;
+    router.push("/onboarding/step2");
   };
 
   return (
-    <div className="flex flex-col items-center justify-center h-full px-md">
+    <div className="flex flex-col min-h-full px-[24px] pb-[28px]">
+      {/* Spacer */}
+      <div style={{ height: "6vh" }} />
+
       {/* Headline */}
-      <h1
-        className="text-center text-primary"
-        style={{ fontSize: "28px", lineHeight: 1.2 }}
+      <motion.div
+        initial={{ opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
       >
-        나에 대해 알려주세요
-      </h1>
+        <h1 style={{ fontFamily: "var(--font-display)", fontSize: "28px", fontWeight: 700, lineHeight: 1.25, color: "#222" }}>
+          나에게 맞는
+          <br />
+          스타일을 찾아볼까요?
+        </h1>
+        <p style={{ fontSize: "14px", color: "#8C8578", marginTop: 10, lineHeight: 1.5 }}>
+          퍼스널컬러와 상황에 딱 맞는 코디를 추천해드려요
+        </p>
+      </motion.div>
 
-      {/* Subtext */}
-      <p
-        className="mt-sm text-center text-text-secondary"
-        style={{ fontSize: "15px" }}
-      >
-        맞춤 코디를 위해 필요해요
-      </p>
-
-      {/* Gender cards */}
-      <div className="flex gap-md mt-2xl w-full justify-center">
-        {GENDERS.map((gender, i) => (
-          <motion.button
-            key={gender.id}
-            custom={i}
-            variants={cardVariants}
-            initial="hidden"
-            animate="visible"
-            whileTap={{ scale: 1.05 }}
-            onClick={() => handleSelect(gender.id)}
-            className="flex flex-col items-center justify-center rounded-2xl"
-            style={{
-              width: "45%",
-              aspectRatio: "3 / 4",
-              backgroundColor: "#FFFFFF",
-              border:
-                selected === gender.id
-                  ? "2px solid #964F4C"
-                  : "2px solid transparent",
-              transform: selected === gender.id ? "scale(1.05)" : undefined,
-              transition: "border-color 0.2s, transform 0.2s",
-            }}
-          >
-            <span
+      {/* Cards */}
+      <div className="flex gap-[12px] mt-[32px] flex-1">
+        {GENDERS.map((g, i) => {
+          const isSelected = selected === g.id;
+          return (
+            <motion.button
+              key={g.id}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.25 + i * 0.1, duration: 0.4 }}
+              whileTap={{ scale: 0.97 }}
+              onClick={() => handleSelect(g.id)}
+              className="flex-1 flex flex-col justify-between rounded-2xl overflow-hidden"
               style={{
-                fontFamily: '"Nanum Myeongjo", serif',
-                fontSize: "48px",
-                fontWeight: 700,
-                color: "#222222",
+                background: isSelected ? g.gradient : "#FFFFFF",
+                border: isSelected ? `2.5px solid ${g.accentColor}` : "1px solid #E5E1DA",
+                padding: "24px 16px 20px",
+                minHeight: 220,
+                transition: "all 0.3s ease",
+                boxShadow: isSelected ? `0 8px 28px ${g.accentColor}20` : "0 2px 8px rgba(0,0,0,0.03)",
               }}
             >
-              {gender.letter}
-            </span>
-            <span
-              className="mt-sm text-text-secondary"
-              style={{ fontSize: "14px" }}
-            >
-              {gender.label}
-            </span>
-          </motion.button>
-        ))}
+              {/* Top — decorative line */}
+              <div
+                style={{
+                  width: 32,
+                  height: 3,
+                  borderRadius: 2,
+                  backgroundColor: isSelected ? g.accentColor : "#E5E1DA",
+                  transition: "background-color 0.3s",
+                }}
+              />
+
+              {/* Bottom — text */}
+              <div>
+                <span
+                  style={{
+                    fontFamily: "var(--font-display)",
+                    fontSize: "26px",
+                    fontWeight: 700,
+                    color: isSelected ? g.accentColor : "#222",
+                    letterSpacing: "-0.3px",
+                    display: "block",
+                    transition: "color 0.3s",
+                  }}
+                >
+                  {g.label}
+                </span>
+                <span
+                  style={{
+                    fontSize: "12px",
+                    fontWeight: 500,
+                    color: isSelected ? g.accentColor : "#8C8578",
+                    marginTop: 4,
+                    display: "block",
+                    transition: "color 0.3s",
+                  }}
+                >
+                  {g.sub}
+                </span>
+              </div>
+            </motion.button>
+          );
+        })}
       </div>
 
-      {/* Skip link */}
-      <button
-        onClick={handleSkip}
-        className="mt-2xl text-text-secondary underline"
-        style={{ fontSize: "14px" }}
-      >
-        건너뛰기
-      </button>
+      {/* Bottom */}
+      <div className="mt-[24px]">
+        <motion.button
+          whileTap={selected ? { scale: 0.98 } : {}}
+          onClick={handleNext}
+          disabled={!selected}
+          className="w-full cta-primary"
+        >
+          시작하기
+        </motion.button>
+
+        <button
+          onClick={() => { updateOnboarding({ gender: "female" }); router.push("/onboarding/step2"); }}
+          className="w-full mt-[10px] text-center"
+          style={{ fontSize: "12px", color: "#B5AFA6", background: "none", border: "none", cursor: "pointer" }}
+        >
+          건너뛰기
+        </button>
+      </div>
     </div>
   );
 }

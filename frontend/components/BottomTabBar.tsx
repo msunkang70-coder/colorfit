@@ -37,10 +37,7 @@ export default function BottomTabBar() {
     return null;
   }
 
-  // iframe 내부에서는 탭바 숨김
-  if (typeof window !== "undefined" && window.self !== window.top) {
-    return null;
-  }
+  // iframe 내부에서도 탭바 표시 (데모 모드 지원)
 
   return (
     <nav
@@ -49,8 +46,10 @@ export default function BottomTabBar() {
         maxWidth: 768,
         margin: "0 auto",
         height: 56,
-        backgroundColor: "#F8F6F3",
-        borderTop: "1px solid #E5E1DA",
+        backgroundColor: "rgba(248,246,243,0.95)",
+        backdropFilter: "blur(12px)",
+        WebkitBackdropFilter: "blur(12px)",
+        borderTop: "1px solid rgba(229,225,218,0.6)",
         paddingBottom: "env(safe-area-inset-bottom, 0px)",
       }}
     >
