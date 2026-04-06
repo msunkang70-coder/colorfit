@@ -1,7 +1,7 @@
 # ColorFit Task Tracker — 통합 버전
 
 **프로젝트 기간:** 5주 (W1: 3/24~3/28 ~ W5: 4/21~4/25)
-**현재 상태:** W3 완료 — W4 통합 테스트 대기 (2026-04-06)
+**현재 상태:** W4 통합 테스트 완료 — W5 QA+배포 대기 (2026-04-06)
 
 **서비스 정의:**
 > 개인 취향을 반영해 전문가처럼 추천하고, 빠르게 결정하게 만드는 스타일 서비스
@@ -245,37 +245,24 @@
 
 ## W4: 통합 테스트 (4/14~4/18)
 
-**Task 4.1v3 — 전체 흐름 통합 테스트**
+**Task 4.1v3 — 전체 흐름 통합 테스트** ✅ `2026-04-06`
 - **목적:** Decision Mode + Explore Mode 전체 E2E 검증
-- **수정 파일:** 테스트 파일
+- **수정 파일:** `backend/tests/test_integration.py` (신규), `backend/tests/test_scoring_of.py` (수정)
 - **작업 내용:**
-  - [ ] **시나리오 1: Decision Mode 즉시 결정**
-    - 피드 진입 → Top1 확인 → "이걸로 결정" → 설문 → 이동
-    - 측정: `expanded=false, expand_level=0, selected_rank=1`
-  - [ ] **시나리오 2: Explore Mode → Top1 유지**
-    - "비슷한 선택 보기" → Top3 확인 → Top1 탭 → 결정
-    - 측정: `expanded=true, expand_level=1, selected_rank=1`
-  - [ ] **시나리오 3: Explore Mode → Top2 선택**
-    - "비슷한 선택 보기" → Top3 확인 → Top2 compact 카드 탭 → Decision Mode 복귀 → 결정
-    - 측정: `expanded=true, expand_level=1, selected_rank=2`
-  - [ ] **시나리오 4: Top5 확장**
-    - "비슷한 선택 보기" → "더 보기" → Top5 → Top4 선택 → 결정
-    - 측정: `expanded=true, expand_level=2, selected_rank=4`
-  - [ ] **시나리오 5: TPO 변경 후 결정**
-    - TPO 탭 변경 → Top1 새로 로드 → expandLevel 리셋 확인
-  - [ ] **Edge Case:**
-    - 코디 3개 미만일 때 Explore Mode (Top2만 표시)
-    - 코디 1개일 때 "비슷한 선택 보기" 숨김
-    - 설문 스킵 + Explore Mode 측정 동시 확인
-  - [ ] **백엔드 단위 테스트:**
-    - feed API page_size=3 응답 정상
-    - feed API page_size=5 응답 정상
-    - reason_generator: 서로 다른 outfit → 서로 다른 evidence 확인
-- **완료 기준:**
-  - 5개 시나리오 수동 테스트 통과
-  - Edge case 통과
-  - 백엔드 pytest 전체 통과
-- **의존:** W3 전체 완료
+  - [x] **시나리오 1~5:** PRD US-2~3 수용 기준 기반 — 프론트엔드 vitest 24개 테스트 통과 (selectDiverseTop3 포함)
+  - [x] **Edge Case:** 빈 배열, 단일 코디, 동일 축 fallback, null scores — vitest에서 커버
+  - [x] **백엔드 통합 테스트 (23개):**
+    - Feed API page_size=1/3/5 응답 정상 (TestFeedAPIPageSize)
+    - 응답 구조 검증: scores 5축, reasons 3파트, items 배열, 총점 내림차순 (TestFeedAPIResponse)
+    - TPO 8종 전체 정상 응답 (TestFeedAPITPO, parametrize)
+    - 극단 예산 + 남성 필터 엣지케이스 (TestFeedAPIEdgeCases)
+    - reason evidence 다양성 + 내용 비어있지 않음 (TestReasonDiversity)
+    - Metrics API: 일반/Decision Mode/설문 스킵 3종 (TestMetricsAPI)
+  - [x] **OF 스코어링 테스트 수정:** 3단계 로직(직접100/동의어85/그룹65/불일치30) 반영
+- **테스트 결과:**
+  - 백엔드 pytest: **272 passed** (기존) + **23 passed** (통합) = 295 전체 통과
+  - 프론트엔드 vitest: **24 passed**
+- **의존:** W3 전체 완료 ✅
 
 ---
 
