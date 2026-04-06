@@ -5,298 +5,303 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ColorFit Data Viewer</title>
 <style>
-  :root { --bg: #F8F6F3; --surface: #F0EDE8; --accent: #964F4C; --border: #E5E1DA; --text: #222; --text2: #8C8578; }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: 'Pretendard Variable', -apple-system, sans-serif; background: var(--bg); color: var(--text); }
+  :root { --bg:#F8F6F3; --surface:#F0EDE8; --accent:#964F4C; --border:#E5E1DA; --text:#222; --text2:#8C8578; --text3:#B5AFA6; --ok:#6B7F5E; --warn:#A07830; --err:#964F4C; }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body { font-family:'Pretendard Variable',-apple-system,sans-serif; background:var(--bg); color:var(--text); font-size:14px; }
 
-  .header { position: sticky; top: 0; z-index: 10; background: var(--bg); border-bottom: 1px solid var(--border); padding: 16px 20px; }
-  .header h1 { font-family: 'Nanum Myeongjo', serif; font-size: 22px; color: var(--accent); }
-  .header p { font-size: 12px; color: var(--text2); margin-top: 4px; }
+  /* ── Header ── */
+  .header { position:sticky; top:0; z-index:20; background:var(--bg); border-bottom:2px solid var(--accent); padding:16px 24px 12px; }
+  .header-top { display:flex; justify-content:space-between; align-items:baseline; }
+  .header h1 { font-family:'Nanum Myeongjo',serif; font-size:24px; color:var(--accent); }
+  .header .ver { font-size:11px; color:var(--text3); }
+  .header p { font-size:12px; color:var(--text2); margin-top:2px; }
 
-  .filters { display: flex; flex-wrap: wrap; gap: 8px; padding: 12px 20px; background: #fff; border-bottom: 1px solid var(--border); }
-  .filter-group { display: flex; flex-direction: column; gap: 4px; }
-  .filter-group label { font-size: 11px; font-weight: 600; color: var(--text2); text-transform: uppercase; }
-  .filter-group select { padding: 6px 10px; border: 1px solid var(--border); border-radius: 6px; font-size: 13px; background: #fff; }
+  /* ── Dashboard ── */
+  .dashboard { display:grid; grid-template-columns:repeat(auto-fit, minmax(140px,1fr)); gap:8px; padding:12px 24px; background:#fff; border-bottom:1px solid var(--border); }
+  .dash-card { padding:10px 12px; border-radius:8px; background:var(--surface); text-align:center; }
+  .dash-card .num { font-size:22px; font-weight:700; color:var(--accent); }
+  .dash-card .label { font-size:11px; color:var(--text2); margin-top:2px; }
+  .dash-card.warn .num { color:var(--warn); }
+  .dash-card.err .num { color:var(--err); }
+  .dash-card.ok .num { color:var(--ok); }
 
-  .stats { padding: 10px 20px; font-size: 12px; color: var(--text2); background: var(--surface); display: flex; gap: 16px; flex-wrap: wrap; }
-  .stats b { color: var(--accent); }
+  /* ── Coverage Heatmap ── */
+  .heatmap-section { padding:12px 24px; background:#fff; border-bottom:1px solid var(--border); }
+  .heatmap-section h3 { font-size:13px; font-weight:600; margin-bottom:8px; }
+  .heatmap-toggle { font-size:12px; color:var(--accent); cursor:pointer; border:none; background:none; text-decoration:underline; margin-bottom:8px; }
+  .heatmap { display:grid; gap:2px; font-size:10px; overflow-x:auto; }
+  .hm-header { font-weight:600; color:var(--text2); text-align:center; padding:4px 2px; }
+  .hm-cell { text-align:center; padding:4px 2px; border-radius:3px; font-weight:500; min-width:32px; }
+  .hm-0 { background:#F5EDEC; color:var(--err); font-weight:700; }
+  .hm-1 { background:#FCF0E0; color:var(--warn); }
+  .hm-2 { background:#FAFAEF; color:#8B8B00; }
+  .hm-ok { background:#EEF3EC; color:var(--ok); }
+  .hm-label { text-align:left; font-weight:600; padding:4px 4px; color:var(--text); white-space:nowrap; }
 
-  .empty { padding: 48px 20px; text-align: center; color: var(--text2); }
-  .empty .icon { font-size: 48px; margin-bottom: 12px; }
-  .empty .msg { font-size: 15px; font-weight: 600; color: var(--text); }
-  .empty .sub { font-size: 13px; margin-top: 8px; }
+  /* ── Filters ── */
+  .filters { display:flex; flex-wrap:wrap; gap:8px; padding:12px 24px; background:var(--bg); border-bottom:1px solid var(--border); align-items:end; }
+  .fg { display:flex; flex-direction:column; gap:3px; }
+  .fg label { font-size:10px; font-weight:700; color:var(--text2); text-transform:uppercase; letter-spacing:0.5px; }
+  .fg select { padding:7px 12px; border:1px solid var(--border); border-radius:8px; font-size:13px; background:#fff; min-width:100px; }
+  .fg select:focus { border-color:var(--accent); outline:none; }
 
-  .grid { padding: 12px 20px; display: flex; flex-direction: column; gap: 12px; }
+  /* ── Result Stats ── */
+  .result-bar { display:flex; gap:16px; padding:10px 24px; font-size:12px; color:var(--text2); background:var(--surface); border-bottom:1px solid var(--border); flex-wrap:wrap; align-items:center; }
+  .result-bar b { color:var(--accent); font-size:14px; }
+  .result-bar .sep { color:var(--border); }
 
-  .card { background: #fff; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
-  .card-header { display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; border-bottom: 1px solid var(--border); }
-  .card-rank { font-family: 'Nanum Myeongjo', serif; font-size: 18px; font-weight: 700; color: var(--accent); }
-  .card-score { font-size: 24px; font-weight: 700; }
-  .card-id { font-size: 10px; color: var(--text2); font-family: monospace; word-break: break-all; padding: 0 16px; margin-top: 4px; }
+  /* ── Empty State ── */
+  .empty { padding:64px 24px; text-align:center; }
+  .empty .icon { font-size:56px; opacity:0.5; }
+  .empty .msg { font-size:18px; font-weight:600; margin-top:12px; }
+  .empty .sub { font-size:13px; color:var(--text2); margin-top:8px; line-height:1.6; }
+  .empty code { background:var(--surface); padding:2px 8px; border-radius:4px; font-size:12px; }
 
-  .card-meta { display: flex; flex-wrap: wrap; gap: 6px; padding: 8px 16px; }
-  .pill { display: inline-block; padding: 3px 10px; border-radius: 999px; font-size: 11px; font-weight: 500; }
-  .pill-tpo { background: var(--accent); color: #fff; }
-  .pill-gender { background: #4F97A3; color: #fff; }
-  .pill-tone { background: #6B5876; color: #fff; }
-  .pill-style { background: var(--surface); color: var(--text); border: 1px solid var(--border); }
+  /* ── Cards ── */
+  .grid { padding:16px 24px; display:flex; flex-direction:column; gap:12px; }
 
-  .card-items { padding: 8px 16px 12px; }
-  .card-items h4 { font-size: 12px; font-weight: 600; color: var(--text2); margin-bottom: 8px; }
-  .items-row { display: flex; gap: 8px; overflow-x: auto; }
-  .item-chip { flex-shrink: 0; display: flex; flex-direction: column; align-items: center; gap: 4px; width: 80px; }
-  .item-img { width: 72px; height: 90px; border-radius: 6px; object-fit: cover; background: var(--surface); border: 1px solid var(--border); }
-  .item-img-empty { width: 72px; height: 90px; border-radius: 6px; background: var(--surface); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 10px; color: var(--text2); }
-  .item-cat { font-size: 11px; font-weight: 500; text-align: center; }
-  .item-price { font-size: 10px; color: var(--text2); }
+  .card { background:#fff; border:1px solid var(--border); border-radius:12px; overflow:hidden; transition:box-shadow 0.2s; }
+  .card:hover { box-shadow:0 4px 20px rgba(0,0,0,0.06); }
 
-  .card-scores { display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px; padding: 8px 16px 12px; }
-  .axis { text-align: center; }
-  .axis-name { font-size: 10px; font-weight: 600; color: var(--text2); }
-  .axis-bar { height: 6px; border-radius: 3px; background: var(--surface); margin: 3px 0; overflow: hidden; }
-  .axis-fill { height: 100%; border-radius: 3px; transition: width 0.5s ease; }
-  .axis-val { font-size: 11px; font-weight: 600; }
+  .card-top { display:flex; justify-content:space-between; align-items:center; padding:10px 16px; background:var(--surface); }
+  .card-rank { font-family:'Nanum Myeongjo',serif; font-size:16px; font-weight:700; color:var(--accent); }
+  .card-total { font-size:28px; font-weight:800; letter-spacing:-1px; }
 
-  .card-tags { display: flex; flex-wrap: wrap; gap: 4px; padding: 4px 16px 12px; }
-  .tag { font-size: 10px; padding: 2px 8px; border-radius: 4px; background: var(--surface); color: var(--text2); }
+  .card-id { font-size:10px; color:var(--text3); font-family:'JetBrains Mono',monospace; padding:4px 16px; word-break:break-all; cursor:pointer; }
+  .card-id:hover { color:var(--accent); }
+  .card-id::after { content:' 📋'; font-size:9px; }
 
-  .axis-pcf .axis-fill { background: #964F4C; }
-  .axis-of .axis-fill { background: #4F97A3; }
-  .axis-ch .axis-fill { background: #DDB67D; }
-  .axis-pe .axis-fill { background: #D1933F; }
-  .axis-sf .axis-fill { background: #6B5876; }
+  .card-pills { display:flex; flex-wrap:wrap; gap:5px; padding:8px 16px; }
+  .pill { display:inline-flex; align-items:center; padding:3px 10px; border-radius:999px; font-size:11px; font-weight:500; }
+  .p-tpo { background:var(--accent); color:#fff; }
+  .p-gender { background:#4F97A3; color:#fff; }
+  .p-tone { background:#6B5876; color:#fff; }
+  .p-style { background:var(--surface); color:var(--text); border:1px solid var(--border); }
+  .p-form { background:#DDB67D; color:#fff; }
+  .p-price { background:var(--text); color:#fff; }
 
-  .coverage { padding: 16px 20px; }
-  .coverage h3 { font-size: 14px; margin-bottom: 8px; }
-  .coverage-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 4px; }
-  .cov-row { display: flex; justify-content: space-between; padding: 4px 8px; font-size: 12px; border-radius: 4px; }
-  .cov-row.zero { background: #F5EDEC; color: var(--accent); font-weight: 600; }
-  .cov-row.ok { background: var(--surface); }
+  .card-items { padding:8px 16px 12px; }
+  .card-items h4 { font-size:11px; font-weight:600; color:var(--text2); margin-bottom:6px; text-transform:uppercase; letter-spacing:0.5px; }
+  .items-scroll { display:flex; gap:8px; overflow-x:auto; padding-bottom:4px; }
+  .item { flex-shrink:0; text-align:center; width:76px; }
+  .item img { width:72px; height:90px; border-radius:8px; object-fit:cover; background:var(--surface); border:1px solid var(--border); display:block; }
+  .item .no-img { width:72px; height:90px; border-radius:8px; background:var(--surface); border:1px dashed var(--border); display:flex; align-items:center; justify-content:center; font-size:9px; color:var(--text3); }
+  .item .cat { font-size:11px; font-weight:500; margin-top:4px; }
+  .item .price { font-size:10px; color:var(--text2); }
+
+  .card-axes { display:grid; grid-template-columns:repeat(5,1fr); gap:6px; padding:6px 16px 12px; }
+  .ax { text-align:center; }
+  .ax-name { font-size:10px; font-weight:600; color:var(--text2); }
+  .ax-bar { height:5px; border-radius:3px; background:var(--surface); margin:3px 0; overflow:hidden; }
+  .ax-fill { height:100%; border-radius:3px; }
+  .ax-val { font-size:12px; font-weight:700; }
+  .ax-pcf .ax-fill{background:#964F4C} .ax-of .ax-fill{background:#4F97A3} .ax-ch .ax-fill{background:#DDB67D} .ax-pe .ax-fill{background:#D1933F} .ax-sf .ax-fill{background:#6B5876}
+
+  .card-tags { display:flex; flex-wrap:wrap; gap:3px; padding:4px 16px 10px; }
+  .tag { font-size:10px; padding:2px 7px; border-radius:4px; background:var(--surface); color:var(--text2); }
+
+  /* ── Responsive ── */
+  @media(max-width:600px) {
+    .dashboard { grid-template-columns:repeat(3,1fr); }
+    .filters { gap:6px; }
+    .fg select { min-width:80px; font-size:12px; }
+  }
 </style>
 </head>
 <body>
 
 <div class="header">
-  <h1>ColorFit Data Viewer</h1>
-  <p>TPO/성별/톤/스타일 조건별 코디 점검 뷰어 — 문제 케이스 발견 + 교정 요청용</p>
+  <div class="header-top">
+    <h1>ColorFit Data Viewer</h1>
+    <span class="ver" id="ver"></span>
+  </div>
+  <p>조건별 코디 점검 뷰어 — 문제 케이스 발견 &amp; 교정 요청용</p>
 </div>
 
-<div class="filters" id="filters">
-  <div class="filter-group">
-    <label>TPO</label>
-    <select id="f-tpo"><option value="">전체</option></select>
-  </div>
-  <div class="filter-group">
-    <label>성별</label>
-    <select id="f-gender"><option value="">전체</option><option value="female">여성</option><option value="male">남성</option></select>
-  </div>
-  <div class="filter-group">
-    <label>톤</label>
-    <select id="f-tone"><option value="">전체</option></select>
-  </div>
-  <div class="filter-group">
-    <label>스타일</label>
-    <select id="f-style"><option value="">전체</option></select>
-  </div>
-  <div class="filter-group">
-    <label>정렬</label>
-    <select id="f-sort">
-      <option value="total_desc">총점 높은순</option>
-      <option value="total_asc">총점 낮은순</option>
-      <option value="price_asc">가격 낮은순</option>
-      <option value="price_desc">가격 높은순</option>
-      <option value="formality_desc">포멀리티 높은순</option>
-      <option value="formality_asc">포멀리티 낮은순</option>
-    </select>
-  </div>
-  <div class="filter-group">
-    <label>표시</label>
-    <select id="f-limit">
-      <option value="10">10개</option>
-      <option value="20" selected>20개</option>
-      <option value="50">50개</option>
-      <option value="9999">전체</option>
-    </select>
-  </div>
+<div class="dashboard" id="dashboard"></div>
+
+<div class="heatmap-section" id="hm-section" style="display:none">
+  <button class="heatmap-toggle" id="hm-toggle">TPO × 성별 × 톤 커버리지 맵 펼치기</button>
+  <div id="hm-wrap" style="display:none"></div>
 </div>
 
-<div class="stats" id="stats"></div>
+<div class="filters">
+  <div class="fg"><label>TPO</label><select id="f-tpo"><option value="">전체</option></select></div>
+  <div class="fg"><label>성별</label><select id="f-gender"><option value="">전체</option><option value="female">여성</option><option value="male">남성</option></select></div>
+  <div class="fg"><label>톤</label><select id="f-tone"><option value="">전체 (12톤)</option></select></div>
+  <div class="fg"><label>스타일</label><select id="f-style"><option value="">전체</option></select></div>
+  <div class="fg"><label>이미지</label><select id="f-img"><option value="">전체</option><option value="has">이미지 있음</option><option value="no">이미지 없음</option></select></div>
+  <div class="fg"><label>정렬</label><select id="f-sort">
+    <option value="total_desc">총점 높은순</option><option value="total_asc">총점 낮은순</option>
+    <option value="price_asc">가격 낮은순</option><option value="price_desc">가격 높은순</option>
+    <option value="form_desc">포멀리티 높은순</option><option value="form_asc">포멀리티 낮은순</option>
+  </select></div>
+  <div class="fg"><label>표시</label><select id="f-limit">
+    <option value="10">10개</option><option value="20" selected>20개</option><option value="50">50개</option><option value="9999">전체</option>
+  </select></div>
+</div>
+
+<div class="result-bar" id="result-bar"></div>
 <div id="content"></div>
 
-<div class="coverage" id="coverage" style="display:none">
-  <h3>0건 조건 (데이터 공백)</h3>
-  <div class="coverage-grid" id="cov-grid"></div>
-</div>
-
 <script>
-let DATA = [];
-const TPOS = ["commute","interview","date","campus","weekend","travel","event","workout"];
-const TPO_KR = {commute:"출근",interview:"면접",date:"데이트",campus:"캠퍼스",weekend:"주말",travel:"여행",event:"행사",workout:"운동"};
-const AXIS_COLORS = {pcf:"#964F4C",of:"#4F97A3",ch:"#DDB67D",pe:"#D1933F",sf:"#6B5876"};
-const AXIS_KR = {pcf:"컬러매칭",of:"상황적합",ch:"색조화",pe:"가성비",sf:"실루엣"};
+let DATA=[];
+const TPOS=["commute","interview","date","campus","weekend","travel","event","workout"];
+const TPO_KR={commute:"출근",interview:"면접",date:"데이트",campus:"캠퍼스",weekend:"주말",travel:"여행",event:"행사",workout:"운동"};
+const AX_KR={pcf:"컬러매칭",of:"상황적합",ch:"색조화",pe:"가성비",sf:"실루엣"};
+const TONE_SHORT=t=>{if(!t)return"?";const p=t.split("_");return p[0][0].toUpperCase()+p[p.length-1].slice(0,3)};
 
-async function loadData() {
-  try {
-    const r = await fetch("../backend/data/outfits_scored.json");
-    DATA = await r.json();
-  } catch(e) {
-    // fallback: try relative path
-    try {
-      const r2 = await fetch("outfits_scored.json");
-      DATA = await r2.json();
-    } catch(e2) {
-      document.getElementById("content").innerHTML = `<div class="empty"><div class="icon">!</div><div class="msg">데이터 로드 실패</div><div class="sub">이 파일을 로컬 서버로 열거나, outfits_scored.json을 같은 폴더에 복사하세요.<br><code>cd docs && python -m http.server 8080</code></div></div>`;
-      return;
-    }
-  }
-  initFilters();
+async function init(){
+  try{DATA=await(await fetch("outfits_scored.json")).json()}
+  catch(e){try{DATA=await(await fetch("../backend/data/outfits_scored.json")).json()}catch(e2){
+    document.getElementById("content").innerHTML=`<div class="empty"><div class="icon">&#x26A0;</div><div class="msg">데이터 로드 실패</div><div class="sub">docs 폴더에서 로컬 서버를 실행하세요<br><code>cd docs && python -m http.server 8080</code></div></div>`;return;}}
+  document.getElementById("ver").textContent=`${DATA.length}개 코디 | ${new Date().toLocaleDateString("ko")}`;
+  buildDashboard();
+  buildHeatmap();
+  buildFilters();
   render();
 }
 
-function initFilters() {
-  const tones = [...new Set(DATA.map(o => o.tone_id).filter(Boolean))].sort();
-  const styles = [...new Set(DATA.map(o => o.style_tag).filter(Boolean))].sort();
+function scored(){return DATA.filter(o=>o.scores&&o.scores.total)}
 
-  const tpoSel = document.getElementById("f-tpo");
-  TPOS.forEach(t => { const op = document.createElement("option"); op.value = t; op.textContent = TPO_KR[t]||t; tpoSel.appendChild(op); });
-
-  const toneSel = document.getElementById("f-tone");
-  tones.forEach(t => { const op = document.createElement("option"); op.value = t; op.textContent = t; toneSel.appendChild(op); });
-
-  const styleSel = document.getElementById("f-style");
-  styles.forEach(s => { const op = document.createElement("option"); op.value = s; op.textContent = s; styleSel.appendChild(op); });
-
-  document.querySelectorAll("select").forEach(sel => sel.addEventListener("change", render));
+function buildDashboard(){
+  const s=scored(), el=document.getElementById("dashboard");
+  const tones=new Set(s.map(o=>o.tone_id).filter(Boolean));
+  const combos=TPOS.length*2*tones.size;
+  let zeros=0,thin=0;
+  for(const tpo of TPOS)for(const g of["female","male"])for(const tn of tones){
+    const c=s.filter(o=>(o.designed_tpo||[]).map(t=>t.toLowerCase()).includes(tpo)&&o.gender===g&&o.tone_id===tn).length;
+    if(c===0)zeros++;else if(c<5)thin++;}
+  const imgs=s.reduce((a,o)=>a+(o.items||[]).filter(i=>i.image_url&&i.image_url.trim()).length,0);
+  const totalItems=s.reduce((a,o)=>a+(o.items||[]).length,0);
+  const totals=s.map(o=>o.scores.total);
+  el.innerHTML=`
+    <div class="dash-card"><div class="num">${DATA.length}</div><div class="label">총 코디</div></div>
+    <div class="dash-card"><div class="num">${s.length}</div><div class="label">스코어 완료</div></div>
+    <div class="dash-card"><div class="num">${tones.size}</div><div class="label">톤 수</div></div>
+    <div class="dash-card"><div class="num">${combos}</div><div class="label">전체 조합</div></div>
+    <div class="dash-card ${zeros?'err':'ok'}"><div class="num">${zeros}</div><div class="label">0건 공백</div></div>
+    <div class="dash-card ${thin?'warn':'ok'}"><div class="num">${thin}</div><div class="label">5건 미만</div></div>
+    <div class="dash-card"><div class="num">${Math.round(imgs/totalItems*100)}%</div><div class="label">이미지 보유</div></div>
+    <div class="dash-card"><div class="num">${Math.min(...totals).toFixed(0)}~${Math.max(...totals).toFixed(0)}</div><div class="label">총점 범위</div></div>`;
 }
 
-function getFiltered() {
-  const tpo = document.getElementById("f-tpo").value;
-  const gender = document.getElementById("f-gender").value;
-  const tone = document.getElementById("f-tone").value;
-  const style = document.getElementById("f-style").value;
+function buildHeatmap(){
+  const s=scored(),sec=document.getElementById("hm-section"),wrap=document.getElementById("hm-wrap"),btn=document.getElementById("hm-toggle");
+  const tones=[...new Set(s.map(o=>o.tone_id).filter(Boolean))].sort();
+  sec.style.display="block";
+  let open=false;
+  btn.onclick=()=>{open=!open;wrap.style.display=open?"block":"none";btn.textContent=open?"커버리지 맵 접기":"TPO × 성별 × 톤 커버리지 맵 펼치기"};
 
-  return DATA.filter(o => {
-    if (tpo && !(o.designed_tpo || []).map(t=>t.toLowerCase()).includes(tpo)) return false;
-    if (gender && o.gender !== gender) return false;
-    if (tone && o.tone_id !== tone) return false;
-    if (style && o.style_tag !== style) return false;
-    if (!o.scores || !o.scores.total) return false;
+  const cols=tones.length+1;
+  let html=`<div class="heatmap" style="grid-template-columns:100px repeat(${tones.length},1fr)">`;
+  html+=`<div class="hm-header"></div>`;
+  tones.forEach(t=>html+=`<div class="hm-header">${TONE_SHORT(t)}</div>`);
+
+  for(const tpo of TPOS){
+    for(const g of["female","male"]){
+      const label=`${TPO_KR[tpo]} ${g==="female"?"♀":"♂"}`;
+      html+=`<div class="hm-label">${label}</div>`;
+      for(const tn of tones){
+        const c=s.filter(o=>(o.designed_tpo||[]).map(t=>t.toLowerCase()).includes(tpo)&&o.gender===g&&o.tone_id===tn).length;
+        const cls=c===0?"hm-0":c<3?"hm-1":c<5?"hm-2":"hm-ok";
+        html+=`<div class="hm-cell ${cls}" title="${TPO_KR[tpo]} ${g} ${tn}: ${c}건">${c}</div>`;
+      }
+    }
+  }
+  html+=`</div><div style="margin-top:6px;font-size:10px;color:var(--text3)"><span style="color:var(--err)">■</span> 0건 <span style="color:var(--warn)">■</span> 1~2건 <span style="color:#8B8B00">■</span> 3~4건 <span style="color:var(--ok)">■</span> 5건+</div>`;
+  wrap.innerHTML=html;
+}
+
+function buildFilters(){
+  const s=scored();
+  const tones=[...new Set(s.map(o=>o.tone_id).filter(Boolean))].sort();
+  const styles=[...new Set(s.map(o=>o.style_tag).filter(Boolean))].sort();
+  const tSel=document.getElementById("f-tpo");
+  TPOS.forEach(t=>{const o=document.createElement("option");o.value=t;o.textContent=TPO_KR[t];tSel.appendChild(o)});
+  const tnSel=document.getElementById("f-tone");
+  tones.forEach(t=>{const o=document.createElement("option");o.value=t;o.textContent=t.replace(/_/g," ");tnSel.appendChild(o)});
+  const sSel=document.getElementById("f-style");
+  styles.forEach(s=>{const o=document.createElement("option");o.value=s;o.textContent=s;sSel.appendChild(o)});
+  document.querySelectorAll(".filters select").forEach(el=>el.addEventListener("change",render));
+}
+
+function getFiltered(){
+  const tpo=document.getElementById("f-tpo").value;
+  const gender=document.getElementById("f-gender").value;
+  const tone=document.getElementById("f-tone").value;
+  const style=document.getElementById("f-style").value;
+  const img=document.getElementById("f-img").value;
+  return scored().filter(o=>{
+    if(tpo&&!(o.designed_tpo||[]).map(t=>t.toLowerCase()).includes(tpo))return false;
+    if(gender&&o.gender!==gender)return false;
+    if(tone&&o.tone_id!==tone)return false;
+    if(style&&o.style_tag!==style)return false;
+    if(img==="has"&&!(o.items||[]).some(i=>i.image_url&&i.image_url.trim()))return false;
+    if(img==="no"&&(o.items||[]).every(i=>i.image_url&&i.image_url.trim()))return false;
     return true;
   });
 }
 
-function render() {
-  const filtered = getFiltered();
-  const sort = document.getElementById("f-sort").value;
-  const limit = parseInt(document.getElementById("f-limit").value);
-
-  filtered.sort((a,b) => {
-    switch(sort) {
-      case "total_desc": return (b.scores?.total||0) - (a.scores?.total||0);
-      case "total_asc": return (a.scores?.total||0) - (b.scores?.total||0);
-      case "price_asc": return (a.price_total||a.total_price||0) - (b.price_total||b.total_price||0);
-      case "price_desc": return (b.price_total||b.total_price||0) - (a.price_total||a.total_price||0);
-      case "formality_desc": return (b.formality_avg||0) - (a.formality_avg||0);
-      case "formality_asc": return (a.formality_avg||0) - (b.formality_avg||0);
-    }
-  });
-
-  const shown = filtered.slice(0, limit);
-
-  // Stats
-  const totals = filtered.map(o => o.scores.total);
-  const statsEl = document.getElementById("stats");
-  if (filtered.length === 0) {
-    statsEl.innerHTML = `<b>0건</b> — 해당 조건에 코디가 없습니다`;
-  } else {
-    const avg = (totals.reduce((a,b)=>a+b,0)/totals.length).toFixed(1);
-    const min = Math.min(...totals).toFixed(1);
-    const max = Math.max(...totals).toFixed(1);
-    const prices = filtered.map(o => o.price_total||o.total_price||0).filter(p=>p>0);
-    const avgPrice = prices.length ? Math.round(prices.reduce((a,b)=>a+b,0)/prices.length/1000) : 0;
-    statsEl.innerHTML = `<span>결과 <b>${filtered.length}건</b> (표시 ${shown.length})</span>
-      <span>총점 <b>${min}~${max}</b> (평균 ${avg})</span>
-      <span>평균가격 <b>${avgPrice}K</b></span>`;
+function render(){
+  const f=getFiltered();
+  const sort=document.getElementById("f-sort").value;
+  const limit=+document.getElementById("f-limit").value;
+  f.sort((a,b)=>{
+    const sa=a.scores||{},sb=b.scores||{};
+    switch(sort){
+      case"total_desc":return(sb.total||0)-(sa.total||0);
+      case"total_asc":return(sa.total||0)-(sb.total||0);
+      case"price_asc":return(a.price_total||a.total_price||0)-(b.price_total||b.total_price||0);
+      case"price_desc":return(b.price_total||b.total_price||0)-(a.price_total||a.total_price||0);
+      case"form_desc":return(b.formality_avg||0)-(a.formality_avg||0);
+      case"form_asc":return(a.formality_avg||0)-(b.formality_avg||0);
+    }});
+  const shown=f.slice(0,limit);
+  // result bar
+  const bar=document.getElementById("result-bar");
+  if(!f.length){bar.innerHTML=`<b>0건</b> — 해당 조건에 코디가 없습니다. 데이터 보강이 필요합니다.`}
+  else{
+    const ts=f.map(o=>o.scores.total),ps=f.map(o=>o.price_total||o.total_price||0).filter(p=>p>0);
+    const imgCnt=f.reduce((a,o)=>a+(o.items||[]).some(i=>i.image_url&&i.image_url.trim())?1:0,0);
+    const stDist={};f.forEach(o=>{const s=o.style_tag||"?";stDist[s]=(stDist[s]||0)+1});
+    const topStyles=Object.entries(stDist).sort((a,b)=>b[1]-a[1]).slice(0,3).map(([s,n])=>`${s}(${n})`).join(", ");
+    bar.innerHTML=`
+      <span>결과 <b>${f.length}건</b></span><span class="sep">|</span>
+      <span>표시 ${shown.length}개</span><span class="sep">|</span>
+      <span>총점 ${Math.min(...ts).toFixed(1)}~${Math.max(...ts).toFixed(1)} (평균 ${(ts.reduce((a,b)=>a+b)/ts.length).toFixed(1)})</span><span class="sep">|</span>
+      <span>평균가 ${ps.length?Math.round(ps.reduce((a,b)=>a+b)/ps.length/1000):0}K</span><span class="sep">|</span>
+      <span>이미지 ${Math.round(imgCnt/f.length*100)}%</span><span class="sep">|</span>
+      <span>스타일 ${topStyles}</span>`;
   }
-
-  // Cards
-  const contentEl = document.getElementById("content");
-  if (shown.length === 0) {
-    contentEl.innerHTML = `<div class="empty"><div class="icon">&#x1F50D;</div><div class="msg">결과 0건</div><div class="sub">이 조건 조합에 코디가 없습니다.<br>데이터 보강이 필요한 영역입니다.</div></div>`;
-  } else {
-    contentEl.innerHTML = `<div class="grid">${shown.map((o,i) => renderCard(o, i+1)).join("")}</div>`;
-  }
-
-  renderCoverage();
+  // cards
+  const el=document.getElementById("content");
+  if(!shown.length){el.innerHTML=`<div class="empty"><div class="icon">&#x1F50D;</div><div class="msg">결과 0건</div><div class="sub">이 조건 조합에 코디가 없습니다.<br>교정 요청 예시: "면접 + 남성 + autumn_warm_deep 코디 5개 보강해줘"</div></div>`}
+  else{el.innerHTML=`<div class="grid">${shown.map((o,i)=>card(o,i+1)).join("")}</div>`}
 }
 
-function renderCard(o, rank) {
-  const s = o.scores || {};
-  const price = o.price_total || o.total_price || 0;
-  const tpos = (o.designed_tpo || []).map(t => `<span class="pill pill-tpo">${TPO_KR[t.toLowerCase()]||t}</span>`).join("");
-  const items = (o.items || []).map(it => {
-    const img = it.image_url
-      ? `<img class="item-img" src="${it.image_url}" alt="${it.category}" referrerpolicy="no-referrer" loading="lazy" onerror="this.outerHTML='<div class=item-img-empty>No img</div>'">`
-      : `<div class="item-img-empty">No img</div>`;
-    return `<div class="item-chip">${img}<span class="item-cat">${it.category||"?"}</span><span class="item-price">${it.price ? (it.price/1000).toFixed(0)+"K" : ""}</span></div>`;
+function card(o,rank){
+  const s=o.scores||{},pr=o.price_total||o.total_price||0;
+  const tpos=(o.designed_tpo||[]).map(t=>`<span class="pill p-tpo">${TPO_KR[t.toLowerCase()]||t}</span>`).join("");
+  const items=(o.items||[]).map(it=>{
+    const img=it.image_url&&it.image_url.trim()
+      ?`<img src="${it.image_url}" alt="${it.category}" referrerpolicy="no-referrer" loading="lazy" onerror="this.outerHTML='<div class=no-img>ERR</div>'">`
+      :`<div class="no-img">No img</div>`;
+    return`<div class="item">${img}<div class="cat">${it.category||"?"}</div>${it.price?`<div class="price">${(it.price/1000).toFixed(0)}K</div>`:""}</div>`;
   }).join("");
-
-  const axes = ["pcf","of","ch","pe","sf"].map(a => {
-    const v = s[a] || 0;
-    return `<div class="axis axis-${a}"><div class="axis-name">${AXIS_KR[a]}</div><div class="axis-bar"><div class="axis-fill" style="width:${v}%"></div></div><div class="axis-val">${v.toFixed(0)}</div></div>`;
-  }).join("");
-
-  const tags = (o.tags || []).map(t => `<span class="tag">${t}</span>`).join("");
-
-  return `<div class="card">
-    <div class="card-header">
-      <span class="card-rank">#${rank}</span>
-      <span class="card-score">${s.total?.toFixed(1) || "?"}</span>
-    </div>
-    <div class="card-id">${o.outfit_id || "?"}</div>
-    <div class="card-meta">
-      ${tpos}
-      <span class="pill pill-gender">${o.gender === "female" ? "여성" : "남성"}</span>
-      <span class="pill pill-tone">${(o.tone_id||"").replace(/_/g," ")}</span>
-      <span class="pill pill-style">${o.style_tag||""}</span>
-      <span class="pill pill-style">F${(o.formality_avg||0).toFixed(1)}</span>
-      <span class="pill pill-style">${price ? (price/1000).toFixed(0)+"K" : "?"}</span>
-    </div>
-    <div class="card-items"><h4>아이템 구성 (${(o.items||[]).length}개)</h4><div class="items-row">${items}</div></div>
-    <div class="card-scores">${axes}</div>
+  const axes=["pcf","of","ch","pe","sf"].map(a=>`<div class="ax ax-${a}"><div class="ax-name">${AX_KR[a]}</div><div class="ax-bar"><div class="ax-fill" style="width:${s[a]||0}%"></div></div><div class="ax-val">${(s[a]||0).toFixed(0)}</div></div>`).join("");
+  const tags=(o.tags||[]).map(t=>`<span class="tag">${t}</span>`).join("");
+  return`<div class="card">
+    <div class="card-top"><span class="card-rank">#${rank}</span><span class="card-total">${(s.total||0).toFixed(1)}</span></div>
+    <div class="card-id" onclick="navigator.clipboard.writeText('${o.outfit_id||""}')" title="클릭하여 ID 복사">${o.outfit_id||"?"}</div>
+    <div class="card-pills">${tpos}<span class="pill p-gender">${o.gender==="female"?"여성":"남성"}</span><span class="pill p-tone">${(o.tone_id||"").replace(/_/g," ")}</span><span class="pill p-style">${o.style_tag||""}</span><span class="pill p-form">F${(o.formality_avg||0).toFixed(1)}</span><span class="pill p-price">${pr?(pr/1000).toFixed(0)+"K":"?"}</span></div>
+    <div class="card-items"><h4>아이템 구성 (${(o.items||[]).length}개)</h4><div class="items-scroll">${items}</div></div>
+    <div class="card-axes">${axes}</div>
     <div class="card-tags">${tags}</div>
   </div>`;
 }
 
-function renderCoverage() {
-  const covEl = document.getElementById("coverage");
-  const gridEl = document.getElementById("cov-grid");
-  const zeros = [];
-
-  for (const tpo of TPOS) {
-    for (const gender of ["female", "male"]) {
-      const count = DATA.filter(o =>
-        (o.designed_tpo||[]).map(t=>t.toLowerCase()).includes(tpo) &&
-        o.gender === gender &&
-        o.scores && o.scores.total
-      ).length;
-      if (count === 0) {
-        zeros.push({tpo, gender, count});
-      }
-    }
-  }
-
-  if (zeros.length === 0) {
-    covEl.style.display = "none";
-  } else {
-    covEl.style.display = "block";
-    gridEl.innerHTML = zeros.map(z =>
-      `<div class="cov-row zero">${TPO_KR[z.tpo]} + ${z.gender === "female" ? "여성" : "남성"} → <b>0건</b></div>`
-    ).join("");
-  }
-}
-
-loadData();
+init();
 </script>
 </body>
 </html>
