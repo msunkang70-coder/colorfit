@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import OutfitCard from "@/components/OutfitCard";
-import { getOnboardingData } from "@/lib/onboarding-store";
+import { getOnboardingData, resetOnboarding } from "@/lib/onboarding-store";
 import {
   postReaction,
   postMetrics,
@@ -57,11 +57,16 @@ export default function FeedPage() {
   // 클라이언트 마운트 후 localStorage 읽기 (hydration 불일치 방지)
   useEffect(() => {
     const p = getOnboardingData();
+    // 온보딩 미완료 시 온보딩으로 리다이렉트
+    if (!p.tone_id || p.tpo_list.length === 0) {
+      router.replace("/onboarding/step1");
+      return;
+    }
     profileRef.current = p;
     setBudgetMin(p.budget_min);
     setBudgetMax(p.budget_max);
     setMounted(true);
-  }, []);
+  }, [router]);
 
   // ── 결정 상태 ──
   const [decision, setDecision] = useState<FeedOutfit | null>(null);
@@ -226,16 +231,25 @@ export default function FeedPage() {
       <header className="sticky top-0 z-30 bg-bg px-md pt-md pb-sm">
         <div className="flex items-center justify-between">
           <h1 className="brand-logo">ColorFit</h1>
-          <button
-            className="w-8 h-8 rounded-full bg-surface flex items-center justify-center"
-            aria-label="프로필"
-            onClick={() => router.push("/profile")}
-          >
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-              <circle cx="12" cy="7" r="4" />
-            </svg>
-          </button>
+          <div className="flex items-center gap-[8px]">
+            <button
+              className="px-[10px] py-[6px] rounded-full bg-surface text-text-secondary"
+              style={{ fontSize: "11px" }}
+              onClick={() => { resetOnboarding(); router.replace("/onboarding/step1"); }}
+            >
+              다시 설정
+            </button>
+            <button
+              className="w-8 h-8 rounded-full bg-surface flex items-center justify-center"
+              aria-label="프로필"
+              onClick={() => router.push("/profile")}
+            >
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                <circle cx="12" cy="7" r="4" />
+              </svg>
+            </button>
+          </div>
         </div>
 
         <div className="flex gap-sm mt-sm overflow-x-auto scrollbar-hide pb-xs">
