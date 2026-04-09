@@ -1,0 +1,16 @@
+{
+  "interview": 4.0,
+  "commute": 3.5,
+  "meeting": 4.0,
+  "office": 3.5,
+  "date": 3.0,
+  "event": 4.5,
+  "party": 3.5,
+  "weekend": 2.0,
+  "casual": 2.0,
+  "daily": 2.0,
+  "campus": 2.0,
+  "travel": 2.0,
+  "workout": 1.5,
+  "outdoor": 2.0
+}

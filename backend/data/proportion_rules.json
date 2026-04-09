@@ -1,0 +1,22 @@
+{
+  "oversized": {
+    "slim": 95, "skinny": 90, "straight": 80, "regular": 75,
+    "wide": 40, "flared": 50, "relaxed": 45
+  },
+  "fitted": {
+    "slim": 85, "skinny": 80, "straight": 90, "regular": 85,
+    "wide": 85, "flared": 80, "relaxed": 70
+  },
+  "crop": {
+    "high_waist": 95, "wide": 85, "flared": 80, "straight": 75,
+    "slim": 70, "skinny": 65, "regular": 75
+  },
+  "regular": {
+    "slim": 80, "skinny": 75, "straight": 85, "regular": 80,
+    "wide": 75, "flared": 70, "relaxed": 70
+  },
+  "relaxed": {
+    "slim": 85, "skinny": 80, "straight": 80, "regular": 75,
+    "wide": 50, "flared": 55, "relaxed": 45
+  }
+}

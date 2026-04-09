@@ -16,24 +16,35 @@ class ItemResponse(BaseModel):
     mall_name: str = ""
     mall_url: str = ""
     image_url: str = ""
+    style_tag: str = ""
+    formality: float = 0
 
 
 class ScoresResponse(BaseModel):
-    personal_color_fit: float = Field(alias="pcf")
-    occasion_fit: float = Field(alias="of")
-    color_harmony: float = Field(alias="ch")
-    price_efficiency: float = Field(alias="pe")
-    style_fit: float = Field(alias="sf")
+    tpo: float = Field(0, alias="tpo", description="TPO 적합도 0-100")
+    fit: float = Field(0, alias="fit", description="체형/핏 적합도 0-100")
+    color: float = Field(0, alias="color", description="컬러 조합 0-100")
+    style: float = Field(0, alias="style", description="스타일 일관성 0-100")
+    risk: float = Field(0, alias="risk", description="리스크 감점 -30~0")
+    final: float = Field(0, alias="final", description="최종 점수 0-100")
+    # 기존 호환 (프론트 깨짐 방지)
+    pcf: float = 0
+    of: float = 0
+    ch: float = 0
+    pe: float = 0
+    sf: float = 0
     total: float = 0
 
     model_config = {"populate_by_name": True}
 
 
 class ReasonResponse(BaseModel):
-    """결정 이유 3파트 — 각 파트 문자열 1개."""
+    """추천 사유 3파트."""
     core: str = ""
-    evidence: str = ""
     risk_guard: str = ""
+    situation: str = ""
+    # 기존 호환
+    evidence: str = ""
 
 
 class OutfitResponse(BaseModel):

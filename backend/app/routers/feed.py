@@ -19,6 +19,8 @@ from app.services.feed_builder import (
     stage1_hard_filter, stage2_eligibility, stage3_soft_score, stage4_expert_rerank,
 )
 from app.services.reason_generator import generate_reasons
+from app.services.scoring_v2 import compute_scores_v2
+from app.services.reason_generator_v2 import generate_reasons_v2
 from app.services.stylist_rules import apply_stylist_rules
 from app.services.quality_filters import apply_quality_filters
 from app.services.qa_gate import qa_check
@@ -27,7 +29,7 @@ router = APIRouter(prefix="/api", tags=["feed"])
 
 _DATA_DIR = Path(__file__).resolve().parents[2] / "data"
 
-_outfits_cache: list[dict] | None = None
+_outfits_cache: list[dict] | None = None  # 서버 시작 시 초기화
 
 
 def _load_outfits_from_json() -> list[dict]:
@@ -59,6 +61,8 @@ def _outfit_to_response(outfit: dict) -> OutfitResponse:
             mall_name=it.get("mall_name", ""),
             mall_url=it.get("mall_url", ""),
             image_url=it.get("image_url", it.get("image", "")),
+            style_tag=it.get("style_tag", ""),
+            formality=it.get("formality", 0),
         )
         for it in outfit.get("items", [])
     ]
@@ -67,6 +71,14 @@ def _outfit_to_response(outfit: dict) -> OutfitResponse:
     scores = None
     if scores_dict:
         scores = ScoresResponse(
+            # v2 축
+            tpo=scores_dict.get("tpo", 0),
+            fit=scores_dict.get("fit", 0),
+            color=scores_dict.get("color", 0),
+            style=scores_dict.get("style", 0),
+            risk=scores_dict.get("risk", 0),
+            final=scores_dict.get("final", 0),
+            # 기존 호환
             pcf=scores_dict.get("pcf", 0),
             of=scores_dict.get("of", 0),
             ch=scores_dict.get("ch", 0),
@@ -81,8 +93,9 @@ def _outfit_to_response(outfit: dict) -> OutfitResponse:
     if isinstance(raw_reasons, dict):
         reason_resp = ReasonResponse(
             core=raw_reasons.get("core", ""),
-            evidence=raw_reasons.get("evidence", ""),
             risk_guard=raw_reasons.get("risk_guard", ""),
+            situation=raw_reasons.get("situation", ""),
+            evidence=raw_reasons.get("evidence", ""),
         )
 
     return OutfitResponse(
@@ -143,15 +156,41 @@ async def get_feed(
     page_outfits = qa_passed[start:end]
 
     for outfit in page_outfits:
-        scores = outfit.get("scores", {})
         outfit_items = outfit.get("items", [])
-        reasons = generate_reasons(
-            scores,
+        # v2 스코어 계산 (기존 스코어 위에 덧씌움)
+        v2_scores = compute_scores_v2(
+            outfit,
+            user_tone_id=tone_id,
+            user_tpo_list=tpo_list,
+        )
+        # 기존 호환 유지 + v2 추가
+        old_scores = outfit.get("scores") or {}
+        outfit["scores"] = {
+            **old_scores,
+            **v2_scores,
+            # 기존 키 호환: total = final
+            "total": v2_scores["final"],
+        }
+        # v2 reason 생성
+        reasons_v2 = generate_reasons_v2(
+            v2_scores,
             items=outfit_items,
             user_tone_id=tone_id,
             user_tpo_list=tpo_list,
         )
-        outfit["reasons"] = reasons
+        # 기존 reason도 생성 (evidence 호환)
+        reasons_v1 = generate_reasons(
+            old_scores,
+            items=outfit_items,
+            user_tone_id=tone_id,
+            user_tpo_list=tpo_list,
+        )
+        outfit["reasons"] = {
+            "core": reasons_v2["core"],
+            "risk_guard": reasons_v2["risk_guard"],
+            "situation": reasons_v2["situation"],
+            "evidence": reasons_v1.get("evidence", ""),
+        }
 
     # 응답 변환
     response_outfits = [_outfit_to_response(o) for o in page_outfits]

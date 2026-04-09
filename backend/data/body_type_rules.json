@@ -1,0 +1,27 @@
+{
+  "straight": {
+    "recommended": ["fitted", "slim", "straight"],
+    "neutral": ["regular", "high_waist"],
+    "avoid": []
+  },
+  "triangle": {
+    "recommended": ["wide", "flared", "a_line", "fitted_top"],
+    "neutral": ["regular", "straight"],
+    "avoid": ["skinny", "slim"]
+  },
+  "inverted_triangle": {
+    "recommended": ["wide", "flared", "oversized_top"],
+    "neutral": ["straight", "regular"],
+    "avoid": ["crop_top"]
+  },
+  "curve": {
+    "recommended": ["high_waist", "fitted", "wrap"],
+    "neutral": ["straight", "regular"],
+    "avoid": ["oversized", "boxy"]
+  },
+  "average": {
+    "recommended": [],
+    "neutral": ["fitted", "regular", "straight", "slim"],
+    "avoid": []
+  }
+}
