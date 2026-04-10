@@ -92,35 +92,28 @@ export default function Step3Page() {
   };
 
   return (
-    <div className="flex flex-col h-full px-md pt-lg pb-md">
-      {/* Headline */}
-      <h2 className="text-center text-primary" style={{ fontSize: "24px" }}>
+    <div className="ob-page">
+      <div className={`ob-bg ${gender === "male" ? "ob-bg-step3-m" : "ob-bg-step3-f"}`} />
+      <div className="ob-overlay" />
+      <div className="ob-content">
+      <h2 style={{ fontFamily: "var(--font-display)", fontSize: "20px", fontWeight: 700, color: "#fff", marginTop: 4 }}>
         어떤 상황의 코디를 찾으세요?
       </h2>
 
       {/* TPO selection */}
-      <section className="mt-xl">
-        <p className="text-text-secondary mb-sm" style={{ fontSize: "13px" }}>
+      <section style={{ marginTop: 16 }}>
+        <p style={{ fontSize: "11px", color: "rgba(255,255,255,0.45)", marginBottom: 6 }}>
           TPO 선택 (최대 {MAX_TPO}개) · {selectedTpo.size}/{MAX_TPO}
         </p>
-        <div className="flex flex-wrap gap-sm">
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
           {TPO_OPTIONS.map((tpo) => {
             const isActive = selectedTpo.has(tpo.id);
             return (
               <motion.button
                 key={tpo.id}
                 onClick={() => toggleTpo(tpo.id)}
-                whileTap={{ scale: 0.95 }}
-                className="px-md py-sm rounded-full font-medium"
-                style={{
-                  fontSize: "14px",
-                  backgroundColor: isActive ? "#964F4C" : "#FFFFFF",
-                  color: isActive ? "#FFFFFF" : "#222222",
-                  border: isActive
-                    ? "1.5px solid #964F4C"
-                    : "1.5px solid #E0DCD7",
-                  transition: "background-color 0.2s, color 0.2s, border-color 0.2s",
-                }}
+                whileTap={{ scale: 0.93 }}
+                className={`glass-chip${isActive ? " on" : ""}`}
               >
                 {tpo.label}
               </motion.button>
@@ -130,14 +123,14 @@ export default function Step3Page() {
       </section>
 
       {/* Mood selection */}
-      <section className="mt-xl flex-1">
-        <p className="text-text-secondary mb-xs" style={{ fontSize: "15px", fontWeight: 500, color: "#222222" }}>
+      <section style={{ marginTop: 20, flex: 1 }}>
+        <p style={{ fontSize: "14px", fontWeight: 600, color: "rgba(255,255,255,0.85)" }}>
           분위기도 골라보세요
         </p>
-        <p className="text-text-secondary mb-sm" style={{ fontSize: "13px" }}>
+        <p style={{ fontSize: "11px", color: "rgba(255,255,255,0.4)", marginTop: 2, marginBottom: 8 }}>
           무드 선택 (최대 {MAX_MOOD}개) · {selectedMood.size}/{MAX_MOOD}
         </p>
-        <div className="flex flex-wrap gap-x-lg gap-y-md">
+        <div style={{ display: "flex", flexWrap: "wrap", gap: "8px 20px" }}>
           {moods.map((mood) => {
             const isActive = selectedMood.has(mood.id);
             return (
@@ -145,9 +138,9 @@ export default function Step3Page() {
                 key={mood.id}
                 onClick={() => toggleMood(mood.id)}
                 style={{
-                  fontSize: "15px",
+                  fontSize: "14px",
                   fontWeight: isActive ? 600 : 400,
-                  color: "#222222",
+                  color: isActive ? "#fff" : "rgba(255,255,255,0.55)",
                   textDecoration: "none",
                   borderBottom: isActive
                     ? "2px solid #964F4C"
@@ -167,16 +160,17 @@ export default function Step3Page() {
       <button
         onClick={handleNext}
         disabled={!canProceed}
-        className="w-full rounded-xl text-white font-semibold mt-lg"
+        className="cta-primary"
         style={{
-          height: 56,
-          fontSize: "16px",
-          backgroundColor: canProceed ? "#964F4C" : "#E0DCD7",
-          transition: "background-color 0.3s",
+          width: "100%",
+          marginTop: 16,
+          opacity: canProceed ? 1 : 0.5,
+          fontSize: "14px",
         }}
       >
         다음
       </button>
+      </div>{/* ob-content */}
     </div>
   );
 }

@@ -141,19 +141,22 @@ export default function Step5Page() {
   };
 
   return (
-    <div className="flex flex-col min-h-full px-[20px] pb-[24px]">
-      {/* Headline */}
-      <div className="mt-[8px]">
+    <div className="ob-page">
+      <div className={`ob-bg ${gender === "male" ? "ob-bg-step5-m" : "ob-bg-step5-f"}`} />
+      <div className="ob-overlay" />
+      <div className="ob-content" style={{ padding: "8px 16px 14px" }}>
+      {/* Headline — 간결하게 */}
+      <div className="mt-[4px]">
         <motion.h2
           key={`title-${round}`}
-          initial={{ opacity: 0, y: 8 }}
+          initial={{ opacity: 0, y: 6 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3 }}
+          transition={{ duration: 0.25 }}
           style={{
             fontFamily: "var(--font-display)",
-            fontSize: "22px",
+            fontSize: "20px",
             fontWeight: 700,
-            color: "#222",
+            color: "#fff",
             lineHeight: 1.3,
           }}
         >
@@ -163,24 +166,24 @@ export default function Step5Page() {
           key={`sub-${round}`}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 0.1, duration: 0.3 }}
-          style={{ fontSize: "13px", color: "#8C8578", marginTop: 6 }}
+          transition={{ delay: 0.08, duration: 0.2 }}
+          style={{ fontSize: "12px", color: "rgba(255,255,255,0.5)", marginTop: 4 }}
         >
           {roundInfo.sub}
         </motion.p>
       </div>
 
-      {/* Image Grid — 3장이면 2+1, 4장이면 2x2 */}
-      <div className="flex-1 flex items-center justify-center mt-[20px]">
+      {/* Image Grid */}
+      <div className="flex-1 flex items-center justify-center mt-[12px]">
         <AnimatePresence mode="wait">
           <motion.div
             key={round}
             initial={{ opacity: 0, scale: 0.97 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.97 }}
-            transition={{ duration: 0.25 }}
-            className={`grid gap-[10px] w-full ${images.length === 3 ? "grid-cols-2" : "grid-cols-2"}`}
-            style={{ maxWidth: 360 }}
+            transition={{ duration: 0.2 }}
+            className="grid grid-cols-2 gap-[8px] w-full"
+            style={{ maxWidth: 340 }}
           >
             {images.map((img, imgIdx) => {
               const isSelected = selected === img.id;
@@ -192,19 +195,18 @@ export default function Step5Page() {
                   key={img.id}
                   onClick={() => handleSelect(img.id)}
                   animate={{
-                    scale: isSelected ? 0.96 : 1,
-                    opacity: isDimmed ? 0.3 : 1,
+                    scale: isSelected ? 0.95 : isDimmed ? 0.93 : 1,
+                    opacity: isDimmed ? 0.25 : 1,
                   }}
-                  transition={{ duration: 0.25 }}
-                  className={`relative rounded-xl overflow-hidden ${isLastOdd ? "col-span-2 mx-auto" : ""}`}
+                  transition={{ type: "spring", stiffness: 400, damping: 25 }}
+                  className={`relative rounded-2xl overflow-hidden ${isLastOdd ? "col-span-2 mx-auto" : ""}`}
                   style={{
-                    ...(isLastOdd ? { maxWidth: "calc(50% - 5px)" } : {}),
+                    ...(isLastOdd ? { maxWidth: "calc(50% - 4px)" } : {}),
                     aspectRatio: "3 / 4",
-                    border: isSelected ? "3px solid #964F4C" : "2px solid transparent",
-                    boxShadow: isSelected ? "0 4px 20px rgba(150,79,76,0.2)" : "0 2px 8px rgba(0,0,0,0.06)",
+                    border: isSelected ? "3px solid #964F4C" : "1.5px solid rgba(0,0,0,0.06)",
+                    boxShadow: isSelected ? "0 8px 24px rgba(150,79,76,0.25)" : "0 2px 6px rgba(0,0,0,0.05)",
                   }}
                 >
-                  {/* Image */}
                   <img
                     src={img.src}
                     alt={img.label}
@@ -213,32 +215,28 @@ export default function Step5Page() {
                     referrerPolicy="no-referrer"
                   />
 
-                  {/* Label overlay */}
-                  <div
-                    className="absolute bottom-0 left-0 right-0 px-[10px] pb-[10px] pt-[28px]"
-                    style={{ background: "linear-gradient(transparent, rgba(0,0,0,0.55))" }}
-                  >
-                    <span
-                      style={{
-                        fontSize: "13px",
-                        fontWeight: 600,
-                        color: "#FFFFFF",
-                        letterSpacing: "0.3px",
-                        display: "block",
-                      }}
+                  {/* 선택 체크 */}
+                  {isSelected && (
+                    <motion.div
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      className="absolute top-[8px] right-[8px] w-[26px] h-[26px] rounded-full flex items-center justify-center"
+                      style={{ backgroundColor: "#964F4C" }}
                     >
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
+                    </motion.div>
+                  )}
+
+                  {/* 라벨 — 간소화 */}
+                  <div
+                    className="absolute bottom-0 left-0 right-0 px-[8px] pb-[8px] pt-[20px]"
+                    style={{ background: "linear-gradient(transparent, rgba(0,0,0,0.5))" }}
+                  >
+                    <span style={{ fontSize: "12px", fontWeight: 600, color: "#fff", letterSpacing: "0.2px", display: "block" }}>
                       {img.label}
                     </span>
                     {img.sub && (
-                      <span
-                        style={{
-                          fontSize: "10px",
-                          fontWeight: 400,
-                          color: "rgba(255,255,255,0.8)",
-                          display: "block",
-                          marginTop: 2,
-                        }}
-                      >
+                      <span style={{ fontSize: "9px", color: "rgba(255,255,255,0.7)", display: "block", marginTop: 1 }}>
                         {img.sub}
                       </span>
                     )}
@@ -265,16 +263,17 @@ export default function Step5Page() {
       </div>
 
       {/* Round indicator */}
-      <div className="flex justify-center gap-[6px] mt-[20px]">
+      <div className="flex justify-center gap-[5px] mt-[14px]">
         {Array.from({ length: TOTAL_ROUNDS }).map((_, i) => (
           <div
             key={i}
             className="rounded-full"
             style={{
-              width: i === round ? 20 : 6,
+              width: i === round ? 18 : 6,
               height: 6,
               borderRadius: 3,
-              backgroundColor: i === round ? "#964F4C" : "#E5E1DA",
+              backgroundColor: i < round ? "#964F4C" : i === round ? "#964F4C" : "#E5E1DA",
+              opacity: i < round ? 0.4 : 1,
               transition: "all 0.3s ease",
             }}
           />
@@ -282,16 +281,16 @@ export default function Step5Page() {
       </div>
 
       {/* Bottom */}
-      <div className="flex justify-between items-center mt-[16px]">
+      <div className="flex justify-between items-center mt-[12px]">
         <button
           onClick={handleSkipAll}
-          style={{ fontSize: "12px", color: "#B5AFA6", background: "none", border: "none", cursor: "pointer" }}
+          style={{ fontSize: "10px", color: "rgba(255,255,255,0.25)", background: "none", border: "none", cursor: "pointer" }}
         >
           건너뛰기
         </button>
         <button
           onClick={handlePass}
-          style={{ fontSize: "13px", color: "#8C8578", background: "none", border: "none", cursor: "pointer", fontWeight: 500 }}
+          style={{ fontSize: "12px", color: "rgba(255,255,255,0.35)", background: "none", border: "none", cursor: "pointer", fontWeight: 500 }}
         >
           패스 →
         </button>
@@ -317,6 +316,7 @@ export default function Step5Page() {
           </motion.div>
         )}
       </AnimatePresence>
+      </div>{/* ob-content */}
     </div>
   );
 }

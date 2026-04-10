@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { updateOnboarding } from "@/lib/onboarding-store";
+import { getOnboardingData, updateOnboarding } from "@/lib/onboarding-store";
 
 interface ToneChip {
   id: string;
@@ -118,14 +118,18 @@ export default function Step2Page() {
   };
 
   return (
-    <div className="flex flex-col h-full px-md pt-lg pb-md">
+    <div className="ob-page">
+      <div className={`ob-bg ${getOnboardingData().gender === "male" ? "ob-bg-step2-m" : "ob-bg-step2-f"}`} />
+      <div className="ob-overlay" />
+      <div className="ob-content">
       {/* Headline */}
-      <h2 className="text-center text-primary" style={{ fontSize: "24px" }}>
+      <h2 style={{ fontFamily: "var(--font-display)", fontSize: "20px", fontWeight: 700, color: "#fff", marginTop: 4 }}>
         어떤 컬러가 잘 어울리세요?
       </h2>
+      <p style={{ fontSize: "11px", color: "rgba(255,255,255,0.5)", marginTop: 4 }}>시즌을 탭하고, 톤을 선택하세요</p>
 
       {/* Season strips */}
-      <div className="flex flex-col gap-lg mt-xl flex-1">
+      <div style={{ display: "flex", flexDirection: "column", gap: 16, marginTop: 16, flex: 1 }}>
         {SEASONS.map((season) => {
           const isSelected = selectedSeason === season.id;
           const isDimmed = selectedSeason !== null && !isSelected;
@@ -138,7 +142,7 @@ export default function Step2Page() {
                 style={{
                   fontSize: "13px",
                   fontWeight: 500,
-                  color: isDimmed ? "#B5AFA6" : "#8C8578",
+                  color: isDimmed ? "rgba(255,255,255,0.25)" : "rgba(255,255,255,0.6)",
                   transition: "color 0.3s",
                 }}
               >
@@ -191,8 +195,8 @@ export default function Step2Page() {
                             fontSize: "11px",
                             color:
                               selectedTone === tone.id
-                                ? "#964F4C"
-                                : "#8C8578",
+                                ? "#C4726F"
+                                : "rgba(255,255,255,0.5)",
                           }}
                         >
                           {tone.label}
@@ -222,13 +226,8 @@ export default function Step2Page() {
         <button
           onClick={handleNext}
           disabled={!selectedTone}
-          className="w-full rounded-xl text-white font-semibold"
-          style={{
-            height: 56,
-            fontSize: "16px",
-            backgroundColor: selectedTone ? "#964F4C" : "#E0DCD7",
-            transition: "background-color 0.3s",
-          }}
+          className="cta-primary"
+          style={{ width: "100%", opacity: selectedTone ? 1 : 0.5, fontSize: "14px" }}
         >
           다음
         </button>
@@ -337,6 +336,7 @@ export default function Step2Page() {
           </>
         )}
       </AnimatePresence>
+      </div>{/* ob-content */}
     </div>
   );
 }

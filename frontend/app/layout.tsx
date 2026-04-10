@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Nanum_Myeongjo } from "next/font/google";
 import "./globals.css";
 import BottomTabBar from "@/components/BottomTabBar";
+import DemoPanel from "@/components/DemoPanel";
 
 const nanumMyeongjo = Nanum_Myeongjo({
   subsets: ["latin"],
@@ -26,8 +27,13 @@ export default function RootLayout({
         <meta name="referrer" content="no-referrer" />
       </head>
       <body>
-        {children}
-        <BottomTabBar />
+        <div className="demo-wrapper">
+          <div id="app-frame" className="app-frame">
+            {children}
+            <BottomTabBar />
+          </div>
+          <DemoPanel />
+        </div>
       </body>
     </html>
   );

@@ -15,11 +15,7 @@ export default function Home() {
     const completed = Boolean(data.tone_id && data.tpo_list.length > 0);
     setIsReturning(completed);
     setMounted(true);
-
-    // 기존 사용자는 자동으로 피드 이동
-    if (completed) {
-      router.replace("/feed");
-    }
+    if (completed) router.replace("/feed");
   }, [router]);
 
   if (!mounted) {
@@ -30,47 +26,51 @@ export default function Home() {
     );
   }
 
-  // 기존 사용자 → 피드로 리다이렉트 중
   if (isReturning) {
     return (
       <main className="flex min-h-dvh flex-col items-center justify-center bg-bg">
         <h1 className="font-display text-4xl font-bold text-accent">ColorFit</h1>
-        <p className="mt-4 text-text-secondary" style={{ fontSize: "14px" }}>
-          코디를 불러오고 있어요...
-        </p>
+        <p className="mt-4 text-text-secondary" style={{ fontSize: "14px" }}>코디를 불러오고 있어요...</p>
       </main>
     );
   }
 
-  // 신규 사용자 → 웰컴 화면
+  /* 웰컴 — 스크롤 없이 부모(app-frame) 높이에 맞춤 */
   return (
-    <main className="flex min-h-dvh flex-col items-center justify-center bg-bg px-[24px]">
-      <motion.div
-        className="flex flex-col items-center text-center max-w-[360px]"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-      >
-        <h1 className="font-display text-[40px] font-bold text-accent leading-tight">
+    <main className="welcome-page">
+      {/* BG */}
+      <div className="welcome-bg" />
+      <div className="welcome-overlay" />
+
+      {/* Content */}
+      <div className="welcome-content">
+        {/* 브랜드 */}
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="welcome-brand">
           ColorFit
-        </h1>
-        <p className="mt-[12px] text-text-secondary" style={{ fontSize: "15px", lineHeight: 1.6 }}>
-          퍼스널컬러에 맞는 코디를 추천하고<br />
-          왜 이 코디인지 설명해드려요
-        </p>
+        </motion.div>
 
-        <motion.button
-          onClick={() => router.push("/onboarding/step1")}
-          className="w-full mt-[40px] cta-primary"
-          whileTap={{ scale: 0.97 }}
-        >
-          내 스타일 진단 시작하기
-        </motion.button>
+        {/* 중앙 */}
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="welcome-center">
+          <h1 className="welcome-h1">뭘 입을지<br />고민하지 마세요</h1>
+          <p className="welcome-desc">퍼스널컬러와 상황에 맞는 코디를 전문가 기준으로 골라드려요</p>
 
-        <p className="mt-[16px] text-text-tertiary" style={{ fontSize: "12px" }}>
-          1분이면 끝나요 — 성별, 퍼스널컬러, 상황, 예산, 취향
-        </p>
-      </motion.div>
+          <div className="welcome-values">
+            {["🎨 12톤 퍼스널컬러 매칭", "✓ 상황별 전문가 판단 기준", "🛡 실패 확률 낮은 안전한 선택"].map((t, i) => (
+              <motion.div key={i} initial={{ opacity: 0, x: -4 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.2 + i * 0.06 }} className="welcome-value">
+                {t}
+              </motion.div>
+            ))}
+          </div>
+        </motion.div>
+
+        {/* CTA */}
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.35 }} className="welcome-cta-wrap">
+          <button onClick={() => router.push("/onboarding/step1")} className="welcome-cta">
+            1분 만에 내 스타일 찾기
+          </button>
+          <p className="welcome-sub">간단한 5단계 질문으로 시작해요</p>
+        </motion.div>
+      </div>
     </main>
   );
 }

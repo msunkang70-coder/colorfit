@@ -13,7 +13,7 @@ import {
   exportMetricsCsv,
 } from "@/lib/api";
 import type { MetricsPayload } from "@/lib/api";
-import { selectDiverseTop3, applyStyleFilter, checkStyleConsistency, getStyleExplanation } from "@/lib/feed-utils";
+import { selectDiverseTop3, applyStyleFilter, checkStyleConsistency, getStyleExplanation, getStylistCriteria } from "@/lib/feed-utils";
 import type { FeedOutfit, RankedOutfit, StyleCheck } from "@/lib/feed-utils";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
@@ -227,86 +227,40 @@ export default function FeedPage() {
   const showExploreButton = expandLevel === 0 && allOutfits.length >= 2;
 
   return (
-    <div className="min-h-dvh bg-bg max-w-[768px] mx-auto">
+    <div className="feed-page">
+      {/* BG — 성별에 따라 배경 이미지 분기 */}
+      <div className={`feed-bg ${profileRef.current.gender === "male" ? "feed-bg-m" : "feed-bg-f"}`} />
+      <div className="feed-overlay" />
+
       {/* Header */}
-      <header className="sticky top-0 z-30 bg-bg px-md pt-md pb-sm">
-        <div className="flex items-center justify-between">
-          <h1 className="brand-logo">ColorFit</h1>
-          <div className="flex items-center gap-[8px]">
-            <button
-              className="px-[10px] py-[6px] rounded-full bg-surface text-text-secondary"
-              style={{ fontSize: "11px" }}
-              onClick={() => { resetOnboarding(); router.replace("/onboarding/step1"); }}
-            >
-              다시 설정
-            </button>
-            <button
-              className="w-8 h-8 rounded-full bg-surface flex items-center justify-center"
-              aria-label="프로필"
-              onClick={() => router.push("/profile")}
-            >
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-                <circle cx="12" cy="7" r="4" />
-              </svg>
-            </button>
+      <header style={{ position: "relative", zIndex: 30, padding: "10px 16px 8px", background: "rgba(20,18,16,0.92)", backdropFilter: "blur(16px)", WebkitBackdropFilter: "blur(16px)", borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
+          <span style={{ fontFamily: "var(--font-display)", fontSize: "15px", fontWeight: 800, color: "#fff", letterSpacing: "1px" }}>ColorFit</span>
+          <button
+            onClick={() => { resetOnboarding(); router.replace("/onboarding/step1"); }}
+            style={{ fontSize: "10px", color: "rgba(255,255,255,0.5)", background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 20, padding: "4px 10px", cursor: "pointer" }}
+          >
+            다시 진단
+          </button>
+        </div>
+
+        <div style={{ margin: "0 -16px", padding: "0 16px", overflowX: "auto", overflowY: "hidden", WebkitOverflowScrolling: "touch", scrollbarWidth: "none", msOverflowStyle: "none" }}>
+          <div style={{ display: "flex", gap: 5, width: "max-content", paddingBottom: 2, paddingRight: 16 }}>
+            {TPO_TABS.map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => handleTpoChange(tab.id)}
+                className={`glass-chip${activeTpo === tab.id ? " on" : ""}`}
+                style={{ fontSize: "11px", padding: "5px 12px", whiteSpace: "nowrap" }}
+              >
+                {tab.label}
+              </button>
+            ))}
           </div>
         </div>
-
-        <div className="flex gap-sm mt-sm overflow-x-auto scrollbar-hide pb-xs">
-          {TPO_TABS.map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => handleTpoChange(tab.id)}
-              className="shrink-0 px-md py-xs rounded-full whitespace-nowrap"
-              style={{
-                fontSize: "13px",
-                fontWeight: 500,
-                backgroundColor: activeTpo === tab.id ? "#964F4C" : "#FFFFFF",
-                color: activeTpo === tab.id ? "#FFFFFF" : "#222222",
-                border: activeTpo === tab.id ? "1.5px solid #964F4C" : "1.5px solid #E0DCD7",
-                transition: "background-color 0.2s, color 0.2s",
-              }}
-            >
-              {tab.label}
-            </button>
-          ))}
-        </div>
-
-        <button
-          onClick={() => setBudgetExpanded((v) => !v)}
-          className="mt-xs text-text-secondary"
-          style={{ fontSize: "13px" }}
-        >
-          ₩{budgetMin.toLocaleString()}~₩{budgetMax.toLocaleString()}{" "}
-          <span style={{ fontSize: "11px" }}>{budgetExpanded ? "▲" : "▼"}</span>
-        </button>
-
-        <AnimatePresence>
-          {budgetExpanded && (
-            <motion.div
-              initial={{ height: 0, opacity: 0 }}
-              animate={{ height: "auto", opacity: 1 }}
-              exit={{ height: 0, opacity: 0 }}
-              transition={{ duration: 0.3, ease: "easeOut" as const }}
-              className="overflow-hidden"
-            >
-              <div className="mt-sm pb-sm">
-                <p className="text-text-tertiary mb-xs" style={{ fontSize: "11px" }}>최대 예산</p>
-                <input type="range" min={30000} max={500000} step={10000} value={budgetMax}
-                  onChange={(e) => setBudgetMax(Math.max(+e.target.value, 30000))}
-                  className="w-full accent-accent" />
-                <div className="flex justify-between text-text-tertiary" style={{ fontSize: "10px" }}>
-                  <span>₩30,000</span>
-                  <span>₩500,000</span>
-                </div>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
       </header>
 
-      <main>
+      <main style={{ position: "relative", zIndex: 1 }}>
         {status === "loading" && (
           <div className="px-[20px]">
             <div className="animate-pulse">
@@ -345,19 +299,29 @@ export default function FeedPage() {
         {status === "idle" && decision && (
           <>
             <section className="px-[20px] mb-[12px]">
-              <p style={{ fontFamily: "var(--font-display)", fontSize: "22px", color: "#964F4C", fontWeight: 700, letterSpacing: "-0.3px" }}>
-                오늘의 결정
+              <p style={{ fontFamily: "var(--font-display)", fontSize: "18px", color: "#C4726F", fontWeight: 700, letterSpacing: "-0.3px" }}>
+                오늘의 스타일
               </p>
-              <p style={{ fontSize: "12px", color: "#8C8578", marginTop: 2 }}>
-                {(() => {
-                  const tpo = activeTpo || profileRef.current.tpo_list[0] || "";
-                  const moods = profileRef.current.style_moods ?? [];
-                  const explain = getStyleExplanation(moods, tpo);
-                  if (explain) return explain;
-                  if (moods.length > 0) return `${moods.slice(0, 2).join(" · ")} 취향 기반 추천`;
-                  return "당신의 퍼스널컬러에 맞춘 코디예요";
-                })()}
-              </p>
+              {(() => {
+                const tpo = activeTpo || profileRef.current.tpo_list[0] || "";
+                const criteria = getStylistCriteria(tpo);
+                const moods = profileRef.current.style_moods ?? [];
+                const explain = getStyleExplanation(moods, tpo);
+                return (
+                  <>
+                    <p style={{ fontSize: "12px", color: "#8C8578", marginTop: 2 }}>
+                      {explain || criteria.expertComment}
+                    </p>
+                    <div style={{ display: "flex", gap: "4px", marginTop: "6px", flexWrap: "wrap" }}>
+                      {criteria.priorities.map((p) => (
+                        <span key={p} style={{ fontSize: "10px", fontWeight: 500, color: "#964F4C", backgroundColor: "rgba(150,79,76,0.06)", padding: "2px 8px", borderRadius: "10px" }}>
+                          {p}
+                        </span>
+                      ))}
+                    </div>
+                  </>
+                );
+              })()}
             </section>
 
             <OutfitCard
@@ -371,11 +335,11 @@ export default function FeedPage() {
               label={expandLevel === 0
                 ? (selectedRank > 1 ? "대안 선택됨" : undefined)
                 : "1위 추천"}
-              userContext={
-                profileRef.current.style_moods.length > 0
-                  ? `${profileRef.current.style_moods.join(" · ")} 선호 반영`
-                  : undefined
-              }
+              userContext={(() => {
+                const tpo = activeTpo || profileRef.current.tpo_list[0] || "";
+                const c = getStylistCriteria(tpo);
+                return c.decisionCue;
+              })()}
               onSaveToggle={handleSaveToggle}
               onDislike={handleDislike}
               index={0}
@@ -418,10 +382,10 @@ export default function FeedPage() {
                   transition={{ duration: 0.3, ease: "easeOut" as const }}
                   className="px-[20px] overflow-hidden"
                 >
-                  <p className="text-text-secondary mb-[4px]" style={{ fontSize: "13px", fontWeight: 600, color: "#222" }}>
+                  <p style={{ fontSize: "13px", fontWeight: 600, color: "rgba(255,255,255,0.85)", marginBottom: 4 }}>
                     같은 조건, 다른 강점
                   </p>
-                  <p className="text-text-secondary mb-[10px]" style={{ fontSize: "11px" }}>
+                  <p style={{ fontSize: "10px", color: "rgba(255,255,255,0.4)", marginBottom: 10 }}>
                     탭하면 이 코디로 전환돼요
                   </p>
                   <div className="flex flex-col gap-[8px]">
@@ -450,34 +414,40 @@ export default function FeedPage() {
               )}
             </AnimatePresence>
 
-            {/* Risk Guard + CTA */}
-            <div
-              className="fixed bottom-[60px] left-0 right-0 z-20 px-[20px] pb-[12px] pt-[8px]"
-              style={{ background: "linear-gradient(transparent, #F8F6F3 20%)", maxWidth: 768, margin: "0 auto" }}
-            >
-              {decision.reasons?.risk_guard && (
-                <p className="text-center mb-[8px]" style={{ fontSize: "12px", lineHeight: 1.4, color: "#6B7F5E" }}>
-                  ✓ {decision.reasons.risk_guard}
-                </p>
+            {/* CTA 영역 */}
+            <div style={{ padding: "10px 18px 12px", position: "relative", zIndex: 20 }}>
+              {/* 요약 카드 */}
+              {(decision.reasons?.risk_guard || decision.reasons?.situation) && (
+                <div style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 12, padding: "8px 12px", marginBottom: 10 }}>
+                  {decision.reasons?.risk_guard && (
+                    <p style={{ fontSize: "11px", lineHeight: 1.4, color: "rgba(140,180,130,0.9)", fontWeight: 500, textAlign: "center" }}>
+                      🛡 {decision.reasons.risk_guard}
+                    </p>
+                  )}
+                  {decision.reasons?.situation && (
+                    <p style={{ fontSize: "10px", color: "rgba(255,255,255,0.4)", textAlign: "center", marginTop: 4 }}>
+                      📍 {decision.reasons.situation}
+                    </p>
+                  )}
+                </div>
               )}
-              <button
+
+              <motion.button
                 onClick={handleDecide}
-                className="w-full cta-primary"
+                whileTap={{ scale: 0.97 }}
+                style={{ width: "100%", padding: "13px 0", borderRadius: 14, fontSize: 14, fontWeight: 600, color: "#fff", background: "linear-gradient(135deg, #7A3E3C, #964F4C, #B5605D)", border: "none", boxShadow: "0 4px 16px rgba(150,79,76,0.3)" }}
               >
-                이 코디로 결정
-              </button>
+                이 스타일로 선택
+              </motion.button>
               {showExploreButton && (
                 <button
                   onClick={handleExpand}
-                  className="w-full mt-[6px] py-[14px] text-text-secondary"
-                  style={{ fontSize: "13px" }}
+                  style={{ width: "100%", marginTop: 6, padding: "10px 0", fontSize: "11px", color: "rgba(255,255,255,0.4)", background: "none", border: "none", cursor: "pointer" }}
                 >
-                  비슷한 선택 보기
+                  {getStylistCriteria(activeTpo || profileRef.current.tpo_list[0] || "").exploreCta}
                 </button>
               )}
             </div>
-
-            <div style={{ height: 140 }} />
           </>
         )}
       </main>
@@ -499,7 +469,7 @@ export default function FeedPage() {
               exit={{ y: 300 }}
               transition={{ type: "spring", damping: 25, stiffness: 300 }}
               className="w-full rounded-t-2xl bg-bg"
-              style={{ maxWidth: 768, padding: "24px 20px 32px" }}
+              style={{ maxWidth: 393, padding: "24px 20px 32px" }}
               onClick={(e) => e.stopPropagation()}
             >
               <p style={{ fontSize: "15px", fontWeight: 600, color: "#222222" }}>

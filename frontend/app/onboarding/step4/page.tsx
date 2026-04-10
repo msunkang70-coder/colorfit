@@ -3,7 +3,7 @@
 import { useState, useCallback, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { motion, useAnimation } from "framer-motion";
-import { updateOnboarding } from "@/lib/onboarding-store";
+import { getOnboardingData, updateOnboarding } from "@/lib/onboarding-store";
 
 const MIN_BUDGET = 0;
 const MAX_BUDGET = 300000;
@@ -91,11 +91,14 @@ export default function Step4Page() {
   };
 
   return (
-    <div className="flex flex-col h-full px-md pt-lg pb-md">
-      {/* Headline */}
-      <h2 className="text-center text-primary" style={{ fontSize: "24px" }}>
+    <div className="ob-page">
+      <div className={`ob-bg ${getOnboardingData().gender === "male" ? "ob-bg-step4-m" : "ob-bg-step4-f"}`} />
+      <div className="ob-overlay" />
+      <div className="ob-content">
+      <h2 style={{ fontFamily: "var(--font-display)", fontSize: "20px", fontWeight: 700, color: "#fff", marginTop: 4 }}>
         예산 범위를 알려주세요
       </h2>
+      <p style={{ fontSize: "11px", color: "rgba(255,255,255,0.5)", marginTop: 4 }}>코디 전체 가격 기준이에요</p>
 
       {/* Budget display */}
       <p
@@ -201,15 +204,13 @@ export default function Step4Page() {
       <motion.button
         animate={ctaControls}
         onClick={handleNext}
-        className="w-full rounded-xl text-white font-semibold"
-        style={{
-          height: 56,
-          fontSize: "16px",
-          backgroundColor: "#964F4C",
-        }}
+        whileTap={{ scale: 0.97 }}
+        className="w-full cta-primary"
+        style={{ fontSize: "15px" }}
       >
-        추천 코디 보러가기
+        취향 분석하고 코디 받기
       </motion.button>
+      </div>{/* ob-content */}
     </div>
   );
 }

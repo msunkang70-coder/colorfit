@@ -369,4 +369,91 @@ export function selectDiverseTop3(outfits: FeedOutfit[]): RankedOutfit[] {
   return result;
 }
 
+// ── Stylist Criteria Layer ──
+// TPO별 전문가 판단 기준 — 프론트 표현 레이어
+
+interface StylistCriteria {
+  /** 이 상황에서 가장 중요한 기준 */
+  priorities: string[];
+  /** 피해야 할 리스크 */
+  risks: string[];
+  /** Top1에 보여줄 한 줄 전문가 코멘트 */
+  expertComment: string;
+  /** Decision 보조 메시지 (왜 이 코디가 맞는지) */
+  decisionCue: string;
+  /** Explore CTA 문구 */
+  exploreCta: string;
+}
+
+const STYLIST_CRITERIA: Record<string, StylistCriteria> = {
+  interview: {
+    priorities: ["단정함", "안정감", "첫인상 신뢰"],
+    risks: ["과한 개성", "캐주얼 과잉"],
+    expertComment: "면접에서 가장 중요한 건 첫인상의 신뢰감이에요",
+    decisionCue: "첫인상에서 무리 없이 신뢰감을 주는 조합",
+    exploreCta: "다른 인상의 면접룩 비교하기",
+  },
+  commute: {
+    priorities: ["실용성", "정돈감", "부담 없는 스타일"],
+    risks: ["과한 포인트", "어색한 격식"],
+    expertComment: "출근룩의 핵심은 매일 입어도 지치지 않는 균형이에요",
+    decisionCue: "매일 입기 좋으면서 흐트러져 보이지 않는 조합",
+    exploreCta: "다른 분위기의 출근룩 비교하기",
+  },
+  date: {
+    priorities: ["호감도", "자연스러움", "과한 연출 회피"],
+    risks: ["과한 노출", "지나친 격식"],
+    expertComment: "데이트에선 '잘 입었다'보다 '분위기 좋다'가 중요해요",
+    decisionCue: "부담 없이 좋은 인상을 남기는 조합",
+    exploreCta: "다른 느낌의 데이트룩 비교하기",
+  },
+  campus: {
+    priorities: ["편안함", "트렌디함", "개성 표현"],
+    risks: ["과한 격식", "불편한 소재"],
+    expertComment: "캠퍼스에선 편하면서 감각적인 게 정답이에요",
+    decisionCue: "하루 종일 편하면서 센스 있어 보이는 조합",
+    exploreCta: "다른 스타일의 캠퍼스룩 비교하기",
+  },
+  weekend: {
+    priorities: ["편안함", "자연스러운 멋", "활동성"],
+    risks: ["너무 꾸민 느낌", "과한 정장감"],
+    expertComment: "주말엔 '노력 없이 멋있어 보이는' 스타일이 최고예요",
+    decisionCue: "편안하면서도 잘 갖춰 입은 느낌의 조합",
+    exploreCta: "다른 무드의 주말룩 비교하기",
+  },
+  travel: {
+    priorities: ["활동성", "편안함", "사진 밸런스"],
+    risks: ["움직임 제한", "관리 어려운 소재"],
+    expertComment: "여행복은 편하면서 사진 찍었을 때 예뻐야 해요",
+    decisionCue: "활동적이면서 사진 속에서도 좋아 보이는 조합",
+    exploreCta: "다른 느낌의 여행룩 비교하기",
+  },
+  event: {
+    priorities: ["존재감", "품격", "적절한 격식"],
+    risks: ["과한 화려함", "격식 부족"],
+    expertComment: "행사에선 돋보이되 과하지 않은 균형이 핵심이에요",
+    decisionCue: "격식을 갖추면서 세련되게 돋보이는 조합",
+    exploreCta: "다른 분위기의 행사룩 비교하기",
+  },
+  workout: {
+    priorities: ["기능성", "활동 편의", "깔끔한 인상"],
+    risks: ["과한 패션감", "기능성 부족"],
+    expertComment: "운동복도 깔끔하게 맞춰 입으면 동기부여가 달라져요",
+    decisionCue: "기능적이면서 깔끔한 인상을 주는 조합",
+    exploreCta: "다른 구성의 운동룩 비교하기",
+  },
+};
+
+const DEFAULT_CRITERIA: StylistCriteria = {
+  priorities: ["조화로움", "상황 적합성"],
+  risks: ["스타일 충돌"],
+  expertComment: "상황에 맞는 균형 잡힌 코디를 골랐어요",
+  decisionCue: "현재 조건에서 가장 균형 잡힌 조합",
+  exploreCta: "다른 선택도 비교하기",
+};
+
+export function getStylistCriteria(tpo: string): StylistCriteria {
+  return STYLIST_CRITERIA[tpo] || DEFAULT_CRITERIA;
+}
+
 export { AXIS_LABELS, AXIS_DESC, AXIS_WEIGHTS, getStyleExplanation };

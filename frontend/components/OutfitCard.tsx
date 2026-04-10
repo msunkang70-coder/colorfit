@@ -127,6 +127,8 @@ export default function OutfitCard({
 
   const core = reasons?.core ?? "추천 코디";
   const evidence = reasons?.evidence ?? "";
+  const riskGuard = (reasons as Record<string, string> | null)?.risk_guard ?? "";
+  const situation = (reasons as Record<string, string> | null)?.situation ?? "";
   const computedTotal = items?.reduce((s, it) => s + (it.price ?? 0), 0) ?? 0;
   const displayTotal = computedTotal > 0 ? computedTotal : totalPrice;
 
@@ -138,8 +140,8 @@ export default function OutfitCard({
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: index * 0.08, duration: 0.3, ease: "easeOut" as const }}
         onClick={handleClick}
-        className="cursor-pointer rounded-lg overflow-hidden"
-        style={{ backgroundColor: "#F0EDE8", padding: 12 }}
+        className="cursor-pointer rounded-xl overflow-hidden"
+        style={{ backgroundColor: "rgba(255,255,255,0.06)", backdropFilter: "blur(8px)", WebkitBackdropFilter: "blur(8px)", border: "1px solid rgba(255,255,255,0.08)", padding: 12 }}
       >
         <div className="flex gap-[12px]">
           <div className="shrink-0 rounded-md overflow-hidden" style={{ width: 80, height: 100 }}>
@@ -160,13 +162,13 @@ export default function OutfitCard({
                 {label}
               </span>
             )}
-            <h4 className="text-primary truncate" style={{ fontSize: "14px", fontWeight: 600, lineHeight: 1.3 }}>
+            <h4 className="truncate" style={{ fontSize: "13px", fontWeight: 600, lineHeight: 1.3, color: "rgba(255,255,255,0.9)" }}>
               {core}
             </h4>
-            <p className="text-primary font-bold mt-[2px]" style={{ fontSize: "14px" }}>
+            <p className="font-bold mt-[2px]" style={{ fontSize: "13px", color: "#fff" }}>
               {formatPrice(displayTotal)}
-              <span style={{ fontSize: "9px", fontWeight: 400, color: "#8C8578", marginLeft: 4 }}>
-                {itemCount}pcs 합산
+              <span style={{ fontSize: "9px", fontWeight: 400, color: "rgba(255,255,255,0.4)", marginLeft: 4 }}>
+                {itemCount}pcs
               </span>
             </p>
             {evidence && (
@@ -200,20 +202,18 @@ export default function OutfitCard({
       onClick={handleClick}
       className="w-full cursor-pointer"
     >
-      {/* Label badge */}
-      {label && (
-        <span
-          className="inline-block rounded-full mb-[8px]"
-          style={{ fontSize: "11px", fontWeight: 600, padding: "3px 10px", backgroundColor: "#964F4C", color: "#fff" }}
-        >
-          {label}
-        </span>
-      )}
-
-      {/* Image */}
-      <div className="relative w-full rounded-lg overflow-hidden" style={{ aspectRatio: "4 / 5", maxHeight: "45vh" }}>
+      {/* Image — 룩북 스타일 */}
+      <div className="relative w-full rounded-2xl overflow-hidden" style={{ aspectRatio: "3 / 4" }}>
+        {label && (
+          <span
+            className="absolute top-[10px] left-[10px] z-10 rounded-full"
+            style={{ fontSize: "10px", fontWeight: 600, padding: "3px 10px", backgroundColor: "rgba(0,0,0,0.5)", color: "#fff", backdropFilter: "blur(8px)" }}
+          >
+            {label}
+          </span>
+        )}
         {imageUrl ? (
-          <img src={imageUrl} alt={core} loading="lazy" width={400} height={500}
+          <img src={imageUrl} alt={core} loading="lazy" width={400} height={533}
             className="w-full h-full object-cover" referrerPolicy="no-referrer" />
         ) : (
           <div className="w-full h-full bg-surface flex items-center justify-center">
@@ -234,27 +234,23 @@ export default function OutfitCard({
           </motion.div>
         )}
 
-        {/* Core + Price overlay */}
+        {/* 오버레이 — 미니멀 */}
         <div
-          className="absolute bottom-0 left-0 right-0 px-[16px] pb-[14px] pt-[44px]"
-          style={{ background: "linear-gradient(transparent 0%, rgba(0,0,0,0.7) 100%)" }}
+          className="absolute bottom-0 left-0 right-0 px-[14px] pb-[12px] pt-[48px]"
+          style={{ background: "linear-gradient(transparent 0%, rgba(0,0,0,0.6) 100%)" }}
         >
-          <h3 className="text-white" style={{ fontFamily: "var(--font-display)", fontSize: "16px", fontWeight: 700, lineHeight: 1.3, textShadow: "0 1px 4px rgba(0,0,0,0.5)" }}>
+          <h3 className="text-white" style={{ fontFamily: "var(--font-display)", fontSize: "15px", fontWeight: 700, lineHeight: 1.35, textShadow: "0 1px 3px rgba(0,0,0,0.4)" }}>
             {core}
           </h3>
           {userContext && (
-            <p style={{ fontSize: "11px", color: "rgba(255,255,255,0.7)", marginTop: 2, textShadow: "0 1px 2px rgba(0,0,0,0.4)" }}>
+            <p style={{ fontSize: "10px", color: "rgba(255,255,255,0.65)", marginTop: 2 }}>
               {userContext}
             </p>
           )}
-          <div className="flex items-baseline gap-[6px] mt-[4px]">
-            <p className="text-white font-bold" style={{ fontSize: "20px", textShadow: "0 1px 4px rgba(0,0,0,0.5)" }}>
-              {formatPrice(displayTotal)}
-            </p>
-            <span style={{ fontSize: "11px", fontWeight: 500, color: "rgba(255,255,255,0.65)" }}>
-              총 {itemCount}pcs 합산
-            </span>
-          </div>
+          <p className="text-white font-bold mt-[4px]" style={{ fontSize: "17px", textShadow: "0 1px 3px rgba(0,0,0,0.4)" }}>
+            {formatPrice(displayTotal)}
+            <span style={{ fontSize: "10px", fontWeight: 400, opacity: 0.6, marginLeft: 4 }}>{itemCount}pcs</span>
+          </p>
         </div>
 
         <button
@@ -274,12 +270,12 @@ export default function OutfitCard({
 
       {/* ── 코디 구성 아이템 (드래그 밖, 독립 클릭 영역) ── */}
       {items && items.length > 1 && (
-        <div className="mt-[12px] rounded-xl" style={{ backgroundColor: "#F0EDE8", padding: "12px", position: "relative", zIndex: 10, opacity: 1 }}>
+        <div className="mt-[12px] rounded-xl" style={{ backgroundColor: "rgba(255,255,255,0.06)", backdropFilter: "blur(8px)", border: "1px solid rgba(255,255,255,0.08)", padding: "12px", position: "relative", zIndex: 10, opacity: 1 }}>
           <div className="flex items-center justify-between mb-[8px]">
-            <p style={{ fontSize: "13px", fontWeight: 700, color: "#222" }}>
+            <p style={{ fontSize: "12px", fontWeight: 600, color: "rgba(255,255,255,0.85)" }}>
               아이템 구성 {items.length}pcs
             </p>
-            <p style={{ fontSize: "10px", color: "#8C8578" }}>
+            <p style={{ fontSize: "9px", color: "rgba(255,255,255,0.35)" }}>
               탭하여 상세보기
             </p>
           </div>
@@ -297,13 +293,14 @@ export default function OutfitCard({
                   className="flex items-center gap-[10px] rounded-lg w-full text-left"
                   style={{
                     padding: "8px",
-                    backgroundColor: "#FFFFFF",
-                    border: "1px solid #E5E1DA",
+                    backgroundColor: "rgba(255,255,255,0.04)",
+                    border: "1px solid rgba(255,255,255,0.08)",
                     cursor: "pointer",
+                    borderRadius: "10px",
                     transition: "border-color 0.15s, background-color 0.15s, transform 0.1s",
                   }}
-                  onMouseEnter={(e) => { e.currentTarget.style.borderColor = "#964F4C"; e.currentTarget.style.backgroundColor = "#FBF8F7"; }}
-                  onMouseLeave={(e) => { e.currentTarget.style.borderColor = "#E5E1DA"; e.currentTarget.style.backgroundColor = "#FFFFFF"; }}
+                  onMouseEnter={(e) => { e.currentTarget.style.borderColor = "rgba(150,79,76,0.5)"; e.currentTarget.style.backgroundColor = "rgba(255,255,255,0.08)"; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)"; e.currentTarget.style.backgroundColor = "rgba(255,255,255,0.04)"; }}
                   onMouseDown={(e) => { e.currentTarget.style.transform = "scale(0.98)"; }}
                   onMouseUp={(e) => { e.currentTarget.style.transform = "scale(1)"; }}
                 >
@@ -318,7 +315,7 @@ export default function OutfitCard({
                           {role}
                         </span>
                       )}
-                      <span style={{ fontSize: "12px", fontWeight: 600, color: "#222" }}>{catName}</span>
+                      <span style={{ fontSize: "11px", fontWeight: 600, color: "rgba(255,255,255,0.85)" }}>{catName}</span>
                     </div>
                     {it.brand && (
                       <p style={{ fontSize: "10px", color: "#8C8578", marginTop: 1 }} className="truncate">{it.brand}</p>
@@ -326,7 +323,7 @@ export default function OutfitCard({
                   </div>
                   <div className="shrink-0 text-right">
                     {itemPrice > 0 && (
-                      <p style={{ fontSize: "12px", fontWeight: 700, color: "#222" }}>{formatPrice(itemPrice)}</p>
+                      <p style={{ fontSize: "11px", fontWeight: 700, color: "#fff" }}>{formatPrice(itemPrice)}</p>
                     )}
                   </div>
                 </button>
@@ -336,19 +333,33 @@ export default function OutfitCard({
 
           {/* 합산 확인 */}
           {computedTotal > 0 && (
-            <div className="flex justify-end items-center mt-[8px] pt-[8px]" style={{ borderTop: "1px solid #E5E1DA" }}>
-              <span style={{ fontSize: "11px", color: "#8C8578", marginRight: 8 }}>합산</span>
-              <span style={{ fontSize: "14px", fontWeight: 700, color: "#964F4C" }}>{formatPrice(computedTotal)}</span>
+            <div className="flex justify-end items-center mt-[8px] pt-[8px]" style={{ borderTop: "1px solid rgba(255,255,255,0.08)" }}>
+              <span style={{ fontSize: "10px", color: "rgba(255,255,255,0.4)", marginRight: 8 }}>합산</span>
+              <span style={{ fontSize: "13px", fontWeight: 700, color: "#C4726F" }}>{formatPrice(computedTotal)}</span>
             </div>
           )}
         </div>
       )}
 
-      {/* Evidence */}
-      {evidence && (
-        <p className="mt-[10px] text-text-secondary" style={{ fontSize: "13px", lineHeight: 1.6 }}>
-          💡 {evidence}
-        </p>
+      {/* 전문가 코멘트 */}
+      {(evidence || riskGuard) && (
+        <div className="mt-[10px] rounded-xl" style={{ padding: "10px 12px", backgroundColor: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.06)" }}>
+          {evidence && (
+            <p style={{ fontSize: "11px", lineHeight: 1.5, color: "rgba(255,255,255,0.75)", fontWeight: 500 }}>
+              💡 {evidence}
+            </p>
+          )}
+          {riskGuard && (
+            <p style={{ fontSize: "10px", lineHeight: 1.5, color: "rgba(107,127,94,0.9)", marginTop: evidence ? 4 : 0 }}>
+              🛡 {riskGuard}
+            </p>
+          )}
+          {situation && (
+            <p style={{ fontSize: "9px", color: "rgba(255,255,255,0.35)", marginTop: 4 }}>
+              📍 {situation}
+            </p>
+          )}
+        </div>
       )}
 
       {/* ── 아이템 상세 하단 시트 ── */}

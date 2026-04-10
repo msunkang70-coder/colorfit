@@ -91,6 +91,165 @@ body {
   overflow-x: hidden;
 }
 
+/* ── iPhone Demo Frame ── */
+
+/* 모바일: 풀스크린 */
+.demo-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  min-height: 100dvh;
+}
+
+.app-frame {
+  width: 100%;
+  max-width: 393px; /* iPhone 15 Pro */
+  min-height: 100dvh;
+  position: relative;
+  background-color: var(--color-bg);
+  overflow-x: hidden;
+  overflow-y: auto;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE */
+}
+.app-frame::-webkit-scrollbar { display: none; }
+
+.demo-panel { display: none; }
+
+/* 데스크탑: 폰 프레임 + 데모 패널 */
+@media (min-width: 820px) {
+  body { background: #2A2520; }
+
+  .demo-wrapper {
+    gap: 32px;
+    padding: 24px 32px;
+    align-items: flex-start;
+  }
+
+  .app-frame {
+    width: 393px;
+    min-height: 852px;
+    max-height: 852px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    border-radius: 40px;
+    border: 6px solid #3A3530;
+    box-shadow:
+      0 0 0 2px #4A4540,
+      0 20px 60px rgba(0,0,0,0.5),
+      inset 0 0 0 1px rgba(255,255,255,0.05);
+  }
+
+  /* 노치/홈바 제거 — border-radius만으로 폰 느낌 유지 */
+
+  /* 데모 패널 */
+  .demo-panel {
+    display: flex;
+    flex-direction: column;
+    width: 280px;
+    min-height: 852px;
+    padding: 24px 0;
+    flex-shrink: 0;
+  }
+
+  .demo-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 20px;
+  }
+
+  .demo-logo {
+    font-family: var(--font-display);
+    font-size: 18px;
+    font-weight: 800;
+    color: #964F4C;
+    letter-spacing: 0.5px;
+  }
+
+  .demo-badge {
+    font-size: 9px;
+    font-weight: 700;
+    color: #fff;
+    background: #964F4C;
+    padding: 2px 8px;
+    border-radius: 6px;
+    letter-spacing: 1px;
+  }
+
+  .demo-title {
+    font-family: var(--font-display);
+    font-size: 22px;
+    font-weight: 700;
+    color: #F0EDE8;
+    line-height: 1.3;
+    margin-bottom: 16px;
+  }
+
+  .demo-list {
+    flex: 1;
+    overflow-y: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    padding-right: 4px;
+  }
+  .demo-list::-webkit-scrollbar { display: none; }
+
+  .demo-footer {
+    margin-top: auto;
+    padding-top: 16px;
+    border-top: 1px solid #3A3530;
+  }
+
+  .demo-tech {
+    font-size: 10px;
+    color: #6B6358;
+    margin-bottom: 10px;
+  }
+
+  .demo-flow {
+    display: flex;
+    gap: 6px;
+  }
+
+  .demo-dot {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    font-weight: 600;
+    color: #6B6358;
+    background: #2A2520;
+    border: 1px solid #3A3530;
+    transition: all 0.2s;
+  }
+
+  .demo-dot.active {
+    background: #964F4C;
+    color: #fff;
+    border-color: #964F4C;
+    box-shadow: 0 0 8px rgba(150,79,76,0.4);
+  }
+}
+
+/* 태블릿: 폰만 가운데 (패널 숨김) */
+@media (min-width: 480px) and (max-width: 819px) {
+  body { background: #E5E1DA; }
+  .app-frame {
+    border-radius: 32px;
+    border: 6px solid #D5D0CA;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.1);
+    max-height: 852px;
+    overflow-y: auto;
+    margin: 20px auto;
+  }
+}
+
 /* ── Typography ── */
 h1, h2, h3 {
   font-family: var(--font-display);
@@ -117,7 +276,7 @@ h3 { font-size: 18px; line-height: 1.3; }
 
 /* ── CTA Button ── */
 .cta-primary {
-  background: linear-gradient(135deg, #964F4C 0%, #B5605D 100%);
+  background: linear-gradient(135deg, #7A3E3C 0%, #964F4C 50%, #B5605D 100%);
   color: #FFFFFF;
   font-weight: 600;
   border: none;
@@ -125,7 +284,7 @@ h3 { font-size: 18px; line-height: 1.3; }
   padding: 16px 0;
   font-size: 15px;
   letter-spacing: 0.3px;
-  box-shadow: 0 4px 16px rgba(150, 79, 76, 0.25);
+  box-shadow: 0 6px 20px rgba(150, 79, 76, 0.3);
   transition: all 0.2s ease;
 }
 
@@ -144,13 +303,13 @@ h3 { font-size: 18px; line-height: 1.3; }
 .card-elevated {
   background: #FFFFFF;
   border: 1px solid #E5E1DA;
-  border-radius: 16px;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+  border-radius: 20px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
   transition: all 0.3s ease;
 }
 
 .card-elevated:hover {
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
 }
 
 .card-selected {
@@ -162,6 +321,234 @@ h3 { font-size: 18px; line-height: 1.3; }
 /* ── Scrollbar ── */
 .scrollbar-hide::-webkit-scrollbar { display: none; }
 .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* ── Welcome Page — 부모(app-frame) 높이에 꽉 맞춤 ── */
+.welcome-page {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+.welcome-bg {
+  position: absolute;
+  inset: 0;
+  background-image: url(/images/style/style_1.jpg);
+  background-size: cover;
+  background-position: center 15%;
+  filter: brightness(0.5) saturate(0.5);
+}
+.welcome-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, rgba(20,18,16,0.05) 0%, rgba(20,18,16,0.35) 25%, rgba(20,18,16,0.8) 50%, rgba(20,18,16,0.97) 100%);
+}
+.welcome-content {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 14px 20px 20px;
+}
+.welcome-brand {
+  text-align: center;
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: 2px;
+}
+.welcome-center {
+  /* 자연스럽게 중앙 */
+}
+.welcome-h1 {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 800;
+  color: #fff;
+  line-height: 1.3;
+}
+.welcome-desc {
+  font-size: 11px;
+  color: rgba(255,255,255,0.5);
+  margin-top: 5px;
+  line-height: 1.5;
+}
+.welcome-values {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 12px;
+}
+.welcome-value {
+  display: flex;
+  align-items: center;
+  padding: 6px 10px;
+  border-radius: 8px;
+  background: rgba(255,255,255,0.06);
+  font-size: 11px;
+  color: rgba(255,255,255,0.7);
+  font-weight: 500;
+}
+.welcome-cta-wrap {
+  /* 하단 고정 */
+}
+.welcome-cta {
+  width: 100%;
+  padding: 13px 0;
+  border-radius: 14px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #fff;
+  background: linear-gradient(135deg, #7A3E3C, #964F4C, #B5605D);
+  border: none;
+  box-shadow: 0 4px 16px rgba(150,79,76,0.3);
+  cursor: pointer;
+}
+.welcome-sub {
+  font-size: 9px;
+  color: rgba(255,255,255,0.2);
+  text-align: center;
+  margin-top: 6px;
+}
+
+/* ── Onboarding Shell — 프레임 높이에 맞춤 ── */
+.onboarding-shell {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  background: transparent;
+  overflow: hidden;
+}
+.onboarding-header {
+  padding: 10px 20px 6px;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 20;
+}
+.onboarding-main {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.onboarding-main::-webkit-scrollbar { display: none; }
+
+/* ── 온보딩 공통 배경 스타일 ── */
+.ob-page { position: absolute; inset: 0; overflow: hidden; }
+.ob-bg {
+  position: absolute; inset: 0;
+  background-size: cover;
+  filter: brightness(0.42) saturate(0.4);
+}
+.ob-overlay {
+  position: absolute; inset: 0;
+  background: linear-gradient(to bottom,
+    rgba(20,18,16,0.1) 0%, rgba(20,18,16,0.45) 25%,
+    rgba(20,18,16,0.82) 55%, rgba(20,18,16,0.96) 100%);
+}
+.ob-content {
+  position: absolute; inset: 0; z-index: 10;
+  display: flex; flex-direction: column;
+  justify-content: space-between;
+  padding: 8px 20px 18px;
+  overflow-y: auto; scrollbar-width: none; -ms-overflow-style: none;
+}
+.ob-content::-webkit-scrollbar { display: none; }
+
+/* Step별 배경 이미지 — 여성 */
+.ob-bg-step1 { background-image: url(/images/style/style_1.jpg); background-position: center 20%; }
+.ob-bg-step2-f { background-image: url(/images/style/style_8.jpg); background-position: center 30%; }
+.ob-bg-step3-f { background-image: url(/images/style/style_5.jpg); background-position: center 15%; }
+.ob-bg-step4-f { background-image: url(/images/style/style_12.jpg); background-position: center 25%; }
+.ob-bg-step5-f { background-image: url(/images/style/style_4.jpg); background-position: center 20%; }
+/* Step별 배경 이미지 — 남성 */
+.ob-bg-step2-m { background-image: url(/images/style/male_8.jpg); background-position: center 30%; }
+.ob-bg-step3-m { background-image: url(/images/style/male_5.jpg); background-position: center 15%; }
+.ob-bg-step4-m { background-image: url(/images/style/male_4.jpg); background-position: center 25%; }
+.ob-bg-step5-m { background-image: url(/images/style/male_1.jpg); background-position: center 20%; }
+
+/* 글래스 카드 */
+.glass-card {
+  background: rgba(255,255,255,0.08);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 12px;
+}
+.glass-card.active {
+  background: rgba(150,79,76,0.15);
+  border-color: rgba(150,79,76,0.5);
+  box-shadow: 0 4px 16px rgba(150,79,76,0.2);
+}
+/* 글래스 CTA */
+.glass-cta {
+  width: 100%; padding: 13px 0; border-radius: 14px;
+  font-size: 14px; font-weight: 600; color: #fff;
+  background: linear-gradient(135deg, #7A3E3C, #964F4C, #B5605D);
+  border: none; box-shadow: 0 4px 16px rgba(150,79,76,0.3); cursor: pointer;
+}
+.glass-cta:disabled {
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.08);
+  box-shadow: none; cursor: default;
+}
+/* 글래스 칩 */
+.glass-chip {
+  padding: 7px 16px; border-radius: 99px; font-size: 12px; font-weight: 500;
+  color: rgba(255,255,255,0.7); cursor: pointer;
+  background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1);
+  transition: all 0.15s;
+}
+.glass-chip.on {
+  background: rgba(150,79,76,0.25); border-color: #964F4C;
+  color: #fff; box-shadow: 0 2px 8px rgba(150,79,76,0.2);
+}
+
+/* ── Feed Page 다크 배경 ── */
+.feed-page {
+  position: absolute;
+  inset: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  background: #1A1714;
+}
+.feed-page::-webkit-scrollbar { display: none; }
+.feed-bg {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 100%;
+  background-size: cover;
+  background-position: center 20%;
+  filter: brightness(0.3) saturate(0.3) blur(6px);
+  transform: scale(1.05);
+  z-index: 0;
+  pointer-events: none;
+}
+.feed-bg-f { background-image: url(/images/style/style_1.jpg); }
+.feed-bg-m { background-image: url(/images/style/male_1.jpg); }
+.feed-overlay {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 100%;
+  background: rgba(20,18,16,0.65);
+  z-index: 0;
+  pointer-events: none;
+}
+.feed-header {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  padding: 10px 16px 6px;
+  background: rgba(20,18,16,0.88);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
 
 /* ── Reduced Motion ── */
 @media (prefers-reduced-motion: reduce) {
