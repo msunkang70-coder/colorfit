@@ -1,9 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { updateOnboarding } from "@/lib/onboarding-store";
+import { getOnboardingData, updateOnboarding } from "@/lib/onboarding-store";
 
 const TPO_OPTIONS = [
   { id: "commute", label: "출근" },
@@ -48,8 +48,11 @@ export default function Step3Page() {
   const [selectedTpo, setSelectedTpo] = useState<Set<string>>(new Set());
   const [selectedMood, setSelectedMood] = useState<Set<string>>(new Set());
 
-  // TODO: read gender from onboarding state; default to female
-  const gender = "female";
+  const [gender, setGender] = useState("female");
+  useEffect(() => {
+    const data = getOnboardingData();
+    if (data.gender) setGender(data.gender);
+  }, []);
   const moods = MOOD_BY_GENDER[gender];
 
   const toggleTpo = (id: string) => {

@@ -146,13 +146,13 @@ def _body_bonus(items: list[dict], body_type: str) -> float:
     return 0.0
 
 
-def calc_fit(outfit: dict, body_type: str = "average") -> float:
-    """체형/핏 적합도 (0-100)."""
+def calc_fit(outfit: dict, body_type: str | None = None) -> float:
+    """체형/핏 적합도 (0-100). body_type이 None/빈값이면 'average' fallback."""
+    bt = body_type if body_type else "average"
     items = outfit.get("items") or []
     sil = _sil_balance(items)
-    body = _body_bonus(items, body_type)
+    body = _body_bonus(items, bt)
     body_component = max(0, min(100, 50 + body))
-    # proportion은 sil_balance에 이미 포함
     return sil * 0.60 + body_component * 0.40
 
 
@@ -311,7 +311,14 @@ def _is_volume_clash(items: list[dict]) -> bool:
 
 def calc_risk(outfit: dict, tpo_score: float, fit_score: float,
               color_score: float, style_score: float) -> float:
-    """리스크 감점 (-30 ~ 0). 다른 축과 중복 감점 없음."""
+    """리스크 감점 (-30 ~ 0).
+
+    중복 감점 방지 원칙:
+    - formality 방향성 → TPO축에서만 처리 (여기서 금지)
+    - formality std(편차) → TPO축에서만 처리 (여기서 금지)
+    - style_tag 불일치 → STYLE축에서만 처리 (여기서 금지)
+    - 이 축은 오직 "복합 위험"만 감지 (개별 축에서 못 잡는 것)
+    """
     items = outfit.get("items") or []
     penalty = 0.0
 
@@ -352,14 +359,18 @@ def compute_scores_v2(
     outfit: dict,
     user_tone_id: str = "",
     user_tpo_list: list[str] | None = None,
-    body_type: str = "average",
+    body_type: str | None = None,
+    height_range: str | None = None,
 ) -> dict[str, float]:
-    """5축 스코어 계산 → {tpo, fit, color, style, risk, final}."""
+    """5축 스코어 계산 → {tpo, fit, color, style, risk, final}.
+
+    body_type/height_range가 None이면 'average' fallback.
+    """
     if user_tpo_list is None:
         user_tpo_list = []
 
     tpo = calc_tpo(outfit, user_tpo_list)
-    fit = calc_fit(outfit, body_type)
+    fit = calc_fit(outfit, body_type or "average")
     color = calc_color(outfit, user_tone_id)
     style = calc_style(outfit)
     risk = calc_risk(outfit, tpo, fit, color, style)

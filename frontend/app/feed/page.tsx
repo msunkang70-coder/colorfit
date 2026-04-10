@@ -13,8 +13,8 @@ import {
   exportMetricsCsv,
 } from "@/lib/api";
 import type { MetricsPayload } from "@/lib/api";
-import { selectDiverseTop3 } from "@/lib/feed-utils";
-import type { FeedOutfit, RankedOutfit } from "@/lib/feed-utils";
+import { selectDiverseTop3, applyStyleFilter, checkStyleConsistency, getStyleExplanation } from "@/lib/feed-utils";
+import type { FeedOutfit, RankedOutfit, StyleCheck } from "@/lib/feed-utils";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
 
@@ -125,10 +125,11 @@ export default function FeedPage() {
         return res.json();
       })
       .then((data: FeedResponse) => {
-        const outfits = data.outfits;
-        setAllOutfits(outfits);
-        setDecision(outfits[0] ?? null);
-        setTop3(selectDiverseTop3(outfits));
+        const tpo = activeTpo || profileRef.current.tpo_list[0] || "";
+        const filtered = applyStyleFilter(data.outfits, tpo, profileRef.current.style_moods ?? []);
+        setAllOutfits(filtered);
+        setDecision(filtered[0] ?? null);
+        setTop3(selectDiverseTop3(filtered));
         setStatus("idle");
       })
       .catch((err) => {
@@ -348,7 +349,14 @@ export default function FeedPage() {
                 오늘의 결정
               </p>
               <p style={{ fontSize: "12px", color: "#8C8578", marginTop: 2 }}>
-                당신의 퍼스널컬러에 맞춘 코디예요
+                {(() => {
+                  const tpo = activeTpo || profileRef.current.tpo_list[0] || "";
+                  const moods = profileRef.current.style_moods ?? [];
+                  const explain = getStyleExplanation(moods, tpo);
+                  if (explain) return explain;
+                  if (moods.length > 0) return `${moods.slice(0, 2).join(" · ")} 취향 기반 추천`;
+                  return "당신의 퍼스널컬러에 맞춘 코디예요";
+                })()}
               </p>
             </section>
 
@@ -360,11 +368,45 @@ export default function FeedPage() {
               reasons={decision.reasons}
               items={decision.items}
               variant="full"
-              label={expandLevel === 0 ? undefined : "1위 추천"}
+              label={expandLevel === 0
+                ? (selectedRank > 1 ? "대안 선택됨" : undefined)
+                : "1위 추천"}
+              userContext={
+                profileRef.current.style_moods.length > 0
+                  ? `${profileRef.current.style_moods.join(" · ")} 선호 반영`
+                  : undefined
+              }
               onSaveToggle={handleSaveToggle}
               onDislike={handleDislike}
               index={0}
             />
+
+            {/* 스타일 적합도 */}
+            {(() => {
+              const tpo = activeTpo || profileRef.current.tpo_list[0] || "";
+              const sc = checkStyleConsistency(decision, tpo);
+              if (sc.conflict) {
+                return (
+                  <div className="mx-[20px] mb-[8px] rounded-lg px-[12px] py-[8px]"
+                    style={{ backgroundColor: "rgba(160,120,48,0.08)", border: "1px solid rgba(160,120,48,0.2)" }}>
+                    <p style={{ fontSize: "11px", color: "#A07830", fontWeight: 500 }}>
+                      ⚠ {sc.conflict} — 스타일 조합을 확인해보세요
+                    </p>
+                  </div>
+                );
+              }
+              if (sc.ratio >= 0.7) {
+                return (
+                  <div className="mx-[20px] mb-[8px] rounded-lg px-[12px] py-[6px]"
+                    style={{ backgroundColor: "rgba(107,127,94,0.06)" }}>
+                    <p style={{ fontSize: "11px", color: "#6B7F5E", fontWeight: 500 }}>
+                      ✓ 스타일 일관성 {Math.round(sc.ratio * 100)}% — {sc.dominant === "formal" ? "포멀" : sc.dominant === "casual" ? "캐주얼" : sc.dominant === "sport" ? "스포티" : "통합"} 중심 구성
+                    </p>
+                  </div>
+                );
+              }
+              return null;
+            })()}
 
             {/* Explore Mode: compact 카드들 */}
             <AnimatePresence>
@@ -376,23 +418,32 @@ export default function FeedPage() {
                   transition={{ duration: 0.3, ease: "easeOut" as const }}
                   className="px-[20px] overflow-hidden"
                 >
-                  <p className="text-text-secondary mb-[8px]" style={{ fontSize: "13px", fontWeight: 500 }}>
-                    다른 선택지
+                  <p className="text-text-secondary mb-[4px]" style={{ fontSize: "13px", fontWeight: 600, color: "#222" }}>
+                    같은 조건, 다른 강점
+                  </p>
+                  <p className="text-text-secondary mb-[10px]" style={{ fontSize: "11px" }}>
+                    탭하면 이 코디로 전환돼요
                   </p>
                   <div className="flex flex-col gap-[8px]">
                     {exploreCards.map((ranked, i) => (
-                      <OutfitCard
-                        key={ranked.outfit.outfit_id}
-                        outfitId={ranked.outfit.outfit_id}
-                        imageUrl={ranked.outfit.items[0]?.image_url ?? ""}
-                        totalPrice={ranked.outfit.total_price}
-                        itemCount={ranked.outfit.items.length}
-                        reasons={ranked.outfit.reasons}
-                        variant="compact"
-                        label={ranked.label}
-                        onTap={handleSelectFromExplore}
-                        index={i + 1}
-                      />
+                      <div key={ranked.outfit.outfit_id}>
+                        {ranked.diffDesc && (
+                          <p style={{ fontSize: "10px", color: "#964F4C", fontWeight: 500, marginBottom: 4, marginLeft: 4 }}>
+                            ↗ {ranked.diffDesc}
+                          </p>
+                        )}
+                        <OutfitCard
+                          outfitId={ranked.outfit.outfit_id}
+                          imageUrl={ranked.outfit.items[0]?.image_url ?? ""}
+                          totalPrice={ranked.outfit.total_price}
+                          itemCount={ranked.outfit.items.length}
+                          reasons={ranked.outfit.reasons}
+                          variant="compact"
+                          label={ranked.label}
+                          onTap={handleSelectFromExplore}
+                          index={i + 1}
+                        />
+                      </div>
                     ))}
                   </div>
                 </motion.div>
