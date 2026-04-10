@@ -36,3 +36,34 @@ backend/data/eval_cache.json
 # 임시 파일
 /tmp/
 *.log
+
+# 백업 파일
+backend/data/outfits_scored_backup_*.json
+
+# 런타임 데이터
+backend/data/metrics_log.jsonl
+backend/data/reactions.json
+backend/data/users.json
+
+# 이전 버전 데이터 (scored가 최종)
+backend/data/outfits.json
+backend/data/outfits_evaluated.json
+backend/data/broken_outfits.json
+backend/data/male_products.json
+
+# docs 중복 데이터 (backend/data가 원본)
+docs/outfits_scored.json
+
+# 이전 버전 문서 (v2가 최종)
+ColorFit_상세기획서_v1.3.md
+TASK.md
+TASK_v2.md
+
+# 프로젝트 외 파일
+*.pptx
+TEST/
+UI화면/
+개발가이드_Claude_Code.html
+
+# 임시 테스트
+docs/test.html
