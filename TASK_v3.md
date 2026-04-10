@@ -20,7 +20,7 @@
 | 버전 | 시기 | 컨셉 | 핵심 변화 |
 |------|------|------|----------|
 | v1 | 3/24~3/30 | 추천 리스트 (무한스크롤) | 데이터+인프라+스코어링+온보딩 기반 구축 |
-| v2 | 3/31 | 결정 대행 (Top1 고정 + 설득) | reason 3파트 구조, 단일 결정 화면, 측정 로직 |
+| v2 | 3/31 | 결정 대행 (Top1 고정 + 설득) | reason v2 (core/risk_guard/situation + evidence 하위호환), 단일 결정 화면, 측정 로직 |
 | v3 | 3/31~ | 결정을 쉽게 (Top1 + Explore Top3) | Decision/Explore Mode, 축 기반 다양성, 측정 확장 |
 
 ---
@@ -102,7 +102,7 @@
 | 2.9 | Soft Score + 리랭킹 — 18개 테스트 | ✅ 3/30 |
 | 2.10 | 추천 이유 생성 — 17개 테스트 | ✅ 3/30 |
 | 2.11 | Feed/Outfit API 엔드포인트 — 10개 테스트 | ✅ 3/30 |
-| 2.12 | 스코어 프리컴퓨팅 (1670개 코디) | ✅ 3/30 |
+| 2.12 | 스코어 프리컴퓨팅 (1,645개 코디, v2 스코어 포함) | ✅ 3/30 |
 
 ### Lane C: 온보딩 + 피드 UI (v1)
 
@@ -111,9 +111,9 @@
 | 2.13 | 온보딩 공통 레이아웃 (진행바 + 전환 모션) | ✅ 3/31 |
 | 2.14 | Step 1: 성별 선택 | ✅ 3/31 |
 | 2.15 | Step 2: 퍼스널컬러 선택 | ✅ 3/31 |
-| 2.16 | Step 3: TPO + 무드 선택 | ✅ 3/31 |
+| 2.16 | Step 3: TPO + 성별별 무드 선택 (여성: 미니멀/클래식/캐주얼/러블리/스트릿/에디토리얼, 남성: 미니멀/클래식/캐주얼/댄디/스트릿/아메카지) | ✅ 3/31 |
 | 2.17 | Step 4: 예산 설정 | ✅ 3/31 |
-| 2.18 | Step 5: 비주얼 취향 분석 | ✅ 3/31 |
+| 2.18 | Step 5: 비주얼 취향 분석 (male/female 별도 이미지 16장씩 + 핏 3옵션 + 컬러 4옵션) | ✅ 3/31 |
 | 2.19 | 온보딩 API 연동 | ✅ 3/31 |
 | 2.20 | 코디 카드 컴포넌트 | ✅ 3/31 |
 | 2.21 | 코디 피드 화면 (무한 스크롤) | ✅ 3/31 |
@@ -125,11 +125,41 @@
 
 | Task | 내용 | 상태 |
 |------|------|------|
-| 2.10v2 | reason_generator 3파트 구조 (core/evidence/risk_guard) — 33개 테스트 | ✅ 3/31 |
+| 2.10v2 | reason_generator v2 구조 (core/risk_guard/situation + evidence 하위호환) — 33개 테스트 | ✅ 3/31 |
 | 2.11v2 | Feed API + Schema 연쇄 수정 (ReasonResponse) | ✅ 3/31 |
 | 2.20v2 | OutfitCard → DecisionCard 구조 변경 | ✅ 3/31 |
 | 2.21v2 | 피드 → 단일 결정 화면 전환 (page_size=1) | ✅ 3/31 |
 | 2.23v2 | 코디 상세 화면 이유 구조 반영 | ✅ 3/31 |
+
+### Lane E: v2 스코어링 전환 (4/9~4/10)
+
+| Task | 내용 | 상태 |
+|------|------|------|
+| 2.30v2 | scoring_v2.py — 5축 재설계 (tpo 30%/fit 15%/color 20%/style 20%/risk -30~0) | ✅ 4/9 |
+| 2.31v2 | reason_generator_v2.py — 3파트 (core/risk_guard/situation) | ✅ 4/9 |
+| 2.32v2 | ScoresResponse 12필드 (v1 6 + v2 6 호환), ReasonResponse 4필드 | ✅ 4/9 |
+| 2.33v2 | feed.py — v2 스코어 실시간 계산 + v1 호환 유지 | ✅ 4/9 |
+| 2.34v2 | 데이터 파일 4종 (body_type_rules, proportion_rules, style_tag_compat, tpo_formality_map) | ✅ 4/9 |
+| 2.35v2 | outfits_scored.json v2 스코어 사전 계산 (1,645개) + _app_pass/_app_rank | ✅ 4/10 |
+| 2.36v2 | 프론트 AXIS_LABELS/WEIGHTS v2 전환 + FeedScores 타입 확장 | ✅ 4/9 |
+
+### Lane F: 온보딩 성별 분기 + 스타일 이미지 (4/8)
+
+| Task | 내용 | 상태 |
+|------|------|------|
+| 2.40 | step3 무드 성별 동적 연동 (female 6종 / male 6종) | ✅ 4/8 |
+| 2.41 | step5 남녀 별도 이미지 라운드 (각 16장) | ✅ 4/8 |
+| 2.42 | step5 핏 라운드 재정의 (오버사이즈/레귤러핏/슬림핏) | ✅ 4/8 |
+| 2.43 | step5 컬러 라운드 재정의 (모노톤/뉴트럴/파스텔/비비드) | ✅ 4/8 |
+
+### Lane G: QA Simulator (4/7~4/10)
+
+| Task | 내용 | 상태 |
+|------|------|------|
+| 2.50 | QA Simulator v6 — 앱 미리보기 모드 + 리스트 모드 | ✅ 4/10 |
+| 2.51 | API 직접 호출 동기화 (백엔드 실행 시 앱과 동일 결과) | ✅ 4/10 |
+| 2.52 | 아이템 상세 모달 QA (product_id, role, contribution%, cta_valid) | ✅ 4/10 |
+| 2.53 | 톤 호환 확장 + _app_pass/_app_rank 기반 정렬 | ✅ 4/10 |
 
 ---
 
@@ -253,7 +283,7 @@
   - [x] **Edge Case:** 빈 배열, 단일 코디, 동일 축 fallback, null scores — vitest에서 커버
   - [x] **백엔드 통합 테스트 (23개):**
     - Feed API page_size=1/3/5 응답 정상 (TestFeedAPIPageSize)
-    - 응답 구조 검증: scores 5축, reasons 3파트, items 배열, 총점 내림차순 (TestFeedAPIResponse)
+    - 응답 구조 검증: scores 12필드(v1+v2), reasons 4파트(core/risk_guard/situation/evidence), items 배열, 총점 내림차순 (TestFeedAPIResponse)
     - TPO 8종 전체 정상 응답 (TestFeedAPITPO, parametrize)
     - 극단 예산 + 남성 필터 엣지케이스 (TestFeedAPIEdgeCases)
     - reason evidence 다양성 + 내용 비어있지 않음 (TestReasonDiversity)

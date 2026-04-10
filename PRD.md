@@ -60,7 +60,7 @@ SO THAT 빠르게 확신을 갖고 결정할 수 있다
 ```
 
 **수용 기준:**
-- [ ] Top1 코디 전체 화면 표시 (이미지 3:4 + core + 가격 + evidence + risk_guard)
+- [ ] Top1 코디 전체 화면 표시 (이미지 3:4 + core + 가격 + risk_guard + situation)
 - [ ] "이걸로 결정" CTA (Marsala, 풀와이드, 하단 고정)
 - [ ] TPO 탭 필터 (가로 스크롤 필 버튼)
 - [ ] TPO 변경 시 새 코디 로드 + Decision Mode 리셋
@@ -78,7 +78,7 @@ SO THAT "다른 것도 봤다"는 확신을 가지고 결정할 수 있다
 **수용 기준:**
 - [ ] "비슷한 선택 보기" 보조 CTA (코디 2개 이상일 때만 표시)
 - [ ] 탭 시 Top2~3 compact 카드 표시 (가로 썸네일 80x100 + 축 라벨 뱃지)
-- [ ] 각 compact 카드에 차별화된 축 라벨 ("컬러 매칭형", "상황 최적형" 등)
+- [ ] 각 compact 카드에 차별화된 축 라벨 ("TPO 최적형", "핏 추천형", "컬러 매칭형", "스타일 통일형")
 - [ ] compact 카드 탭 → 해당 코디가 Decision Mode의 Top1 위치로 교체
 - [ ] 코디 1개일 때 "비슷한 선택 보기" 숨김
 - [ ] Top3 선발: `selectDiverseTop3()` — 축 기반 다양성 보장
@@ -124,9 +124,9 @@ SO THAT 가설 H1~H5를 검증할 수 있다
 |------|------|------|------|
 | 1 | 성별 선택 | 여성/남성 카드 탭 | `onboarding/step1/page.tsx` |
 | 2 | 퍼스널컬러 선택 | 시즌 스트립 → 톤 칩 탭 | `onboarding/step2/page.tsx` |
-| 3 | TPO + 무드 선택 | TPO 필 버튼 (최대 3) + 무드 태그 (최대 5) | `onboarding/step3/page.tsx` |
+| 3 | TPO + 무드 선택 | TPO 필 버튼 (최대 3) + 성별별 무드 태그 (여성: 미니멀/클래식/캐주얼/러블리/스트릿/에디토리얼, 남성: 미니멀/클래식/캐주얼/댄디/스트릿/아메카지) | `onboarding/step3/page.tsx` |
 | 4 | 예산 설정 | 듀얼 썸 슬라이더 + 프리셋 4개 | `onboarding/step4/page.tsx` |
-| 5 | 비주얼 취향 | 2x2 이미지 그리드 × 4라운드 | `onboarding/step5/page.tsx` |
+| 5 | 비주얼 취향 | male/female 별도 이미지 라운드(16장씩) + 핏 라운드(오버사이즈/레귤러핏/슬림핏) + 컬러 라운드(모노톤/뉴트럴/파스텔/비비드) | `onboarding/step5/page.tsx` |
 
 **비기능 요구사항:**
 - 각 Step 전환: Framer Motion 좌→우 슬라이드 (0.3s)
@@ -161,7 +161,7 @@ SO THAT 가설 H1~H5를 검증할 수 있다
 |------|------|--------|
 | Top1 카드 | Full variant + "1위 추천" 라벨 | 상단, 강조 |
 | compact 카드 (Top2, Top3) | 80x100 썸네일 + core + 가격 + evidence 1줄 | Surface bg, rounded-lg, 8px padding |
-| 축 라벨 뱃지 | Marsala pill, white text, 10px | "컬러 매칭형" / "상황 최적형" 등 |
+| 축 라벨 뱃지 | Marsala pill, white text, 10px | "TPO 최적형" / "핏 추천형" / "컬러 매칭형" / "스타일 통일형" |
 
 **Top3 선발 알고리즘 (`selectDiverseTop3`):**
 ```
@@ -177,11 +177,10 @@ SO THAT 가설 H1~H5를 검증할 수 있다
 
 | 축 | 라벨 |
 |----|------|
-| pcf | 컬러 매칭형 |
-| of | 상황 최적형 |
-| ch | 색감 조화형 |
-| pe | 가성비형 |
-| sf | 실루엣형 |
+| tpo | TPO 최적형 |
+| fit | 핏 추천형 |
+| color | 컬러 매칭형 |
+| style | 스타일 통일형 |
 
 **모드 전환:**
 - "비슷한 선택 보기" 탭 → `expandLevel = 1`
@@ -298,11 +297,15 @@ GET /api/feed
       "id": "outfit_sw_001",
       "items": [...],
       "total_price": 77000,
-      "scores": { "pcf": 92, "of": 85, "ch": 78, "pe": 70, "sf": 88, "total": 84.3 },
+      "scores": {
+        "pcf": 92, "of": 85, "ch": 78, "pe": 70, "sf": 88, "total": 84.3,
+        "tpo": 30, "fit": 15, "color": 20, "style": 20, "risk": -5, "final": 80
+      },
       "reasons": {
         "core": "니트 + 슬랙스 — 봄웜라이트 출근룩",
         "evidence": ["니트의 색감이 봄웜라이트 톤과..."],
-        "risk_guard": ["니트와 슬랙스는 색상 대비가..."]
+        "risk_guard": ["니트와 슬랙스는 색상 대비가..."],
+        "situation": "출근 상황에서 단정하면서도 톤에 맞는 조합"
       },
       "image_url": "https://..."
     }

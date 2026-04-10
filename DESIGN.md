@@ -45,11 +45,10 @@
 
 | Axis | Name | HEX | Usage |
 |------|------|-----|-------|
-| PCF | Marsala | #964F4C | 퍼스널컬러 적합도 |
-| OF | Ocean Blue | #4F97A3 | TPO 적합도 |
-| CH | Honey Gold | #DDB67D | 색상 조화 |
-| PE | Autumn Blaze | #D1933F | 가격 효율 |
-| SF | Grape Compote | #6B5876 | 스타일 핏 |
+| tpo | Marsala | #964F4C | TPO 최적형 |
+| fit | Ocean Blue | #4F97A3 | 핏 추천형 |
+| color | Honey Gold | #A07830 | 컬러 매칭형 |
+| style | Grape Compote | #6B5B8A | 스타일 통일형 |
 
 Score bar track (미충전): #E5E1DA (Border)
 
@@ -72,11 +71,10 @@ Score bar track (미충전): #E5E1DA (Border)
 | bg-secondary | #F0EDE8 | #242018 |
 | text-primary | #222222 | #F0EDE8 |
 | brand-accent | #964F4C | #C4726F |
-| score-pcf | #964F4C | #C4726F |
-| score-of | #4F97A3 | #6BADB9 |
-| score-ch | #DDB67D | #E8C693 |
-| score-pe | #D1933F | #DBA84F |
-| score-sf | #6B5876 | #896E96 |
+| score-tpo | #964F4C | #C4726F |
+| score-fit | #4F97A3 | #6BADB9 |
+| score-color | #A07830 | #C49540 |
+| score-style | #6B5B8A | #8971A6 |
 
 ## Spacing
 - **Base unit:** 8px

@@ -234,7 +234,7 @@ OKR의 KR을 4개 관점으로 매핑하여 전략적 균형을 확인한다.
 
 | # | Strengths (강점) | 근거 |
 |---|-----------------|------|
-| S1 | 12톤 퍼스널컬러 × 5축 스코어링 | 83,842개 상품, 1,670개 코디 사전 계산. PCF/OF/CH/PE/SF 다차원 분석 |
+| S1 | 12톤 퍼스널컬러 × 5축 스코어링 v2 | 83,842개 상품, 1,645개 코디 v2 스코어 사전 계산. tpo/fit/color/style/risk 다차원 분석 |
 | S2 | evidence + risk_guard 설명 구조 | 단순 "어울려요"가 아닌, 축 기반 인과 문장 + 구조적 안전 근거 |
 | S3 | Decision/Explore 심리 설계 | 선택 피로 감소 + 후회 최소화 + 비교 기반 확신 — 학술 근거 기반 |
 | S4 | 빠른 MVP 실행력 | 5주 내 전체 파이프라인 (데이터 → 스코어링 → 추천 → UI → 측정) 완성 |
@@ -395,23 +395,26 @@ Decision Mode: Top1만 노출
 Explore Mode: Top1 + Top2 + Top3 노출
 ```
 
-### 6.2 5축 스코어링 (기존 유지)
+### 6.2 5축 스코어링 v2
 
 | 축 | 이름 | 가중치 | 역할 |
 |----|------|--------|------|
-| PCF | Personal Color Fit | 0.25 | 퍼스널컬러 적합도 |
-| OF | Occasion Fit | 0.20 | TPO 적합도 |
-| CH | Color Harmony | 0.15 | 아이템 간 색상 조화 |
-| PE | Price Efficiency | 0.15 | 예산 대비 가격 효율 |
-| SF | Style Fit | 0.25 | 실루엣·포멀도·카테고리 궁합 |
+| tpo | TPO Fit | 30% | TPO 적합도 (TPO 최적형) |
+| fit | Fit Score | 15% | 실루엣·핏 적합도 (핏 추천형) |
+| color | Color Match | 20% | 퍼스널컬러 + 색상 조화 (컬러 매칭형) |
+| style | Style Match | 20% | 스타일 태그 통일도 (스타일 통일형) |
+| risk | Risk Guard | -30~0 감점형 | 리스크 감점 (색상 충돌, 포멀도 불일치 등) |
 
-### 6.3 이유 생성 구조 (core / evidence / risk_guard)
+> v1 축(pcf/of/ch/pe/sf/total)은 ScoresResponse에 하위호환 유지. v2 축(tpo/fit/color/style/risk/final)이 실제 랭킹에 사용됨.
+
+### 6.3 이유 생성 구조 v2 (core / risk_guard / situation)
 
 | 파트 | 역할 | 데이터 소스 | 예시 |
 |------|------|------------|------|
 | **core** | 코디 요약 한 줄 | 아이템 카테고리 + 톤 + TPO | "니트 + 슬랙스 — 봄웜라이트 출근룩" |
-| **evidence** | 왜 이 코디인지 (설득) | 1순위 축 + 아이템 데이터 | "니트의 색감이 봄웜라이트 톤과 자연스럽게 어울려서 피부가 밝아 보여요" |
 | **risk_guard** | 왜 실패하지 않는지 (안전) | 색상 조화/포멀도/TPO 범위 | "니트와 슬랙스는 색상 대비가 적절해서 튀거나 칙칙해 보일 가능성이 낮아요" |
+| **situation** | 상황 맥락 설명 | TPO + 스타일 + 아이템 | "출근 상황에서 단정하면서도 톤에 맞는 조합" |
+| **evidence** | (하위호환 유지) | 1순위 축 + 아이템 데이터 | "니트의 색감이 봄웜라이트 톤과 자연스럽게 어울려서 피부가 밝아 보여요" |
 
 ### 6.4 Top3 차별화 전략
 
@@ -424,7 +427,7 @@ Explore Mode: Top1 + Top2 + Top3 노출
 | Top3 | Top1,2와 다른 1순위 축 보유, 그 중 총점 최고 | {축 라벨}형 | Top1,2와 다른 축 |
 
 **축 → 라벨:**
-pcf=컬러 매칭형, of=상황 최적형, ch=색감 조화형, pe=가성비형, sf=실루엣형
+tpo=TPO 최적형, fit=핏 추천형, color=컬러 매칭형, style=스타일 통일형
 
 **fallback:** 5개 코디가 모두 같은 축이면 총점 순서대로 "1위/2위/3위 추천" 라벨 사용.
 
@@ -598,8 +601,8 @@ pcf=컬러 매칭형, of=상황 최적형, ch=색감 조화형, pe=가성비형,
 | 기능 | 상태 |
 |------|------|
 | 5단계 온보딩 (성별, 톤, TPO, 예산, 취향) | ✅ |
-| 5축 스코어링 + Hard Filter + Rerank | ✅ |
-| reason_generator (core/evidence/risk_guard) | ✅ |
+| 5축 스코어링 v2 (tpo/fit/color/style/risk) + Hard Filter + Rerank | ✅ |
+| reason_generator v2 (core/risk_guard/situation + evidence 하위호환) | ✅ |
 | Decision Mode (Top1 + "이걸로 결정" CTA) | ✅ |
 | 측정 (TTD/CTR/신뢰도/확신) + 설문 | ✅ |
 | sendBeacon + localStorage queue | ✅ |

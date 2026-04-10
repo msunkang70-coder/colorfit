@@ -11,7 +11,7 @@
 
 ## UX 구조: Guided Decision
 
-- **Decision Mode (기본):** Top1 코디 + core/evidence/risk_guard + "이걸로 결정" CTA
+- **Decision Mode (기본):** Top1 코디 + core/risk_guard/situation + "이걸로 결정" CTA
 - **Explore Mode (선택적):** "비슷한 선택 보기" → 축 기반 Top3 compact 카드 → 탭 시 Decision Mode 복귀
 - Top5 최대. Top10 이상 금지
 
@@ -22,7 +22,7 @@
   - Top1: 총점 1위
   - Top2: Top1과 다른 1순위 축 보유 코디 중 최고
   - Top3: Top1,2와 다른 축 보유 코디 중 최고
-- 축 라벨: pcf=컬러 매칭형, of=상황 최적형, ch=색감 조화형, pe=가성비형, sf=실루엣형
+- 축 라벨: tpo=TPO 최적형, fit=핏 추천형, color=컬러 매칭형, style=스타일 통일형
 
 ## 절대 금지
 
@@ -62,10 +62,10 @@ DESIGN.md를 반드시 읽고 UI 구현할 것.
 - 축 라벨: Marsala pill badge
 
 ## 아키텍처 핵심
-- 추천 파이프라인: Profile → Filter → StyleFilter → Score(5축) → Rerank → Reason
+- 추천 파이프라인: Profile → Filter → StyleFilter → Score(v2: tpo/fit/color/style/risk) → Rerank → Reason
 - Hard Filter(탈락) vs Soft Score(순위) 분리
-- 코디 스코어는 프리컴퓨팅 (outfits.scores JSONB)
-- Top3 선발은 프론트에서 실행 (축 기반 다양성)
+- 코디 스코어는 프리컴퓨팅 (1,645개, v2 스코어 + v1 호환 12필드)
+- Top3 선발은 프론트에서 실행 (축 기반 다양성 + TPO 재해석)
 
 ## 측정 데이터
 - TTD, CTR, trust_score, confidence
