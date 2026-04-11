@@ -3,153 +3,107 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ColorFit 사용자 테스트 초대</title>
+<title>ColorFit — 나만의 코디를 찾아보세요</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap');
 *{margin:0;padding:0;box-sizing:border-box}
 body{
   font-family:'Noto Sans KR',sans-serif;
-  background:#0D0B09;
-  color:#F0EDE8;
-  min-height:100vh;
-  display:flex;
-  justify-content:center;
-  align-items:center;
+  background:#0D0B09;color:#F0EDE8;
+  min-height:100vh;display:flex;justify-content:center;align-items:center;
   padding:16px;
 }
 .card{
   width:100%;max-width:400px;
-  background:rgba(26,23,20,0.95);
-  border-radius:24px;
-  overflow:hidden;
+  background:rgba(26,23,20,0.95);border-radius:24px;overflow:hidden;
   border:1px solid rgba(255,255,255,0.06);
   box-shadow:0 8px 40px rgba(0,0,0,0.5);
 }
 
 /* Hero */
 .hero{
-  padding:40px 28px 32px;
-  text-align:center;
-  position:relative;
+  padding:44px 28px 36px;text-align:center;position:relative;
   background:linear-gradient(180deg,rgba(150,79,76,0.12) 0%,transparent 100%);
 }
 .hero::before{
-  content:"";position:absolute;top:0;left:50%;transform:translateX(-50%);
-  width:200px;height:200px;border-radius:50%;
-  background:radial-gradient(circle,rgba(150,79,76,0.15) 0%,transparent 70%);
+  content:"";position:absolute;top:-40px;left:50%;transform:translateX(-50%);
+  width:240px;height:240px;border-radius:50%;
+  background:radial-gradient(circle,rgba(150,79,76,0.18) 0%,transparent 70%);
   pointer-events:none;
 }
-.logo-tag{
-  display:inline-block;font-size:10px;font-weight:600;
-  color:#C4726F;letter-spacing:2px;text-transform:uppercase;
-  padding:4px 12px;border-radius:20px;
-  background:rgba(150,79,76,0.1);border:1px solid rgba(150,79,76,0.2);
-  margin-bottom:16px;
-}
-.logo{font-size:36px;font-weight:900;color:#C4726F;letter-spacing:-1px}
-.logo-sub{font-size:11px;color:rgba(255,255,255,0.25);margin-top:4px;letter-spacing:2px;font-weight:300}
+.logo{font-size:38px;font-weight:900;color:#C4726F;letter-spacing:-1px;position:relative}
 .hero-title{
-  font-size:20px;font-weight:700;color:rgba(240,237,232,0.95);
-  margin-top:24px;line-height:1.5;
+  font-size:22px;font-weight:700;color:rgba(240,237,232,0.95);
+  margin-top:20px;line-height:1.5;
 }
 .hero-title em{font-style:normal;color:#C4726F}
 .hero-desc{
   font-size:13px;color:rgba(255,255,255,0.4);margin-top:10px;line-height:1.7;
 }
-.time-pill{
-  display:inline-flex;align-items:center;gap:6px;
-  font-size:11px;color:rgba(255,255,255,0.5);
-  background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.06);
-  padding:6px 14px;border-radius:20px;margin-top:16px;font-weight:500;
+
+/* Value props */
+.values{
+  display:flex;justify-content:center;gap:8px;margin-top:24px;flex-wrap:wrap;
 }
-.time-pill .dot{width:6px;height:6px;border-radius:50%;background:#6B7F5E}
+.val{
+  font-size:11px;font-weight:500;color:rgba(255,255,255,0.5);
+  padding:6px 14px;border-radius:20px;
+  background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.06);
+}
+.val span{margin-right:4px}
 
 /* CTA */
-.cta-wrap{padding:0 24px;margin-top:-4px;position:relative;z-index:1}
+.cta-section{padding:0 24px 28px;position:relative;z-index:1}
 .cta-box{
   display:block;text-align:center;text-decoration:none;
-  padding:18px 20px;border-radius:16px;
+  padding:20px;border-radius:16px;
   background:linear-gradient(135deg,#964F4C 0%,#C4726F 100%);
-  color:#fff;font-size:17px;font-weight:700;
+  color:#fff;font-size:18px;font-weight:700;
   box-shadow:0 6px 24px rgba(150,79,76,0.35);
   transition:transform 0.15s,box-shadow 0.15s;
 }
 .cta-box:hover{transform:translateY(-1px);box-shadow:0 8px 32px rgba(150,79,76,0.45)}
 .cta-box:active{transform:scale(0.98)}
-.cta-sub{font-size:11px;font-weight:400;opacity:0.7;margin-top:4px}
+.cta-sub{font-size:11px;font-weight:400;opacity:0.7;margin-top:5px}
 
-/* Body */
-.body{padding:28px 24px 20px}
-
-/* Section */
-.sec-label{
-  font-size:10px;font-weight:600;color:#C4726F;
-  letter-spacing:1.5px;text-transform:uppercase;margin-bottom:14px;
+/* How it works */
+.how{padding:0 24px 24px}
+.how-label{
+  font-size:10px;font-weight:600;color:rgba(255,255,255,0.25);
+  letter-spacing:1.5px;text-transform:uppercase;margin-bottom:12px;text-align:center;
 }
-
-/* Steps */
-.steps{list-style:none;margin-bottom:20px}
-.steps li{
-  display:flex;gap:14px;align-items:flex-start;
-  padding:12px 14px;margin-bottom:8px;
-  background:rgba(255,255,255,0.03);
-  border:1px solid rgba(255,255,255,0.05);
-  border-radius:14px;
-  transition:background 0.15s;
+.flow{
+  display:flex;align-items:center;justify-content:center;gap:4px;flex-wrap:wrap;
 }
-.steps li:hover{background:rgba(255,255,255,0.05)}
-.step-icon{
-  width:32px;height:32px;border-radius:10px;flex-shrink:0;
-  display:flex;align-items:center;justify-content:center;
-  font-size:15px;
-  background:rgba(150,79,76,0.1);border:1px solid rgba(150,79,76,0.2);
+.flow-step{
+  display:flex;flex-direction:column;align-items:center;gap:4px;
 }
-.step-body{flex:1;min-width:0}
-.step-title{font-size:13px;font-weight:600;color:rgba(240,237,232,0.85);line-height:1.4}
-.step-desc{font-size:11px;color:rgba(255,255,255,0.3);margin-top:2px;line-height:1.5}
+.flow-icon{
+  width:44px;height:44px;border-radius:12px;
+  display:flex;align-items:center;justify-content:center;font-size:20px;
+  background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.06);
+}
+.flow-text{font-size:9px;color:rgba(255,255,255,0.3);text-align:center;max-width:56px;line-height:1.3}
+.flow-arrow{font-size:12px;color:rgba(255,255,255,0.1);margin:0 2px}
 
-/* Divider */
-.divider{height:1px;background:rgba(255,255,255,0.06);margin:20px 0}
-
-/* Feedback */
-.fb-list{list-style:none;margin-bottom:16px}
-.fb-list li{
-  font-size:12px;color:rgba(255,255,255,0.5);
-  padding:10px 14px;margin-bottom:6px;
-  background:rgba(255,255,255,0.03);
-  border:1px solid rgba(255,255,255,0.05);
-  border-radius:12px;line-height:1.5;
+/* Trust */
+.trust{
+  margin:0 24px 24px;padding:14px 16px;border-radius:14px;
+  background:rgba(107,127,94,0.06);border:1px solid rgba(107,127,94,0.12);
   display:flex;align-items:center;gap:10px;
 }
-.fb-num{
-  width:22px;height:22px;border-radius:50%;flex-shrink:0;
-  display:flex;align-items:center;justify-content:center;
-  font-size:10px;font-weight:700;
-  background:rgba(150,79,76,0.12);color:#C4726F;
-  border:1px solid rgba(150,79,76,0.2);
-}
-
-/* Note */
-.note{
-  font-size:11px;color:rgba(255,255,255,0.2);text-align:center;
-  line-height:1.6;padding:8px 0 4px;
-}
+.trust-icon{font-size:18px;flex-shrink:0}
+.trust-text{font-size:11px;color:rgba(255,255,255,0.4);line-height:1.5}
+.trust-text b{color:rgba(140,180,130,0.8);font-weight:600}
 
 /* Footer */
 .footer{
   padding:16px 24px;text-align:center;
-  background:rgba(255,255,255,0.02);
-  border-top:1px solid rgba(255,255,255,0.05);
+  border-top:1px solid rgba(255,255,255,0.04);
 }
-.footer-text{font-size:11px;color:rgba(255,255,255,0.25);line-height:1.6}
-.footer-link{
-  color:#C4726F;text-decoration:none;font-weight:600;
-  border-bottom:1px solid rgba(196,114,111,0.3);
-  padding-bottom:1px;
-}
-.footer-link:hover{border-bottom-color:#C4726F}
+.footer-text{font-size:10px;color:rgba(255,255,255,0.18);line-height:1.6}
 
-/* Glow decoration */
+/* Glow */
 .glow{
   position:absolute;bottom:0;left:50%;transform:translateX(-50%);
   width:300px;height:2px;
@@ -160,88 +114,67 @@ body{
 <body>
 
 <div class="card">
-  <!-- Hero -->
+  <!-- Hero: 무엇인지 + 왜 써야 하는지 -->
   <div class="hero">
-    <div class="logo-tag">User Test Invitation</div>
     <div class="logo">ColorFit</div>
-    <div class="logo-sub">AI PERSONAL COLOR STYLING</div>
-    <div class="hero-title">나에게 맞는 코디,<br><em>1분</em>이면 충분합니다</div>
-    <div class="hero-desc">퍼스널컬러 기반 AI가 상황에 딱 맞는<br>코디 1벌을 골라드립니다</div>
-    <div class="time-pill"><span class="dot"></span>소요 시간 약 3분</div>
+    <div class="hero-title">퍼스널컬러에 맞는<br><em>내 코디</em>를 찾아보세요</div>
+    <div class="hero-desc">AI가 상황에 딱 맞는 코디 1벌을<br>이유와 함께 골라드립니다</div>
+    <div class="values">
+      <div class="val"><span>⏱</span>1분 완료</div>
+      <div class="val"><span>🎯</span>1벌만 추천</div>
+      <div class="val"><span>💬</span>이유 설명</div>
+    </div>
     <div class="glow"></div>
   </div>
 
-  <!-- CTA -->
-  <div class="cta-wrap">
+  <!-- CTA: 바로 시작 -->
+  <div class="cta-section">
     <a href="https://frontend-msunkang70-1055s-projects.vercel.app" target="_blank" class="cta-box">
-      ColorFit 시작하기 →
-      <div class="cta-sub">터치하면 바로 연결됩니다</div>
+      내 코디 찾으러 가기 →
+      <div class="cta-sub">회원가입 없이 바로 시작</div>
     </a>
   </div>
 
-  <!-- Body -->
-  <div class="body">
-    <div class="sec-label">진행 방법</div>
-    <ol class="steps">
-      <li>
-        <div class="step-icon">👤</div>
-        <div class="step-body">
-          <div class="step-title">온보딩 5단계 진행</div>
-          <div class="step-desc">성별 → 퍼스널컬러 → TPO(상황) → 예산 → 취향</div>
-        </div>
-      </li>
-      <li>
-        <div class="step-icon">👗</div>
-        <div class="step-body">
-          <div class="step-title">"이 코디로 결정" 버튼 클릭</div>
-          <div class="step-desc">추천된 코디를 확인하고 결정해주세요</div>
-        </div>
-      </li>
-      <li>
-        <div class="step-icon">📋</div>
-        <div class="step-body">
-          <div class="step-title">간단한 설문 2개</div>
-          <div class="step-desc">신뢰도 1~5점 + 구매 확신 Yes/No</div>
-        </div>
-      </li>
-      <li>
-        <div class="step-icon">🔄</div>
-        <div class="step-body">
-          <div class="step-title">"비슷한 선택 보기"로 비교</div>
-          <div class="step-desc">원하시면 다른 스타일도 비교해보세요</div>
-        </div>
-      </li>
-      <li>
-        <div class="step-icon">📍</div>
-        <div class="step-body">
-          <div class="step-title">다양한 상황(TPO)으로 시도</div>
-          <div class="step-desc">출근 · 데이트 · 면접 · 주말 등</div>
-        </div>
-      </li>
-    </ol>
-
-    <div class="divider"></div>
-
-    <div class="sec-label">사용 후 피드백</div>
-    <ul class="fb-list">
-      <li><div class="fb-num">1</div>코디 추천이 납득이 되었나요? (1~5점)</li>
-      <li><div class="fb-num">2</div>가장 좋았던 점은 무엇인가요?</li>
-      <li><div class="fb-num">3</div>가장 불편했던 점은 무엇인가요?</li>
-      <li><div class="fb-num">4</div>실제로 이 코디를 구매할 의향이 있나요?</li>
-    </ul>
-
-    <div class="note">
-      테스트 기간 동안 자유롭게 여러 번 사용해주세요<br>
-      사용 데이터는 서비스 개선 목적으로만 활용됩니다
+  <!-- How: 간단한 흐름 -->
+  <div class="how">
+    <div class="how-label">이렇게 진행돼요</div>
+    <div class="flow">
+      <div class="flow-step">
+        <div class="flow-icon">👤</div>
+        <div class="flow-text">성별<br>선택</div>
+      </div>
+      <span class="flow-arrow">→</span>
+      <div class="flow-step">
+        <div class="flow-icon">🎨</div>
+        <div class="flow-text">퍼스널<br>컬러</div>
+      </div>
+      <span class="flow-arrow">→</span>
+      <div class="flow-step">
+        <div class="flow-icon">📍</div>
+        <div class="flow-text">상황<br>선택</div>
+      </div>
+      <span class="flow-arrow">→</span>
+      <div class="flow-step">
+        <div class="flow-icon">💰</div>
+        <div class="flow-text">예산<br>설정</div>
+      </div>
+      <span class="flow-arrow">→</span>
+      <div class="flow-step">
+        <div class="flow-icon" style="background:rgba(150,79,76,0.12);border-color:rgba(150,79,76,0.25)">👗</div>
+        <div class="flow-text" style="color:#C4726F;font-weight:600">코디<br>추천!</div>
+      </div>
     </div>
+  </div>
+
+  <!-- Trust signal -->
+  <div class="trust">
+    <div class="trust-icon">🔒</div>
+    <div class="trust-text"><b>개인정보 수집 없음</b> — 회원가입·로그인 없이 바로 사용할 수 있어요. 사용 데이터는 서비스 개선에만 활용됩니다.</div>
   </div>
 
   <!-- Footer -->
   <div class="footer">
-    <div class="footer-text">
-      피드백은 카카오톡 또는 이메일로 보내주세요<br>
-      <a href="mailto:msunkang70@gmail.com" class="footer-link">msunkang70@gmail.com</a>
-    </div>
+    <div class="footer-text">ColorFit 사용자 테스트 · 2026.04</div>
   </div>
 </div>
 
