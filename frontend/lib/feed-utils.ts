@@ -64,9 +64,10 @@ export interface FeedOutfit {
     formality?: number;
   }[];
   scores: FeedScores | null;
-  reasons: { core: string; evidence: string; risk_guard: string } | null;
+  reasons: { core: string; evidence: string; risk_guard: string; situation: string } | null;
   tags: string[];
   total_price: number;
+  style_tag?: string;
 }
 
 export interface RankedOutfit {
@@ -221,7 +222,7 @@ function calcMoodScore(outfit: FeedOutfit, userMoods: string[], tpo: string): nu
   let score = 0;
   const tag = outfit.tags ?? [];
   const moods = tag.filter(t => !TPO_SET.has(t) && !SEASON_SET.has(t));
-  const styleTag = (outfit as Record<string, unknown>).style_tag as string | undefined;
+  const styleTag = outfit.style_tag;
   const reinterpret = TPO_STYLE_REINTERPRET[tpo] ?? {};
 
   for (const mood of userMoods) {
@@ -456,4 +457,4 @@ export function getStylistCriteria(tpo: string): StylistCriteria {
   return STYLIST_CRITERIA[tpo] || DEFAULT_CRITERIA;
 }
 
-export { AXIS_LABELS, AXIS_DESC, AXIS_WEIGHTS, getStyleExplanation };
+export { AXIS_LABELS, AXIS_DESC, AXIS_WEIGHTS };
