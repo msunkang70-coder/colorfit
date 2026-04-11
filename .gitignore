@@ -67,3 +67,10 @@ UI화면/
 
 # 임시 테스트
 docs/test.html
+
+# 발표자료 (로컬 전용)
+docs/presentation.html
+docs/presentation-slides.md
+docs/ColorFit_발표스크립트.docx
+scripts/make_script.py
+scripts/make_ppt.py
