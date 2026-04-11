@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ColorFit 사용자 테스트 초대</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap');
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Noto Sans KR',sans-serif;background:#F8F6F3;color:#2A2520;min-height:100vh;display:flex;justify-content:center;padding:20px}
+.card{width:100%;max-width:420px;background:#fff;border-radius:20px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,.08)}
+.hero{background:linear-gradient(135deg,#1A1714 0%,#2A2520 50%,#3A302A 100%);padding:36px 28px 28px;text-align:center;position:relative}
+.hero::after{content:"";position:absolute;bottom:-1px;left:0;right:0;height:20px;background:#fff;border-radius:20px 20px 0 0}
+.logo{font-size:28px;font-weight:700;color:#C4726F;letter-spacing:-0.5px}
+.logo-sub{font-size:12px;color:rgba(255,255,255,.4);margin-top:4px;letter-spacing:1px}
+.hero-title{font-size:18px;font-weight:700;color:#F0EDE8;margin-top:20px;line-height:1.4}
+.hero-desc{font-size:13px;color:rgba(255,255,255,.5);margin-top:8px;line-height:1.6}
+.body{padding:28px 24px}
+.cta-box{display:block;text-align:center;background:linear-gradient(135deg,#964F4C,#C4726F);color:#fff;text-decoration:none;padding:16px 20px;border-radius:14px;font-size:16px;font-weight:700;margin-bottom:24px;transition:transform .15s}
+.cta-box:hover{transform:scale(1.02)}
+.cta-box .arrow{font-size:12px;opacity:.7;margin-top:4px;font-weight:400}
+.section-title{font-size:14px;font-weight:700;color:#964F4C;margin-bottom:12px;display:flex;align-items:center;gap:6px}
+.steps{list-style:none;margin-bottom:24px}
+.steps li{display:flex;gap:12px;margin-bottom:14px;align-items:flex-start}
+.step-num{width:26px;height:26px;border-radius:50%;background:#964F4C;color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.step-text{font-size:13px;line-height:1.5;color:#4A4540}
+.step-text b{color:#2A2520}
+.divider{height:1px;background:#E5E1DA;margin:20px 0}
+.feedback-title{font-size:14px;font-weight:700;color:#964F4C;margin-bottom:12px}
+.feedback-list{list-style:none;margin-bottom:20px}
+.feedback-list li{font-size:13px;color:#4A4540;padding:8px 12px;background:#F8F6F3;border-radius:10px;margin-bottom:6px;line-height:1.5}
+.feedback-list li::before{content:"Q. ";font-weight:700;color:#964F4C}
+.note{font-size:11px;color:#B5AFA6;text-align:center;line-height:1.5;padding:16px 0 8px}
+.footer{background:#F8F6F3;padding:16px 24px;text-align:center;border-top:1px solid #E5E1DA}
+.footer-text{font-size:11px;color:#B5AFA6;line-height:1.5}
+.footer-link{color:#964F4C;text-decoration:none;font-weight:500}
+.badge{display:inline-block;font-size:10px;font-weight:600;color:#fff;background:#964F4C;padding:2px 8px;border-radius:10px;margin-left:6px}
+.time-badge{display:inline-block;font-size:11px;color:#964F4C;background:rgba(150,79,76,.08);padding:4px 10px;border-radius:8px;font-weight:500;margin-top:12px}
+</style>
+</head>
+<body>
+
+<div class="card">
+  <!-- Hero -->
+  <div class="hero">
+    <div class="logo">ColorFit</div>
+    <div class="logo-sub">AI PERSONAL COLOR STYLING</div>
+    <div class="hero-title">나에게 맞는 코디,<br>1분이면 충분합니다</div>
+    <div class="hero-desc">퍼스널컬러 기반 AI가 상황에 딱 맞는<br>코디 1벌을 골라드립니다</div>
+    <div class="time-badge">소요 시간: 약 3분</div>
+  </div>
+
+  <!-- Body -->
+  <div class="body">
+    <!-- CTA -->
+    <a href="https://frontend-msunkang70-1055s-projects.vercel.app" target="_blank" class="cta-box">
+      ColorFit 시작하기
+      <div class="arrow">터치하면 바로 연결됩니다</div>
+    </a>
+
+    <!-- Steps -->
+    <div class="section-title">진행 방법</div>
+    <ol class="steps">
+      <li>
+        <div class="step-num">1</div>
+        <div class="step-text"><b>온보딩 5단계</b>를 진행해주세요<br>성별 → 퍼스널컬러 → TPO(상황) → 예산 → 취향</div>
+      </li>
+      <li>
+        <div class="step-num">2</div>
+        <div class="step-text">추천된 코디를 확인하고<br><b>"이 코디로 결정"</b> 버튼을 눌러주세요</div>
+      </li>
+      <li>
+        <div class="step-num">3</div>
+        <div class="step-text">간단한 <b>설문 2개</b>에 답해주세요<br>(신뢰도 1~5점 + 구매 확신 Yes/No)</div>
+      </li>
+      <li>
+        <div class="step-num">4</div>
+        <div class="step-text">원하시면 <b>"비슷한 선택 보기"</b>로<br>다른 스타일도 비교해보세요</div>
+      </li>
+      <li>
+        <div class="step-num">5</div>
+        <div class="step-text"><b>상황(TPO) 탭</b>을 바꿔서<br>출근/데이트/면접 등 다양하게 시도해보세요</div>
+      </li>
+    </ol>
+
+    <div class="divider"></div>
+
+    <!-- Feedback -->
+    <div class="feedback-title">사용 후 피드백 부탁드려요</div>
+    <ul class="feedback-list">
+      <li>코디 추천이 납득이 되었나요? (1~5점)</li>
+      <li>가장 좋았던 점은 무엇인가요?</li>
+      <li>가장 불편했던 점은 무엇인가요?</li>
+      <li>실제로 이 코디를 구매할 의향이 있나요?</li>
+    </ul>
+
+    <div class="note">
+      테스트 기간 동안 자유롭게 여러 번 사용해주세요.<br>
+      사용 데이터는 서비스 개선 목적으로만 활용됩니다.
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="footer">
+    <div class="footer-text">
+      피드백은 카카오톡 또는 이메일로 보내주세요<br>
+      <a href="mailto:msunkang70@gmail.com" class="footer-link">msunkang70@gmail.com</a>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
