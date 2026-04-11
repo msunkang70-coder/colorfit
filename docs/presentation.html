@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ColorFit — 중간 발표</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap');
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Noto Sans KR',sans-serif;background:#0D0B09;color:#F0EDE8;overflow:hidden;height:100vh}
+.deck{position:relative;width:100vw;height:100vh}
+.slide{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;padding:44px 68px;opacity:0;pointer-events:none;transition:opacity .5s}
+.slide.active{opacity:1;pointer-events:auto}
+.tag{display:inline-block;font-size:11px;font-weight:700;color:#C4726F;letter-spacing:2px;margin-bottom:6px;text-transform:uppercase}
+h1{font-size:46px;font-weight:900;line-height:1.15;letter-spacing:-1px;margin-bottom:10px}
+h2{font-size:32px;font-weight:700;line-height:1.2;margin-bottom:14px}
+.sub{font-size:15px;color:rgba(240,237,232,.4);line-height:1.6;margin-bottom:14px}
+.accent{color:#C4726F}
+.dim{color:rgba(240,237,232,.28)}
+.big{font-size:44px;font-weight:900;color:#C4726F;line-height:1}
+ul{list-style:none;padding:0}
+li{font-size:16px;line-height:1.6;color:rgba(240,237,232,.65);padding-left:14px;position:relative;margin-bottom:2px}
+li::before{content:"·";position:absolute;left:0;color:#C4726F;font-weight:700}
+li strong{color:rgba(240,237,232,.88)}
+.s li{font-size:13px;line-height:1.5}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:32px;align-items:start}
+.three{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
+.c{background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.06);border-radius:11px;padding:16px}
+.c h3{font-size:14px;font-weight:700;margin-bottom:4px;color:#F0EDE8}
+.c p,.c li{font-size:12px;color:rgba(240,237,232,.5);line-height:1.5}
+.ca{border-color:rgba(150,79,76,.18);background:rgba(150,79,76,.04)}
+.ca h3{color:#C4726F}
+/* diff table */
+.diff{width:100%;border-collapse:collapse;margin:8px 0;font-size:12px}
+.diff th{color:rgba(255,255,255,.3);text-align:left;padding:5px 8px;border-bottom:1px solid rgba(255,255,255,.07);font-weight:500}
+.diff td{padding:5px 8px;border-bottom:1px solid rgba(255,255,255,.03);color:rgba(255,255,255,.5)}
+.diff td:first-child{color:rgba(255,255,255,.65);font-weight:600;width:80px}
+.diff .old{color:rgba(255,255,255,.28)}
+.diff .new{color:#C4726F;font-weight:600}
+/* vs */
+.vs{display:grid;grid-template-columns:1fr 32px 1fr;gap:10px;align-items:center;margin:10px 0}
+.vs-s{text-align:center}.vs-s h3{font-size:17px;margin-bottom:3px}.vs-x{text-align:center;font-size:22px;color:rgba(255,255,255,.1)}
+/* flow */
+.flow{display:flex;align-items:center;gap:3px;flex-wrap:wrap;justify-content:center;margin:8px 0}
+.flow .fb{display:flex;flex-direction:column;align-items:center;gap:2px}
+.flow .fb .ic{width:42px;height:42px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:17px}
+.flow .fb .lb{font-size:9px;color:rgba(255,255,255,.4);text-align:center;max-width:52px}
+.flow .fa{font-size:12px;color:rgba(255,255,255,.08)}
+/* pipe svg area */
+.dia{margin:8px 0}.dia svg{width:100%;max-height:100px}
+.dia-cap{font-size:10px;color:rgba(255,255,255,.2);text-align:center;margin-top:3px}
+/* score bars */
+.sb{display:flex;align-items:center;gap:6px;margin:3px 0}
+.sb-l{width:52px;font-size:10px;color:rgba(255,255,255,.35);text-align:right}
+.sb-b{height:5px;border-radius:3px}
+/* trade-off */
+.tf{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.tf .it{background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.04);border-radius:9px;padding:12px}
+.tf .it h4{font-size:12px;font-weight:700;color:#C4726F;margin-bottom:2px}
+.tf .it .p{font-size:11px;color:rgba(255,255,255,.3);margin-bottom:4px}
+.tf .it .sol{font-size:11px;color:rgba(255,255,255,.55)}
+.tf .it .sol::before{content:"-> ";color:#C4726F}
+/* qa highlight */
+.qa-finding{background:rgba(150,79,76,.05);border:1px solid rgba(150,79,76,.15);border-radius:10px;padding:14px;margin:8px 0}
+.qa-finding h4{font-size:13px;color:#C4726F;margin-bottom:4px}
+.qa-finding p{font-size:12px;color:rgba(255,255,255,.5);line-height:1.5}
+/* demo */
+.demo-box{background:rgba(150,79,76,.05);border:1px solid rgba(150,79,76,.12);border-radius:14px;padding:20px;text-align:center;margin:8px 0}
+.demo-pts{display:flex;justify-content:center;gap:6px;margin-top:10px;flex-wrap:wrap}
+.demo-pts span{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.05);border-radius:7px;padding:4px 10px;font-size:10px;color:rgba(255,255,255,.4)}
+/* nav */
+.counter{position:fixed;bottom:18px;left:30px;font-size:13px;font-weight:600;color:rgba(255,255,255,.45);z-index:100;letter-spacing:1px}
+.nav{position:fixed;bottom:18px;right:30px;display:flex;gap:7px;z-index:100}
+.nav button{width:36px;height:36px;border-radius:9px;border:1px solid rgba(255,255,255,.06);background:rgba(255,255,255,.03);color:#F0EDE8;font-size:14px;cursor:pointer}
+.nav button:hover{background:rgba(255,255,255,.06)}
+.cover{justify-content:flex-end;padding-bottom:70px}.cover h1{font-size:52px}
+</style>
+</head>
+<body>
+<div class="deck">
+
+<!-- 1 COVER -->
+<div class="slide cover active">
+<div class="tag">Mid-term Progress</div>
+<h1><span class="accent">ColorFit</span></h1>
+<div class="sub">결정을 쉽게 만드는 스타일 서비스 — 중간 발표</div>
+<p style="font-size:12px;color:rgba(255,255,255,.15)">퍼스널컬러 x TPO x 5축 스코어링 | 2026.04</p>
+</div>
+
+<!-- 2 PROBLEM + VALIDATION -->
+<div class="slide">
+<div class="tag">Problem Definition</div>
+<h2>문제는 추천이 아니라 <span class="accent">결정</span>이다</h2>
+<div class="two">
+<div>
+<p style="font-size:11px;color:rgba(255,255,255,.3);margin-bottom:6px">경쟁 서비스 분석 → 문제 정의 → 가설 수립</p>
+<div class="c" style="margin-bottom:6px;padding:12px">
+<h3 style="font-size:12px;color:rgba(255,255,255,.5)">경쟁 서비스 분석</h3>
+<p>무신사/W컨셉 — 추천 이유 없음, 선택 과부하<br>Stitch Fix — 실시간 비교 불가, 월 비용<br>잼페이스 — 진단 후 쇼핑 연결 없음</p>
+</div>
+<div class="c" style="margin-bottom:6px;padding:12px">
+<h3 style="font-size:12px;color:#C4726F">도출한 문제</h3>
+<p>추천은 있지만 <strong style="color:rgba(255,255,255,.8)">"결정을 돕는 서비스"가 공백</strong><br>퍼스널컬러 진단 → 쇼핑 연결 갭 존재</p>
+</div>
+<div class="c ca" style="padding:12px">
+<h3 style="font-size:12px">수립한 가설 (H1~H5)</h3>
+<p>H1: Top1 제시가 리스트보다 결정이 빠르다 (TTD < 15초)<br>H4: Top1 선택율 ≥ 60%<br>→ <strong style="color:#C4726F">사용자 테스트로 검증 예정</strong></p>
+</div>
+</div>
+<div>
+<p style="font-size:11px;color:rgba(255,255,255,.25);margin-bottom:8px">시장 분석 기반</p>
+<div class="c" style="padding:12px;margin-bottom:8px">
+<p style="font-size:12px;color:rgba(255,255,255,.4)"><strong style="color:rgba(255,255,255,.6)">TAM</strong> 30조 (한국 온라인 패션, 통계청)</p>
+<p style="font-size:12px;color:rgba(255,255,255,.4)"><strong style="color:rgba(255,255,255,.6)">SAM</strong> 3,000억 (퍼스널컬러 관심 × 코디 니즈)</p>
+<p style="font-size:12px;color:rgba(255,255,255,.4)"><strong style="color:rgba(255,255,255,.6)">SOM</strong> 15억 (목표 점유 0.5%)</p>
+</div>
+<p style="font-size:11px;color:rgba(255,255,255,.25);margin-bottom:8px">사용자 심리 3층</p>
+<div class="three" style="gap:6px">
+<div class="c" style="padding:10px"><h3 style="font-size:11px">1층</h3><p style="font-size:10px">선택 과부하</p></div>
+<div class="c" style="padding:10px"><h3 style="font-size:11px">2층</h3><p style="font-size:10px">신뢰 부족</p></div>
+<div class="c" style="padding:10px"><h3 style="font-size:11px">3층</h3><p style="font-size:10px">리스크 불안</p></div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- 3 WHY -->
+<div class="slide">
+<div class="tag">Why — Decision Service</div>
+<h2>추천 서비스가 아니라 <span class="accent">결정 서비스</span></h2>
+<div class="vs">
+<div class="vs-s"><h3 class="dim">기존</h3><p class="dim" style="font-size:13px">"여기서 골라"<br>10개 제시, 선택 부담 전가</p></div>
+<div class="vs-x">vs</div>
+<div class="vs-s"><h3 style="color:#C4726F">ColorFit</h3><p style="font-size:13px;color:rgba(255,255,255,.55)">"이걸로 가"<br>1개 제시 + 근거 + 안전</p></div>
+</div>
+<div style="display:flex;gap:8px;margin-top:10px">
+<div class="c" style="flex:1;padding:10px"><p style="font-size:11px"><strong>Decision First</strong> — 1개만, 리스트 없음</p></div>
+<div class="c" style="flex:1;padding:10px"><p style="font-size:11px"><strong>Explain Why</strong> — 모든 추천에 근거</p></div>
+<div class="c" style="flex:1;padding:10px"><p style="font-size:11px"><strong>Compare When Needed</strong> — 비교는 선택적</p></div>
+<div class="c" style="flex:1;padding:10px"><p style="font-size:11px"><strong>Measure</strong> — 결정 속도 측정</p></div>
+</div>
+</div>
+
+<!-- 4 TEAM + DIFFERENTIATION -->
+<div class="slide">
+<div class="tag">Team & My Differentiation</div>
+<h2>공통 기반 위에서 <span class="accent">재설계</span></h2>
+<div class="sub">PM Main Branch 공통 구조 → 내 Sub Branch에서 Decision UX 방향 실험</div>
+<table class="diff">
+<tr><th>영역</th><th>공통 기반 (PM)</th><th>내 브랜치 (변경)</th></tr>
+<tr><td>스코어링</td><td class="old">4축 (PCF/OF/CH/PE)</td><td class="new">5축 v2 (TPO/fit/color/style/risk)</td></tr>
+<tr><td>서비스</td><td class="old">피드 리스트 + 비교 + 저장</td><td class="new">Decision (Top1) + Explore (Top3)</td></tr>
+<tr><td>DB</td><td class="old">PostgreSQL + SQLAlchemy</td><td class="new">JSON (실험 속도) — 설계 유지</td></tr>
+<tr><td>온보딩</td><td class="old">3단계</td><td class="new">5단계 (성별→톤→TPO+무드→예산→취향)</td></tr>
+<tr><td>Reason</td><td class="old">문자열 배열</td><td class="new">3파트 (core / risk_guard / situation)</td></tr>
+<tr><td>페이지</td><td class="old">10+ 페이지</td><td class="new">3개 핵심 (Welcome/Onboarding/Feed)</td></tr>
+</table>
+</div>
+
+<!-- 5 USER FLOW -->
+<div class="slide">
+<div class="tag">User Flow</div>
+<h2>각 단계의 <span class="accent">심리와 데이터</span></h2>
+<div class="flow">
+<div class="fb"><div class="ic" style="background:rgba(150,79,76,.12);border:1px solid rgba(150,79,76,.25)">👋</div><div class="lb">Welcome<br><span style="color:rgba(255,255,255,.2)">호기심</span></div></div><span class="fa">→</span>
+<div class="fb"><div class="ic" style="background:rgba(79,151,163,.1);border:1px solid rgba(79,151,163,.2)">👤</div><div class="lb">성별<br><span style="color:rgba(255,255,255,.2)">gender</span></div></div><span class="fa">→</span>
+<div class="fb"><div class="ic" style="background:rgba(160,120,48,.1);border:1px solid rgba(160,120,48,.2)">🎨</div><div class="lb">톤<br><span style="color:rgba(255,255,255,.2)">tone_id</span></div></div><span class="fa">→</span>
+<div class="fb"><div class="ic" style="background:rgba(107,91,138,.1);border:1px solid rgba(107,91,138,.2)">📍</div><div class="lb">TPO+무드<br><span style="color:rgba(255,255,255,.2)">tpo+mood</span></div></div><span class="fa">→</span>
+<div class="fb"><div class="ic" style="background:rgba(107,127,94,.1);border:1px solid rgba(107,127,94,.2)">💰</div><div class="lb">예산<br><span style="color:rgba(255,255,255,.2)">budget</span></div></div><span class="fa">→</span>
+<div class="fb"><div class="ic" style="background:rgba(150,79,76,.1);border:1px solid rgba(150,79,76,.2)">✨</div><div class="lb">취향<br><span style="color:rgba(255,255,255,.2)">style_seed</span></div></div><span class="fa">→</span>
+<div class="fb"><div class="ic" style="background:rgba(150,79,76,.22);border:2px solid rgba(150,79,76,.45)">👗</div><div class="lb" style="color:#C4726F;font-weight:600">Top1</div></div><span class="fa">→</span>
+<div class="fb"><div class="ic" style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06)">🔄</div><div class="lb">Explore<br><span style="color:rgba(255,255,255,.2)">축 비교</span></div></div><span class="fa">→</span>
+<div class="fb"><div class="ic" style="background:rgba(150,79,76,.15);border:1px solid rgba(150,79,76,.3)">✅</div><div class="lb">결정+설문<br><span style="color:rgba(255,255,255,.2)">TTD 측정</span></div></div>
+</div>
+<div class="two" style="margin-top:10px;gap:20px">
+<div class="c s"><h3>각 단계가 추천에 미치는 영향</h3>
+<ul><li>성별 → 코디 풀 완전 분리 + 무드/이미지 분기</li>
+<li>톤 → color 축 20% (퍼스널컬러 매칭)</li>
+<li>TPO → tpo 축 30% (가장 높은 가중치)</li>
+<li>예산 → Hard Filter (1.5x 초과 탈락)</li></ul></div>
+<div class="c s"><h3>수집 데이터 → 측정</h3>
+<ul><li>TTD (결정 소요 시간) — 핵심 KPI</li>
+<li>Explore 사용 여부 — Top1 신뢰도 지표</li>
+<li>신뢰도 / 확신도 — 설문 수집</li>
+<li>selected_rank — 1위 vs 2,3위 선택 비율</li></ul></div>
+</div>
+</div>
+
+<!-- 6 TECHNICAL DECISION -->
+<div class="slide">
+<div class="tag">Technical Decision</div>
+<h2>왜 이렇게 <span class="accent">바꿨는가</span></h2>
+<div class="two">
+<div>
+<div class="c ca" style="margin-bottom:8px"><h3>4축 → 5축</h3><ul class="s">
+<li><strong>PE 제거</strong> — Hard Filter에서 이미 처리</li>
+<li><strong>TPO 30%</strong> — "상황에 맞는가"가 최우선</li>
+<li><strong>리스크 신설</strong> — 감점형(-30~0), 안전 우선</li>
+<li><strong>중복 감점 금지</strong> — 축 간 독립 보장</li></ul></div>
+<div class="c ca"><h3>리스트 → Decision-First</h3><ul class="s">
+<li>10개→1개: 결정 피로 해소</li>
+<li>비교/저장/가격비교 과감히 제거</li>
+<li>Explore는 보조 — 기본은 Top1</li></ul></div>
+</div>
+<div>
+<div class="c ca" style="margin-bottom:8px"><h3>PostgreSQL → JSON</h3><ul class="s">
+<li>MVP에서 DB 세팅 = 2주 지연</li>
+<li>1,645개 JSON으로 충분히 운용</li>
+<li>5축 사전 계산 → 실시간 불필요</li>
+<li>DB 모델 설계는 유지 (전환 준비)</li></ul></div>
+<div class="c ca"><h3>Reason → 3파트 구조</h3><ul class="s">
+<li><strong>core</strong> — 추천 이유 한 문장</li>
+<li><strong>risk_guard</strong> — 왜 안전한 선택인지</li>
+<li><strong>situation</strong> — 언제 입으면 좋은지</li></ul></div>
+</div>
+</div>
+</div>
+
+<!-- 7 PIPELINE -->
+<div class="slide">
+<div class="tag">Pipeline</div>
+<h2>추천 파이프라인</h2>
+<div class="dia">
+<svg viewBox="0 0 800 90" xmlns="http://www.w3.org/2000/svg">
+<line x1="30" y1="35" x2="770" y2="35" stroke="rgba(150,79,76,.08)" stroke-width="20" stroke-linecap="round"/>
+<g transform="translate(10,10)"><rect width="65" height="50" rx="7" fill="rgba(255,255,255,.03)" stroke="rgba(255,255,255,.06)"/><text x="32" y="24" text-anchor="middle" fill="rgba(255,255,255,.5)" font-size="9" font-weight="600">입력</text><text x="32" y="38" text-anchor="middle" fill="rgba(255,255,255,.2)" font-size="7">톤·TPO·예산</text></g>
+<g transform="translate(90,10)"><rect width="75" height="50" rx="7" fill="rgba(150,79,76,.1)" stroke="rgba(150,79,76,.25)"/><text x="37" y="24" text-anchor="middle" fill="#C4726F" font-size="9" font-weight="700">Hard Filter</text><text x="37" y="38" text-anchor="middle" fill="rgba(255,255,255,.25)" font-size="7">H1~H8 탈락</text></g>
+<g transform="translate(180,10)"><rect width="60" height="50" rx="7" fill="rgba(150,79,76,.06)" stroke="rgba(150,79,76,.15)"/><text x="30" y="24" text-anchor="middle" fill="#C4726F" font-size="8" font-weight="600">Quality</text><text x="30" y="38" text-anchor="middle" fill="rgba(255,255,255,.2)" font-size="6">비의류 제거</text></g>
+<g transform="translate(255,10)"><rect width="60" height="50" rx="7" fill="rgba(150,79,76,.06)" stroke="rgba(150,79,76,.15)"/><text x="30" y="24" text-anchor="middle" fill="#C4726F" font-size="8" font-weight="600">Stylist</text><text x="30" y="38" text-anchor="middle" fill="rgba(255,255,255,.2)" font-size="6">TPO 금기</text></g>
+<g transform="translate(330,10)"><rect width="70" height="50" rx="7" fill="rgba(79,151,163,.1)" stroke="rgba(79,151,163,.25)"/><text x="35" y="24" text-anchor="middle" fill="#4F97A3" font-size="9" font-weight="700">5축 Score</text><text x="35" y="38" text-anchor="middle" fill="rgba(255,255,255,.25)" font-size="7">v2 가중합</text></g>
+<g transform="translate(415,10)"><rect width="60" height="50" rx="7" fill="rgba(107,91,138,.08)" stroke="rgba(107,91,138,.2)"/><text x="30" y="24" text-anchor="middle" fill="#6B5B8A" font-size="8" font-weight="600">Rerank</text><text x="30" y="38" text-anchor="middle" fill="rgba(255,255,255,.2)" font-size="6">다양성</text></g>
+<g transform="translate(490,10)"><rect width="60" height="50" rx="7" fill="rgba(107,127,94,.08)" stroke="rgba(107,127,94,.2)"/><text x="30" y="24" text-anchor="middle" fill="#6B7F5E" font-size="8" font-weight="600">QA Gate</text><text x="30" y="38" text-anchor="middle" fill="rgba(255,255,255,.2)" font-size="6">최종 검증</text></g>
+<g transform="translate(565,10)"><rect width="60" height="50" rx="7" fill="rgba(160,120,48,.08)" stroke="rgba(160,120,48,.2)"/><text x="30" y="24" text-anchor="middle" fill="#A07830" font-size="8" font-weight="600">Reason</text><text x="30" y="38" text-anchor="middle" fill="rgba(255,255,255,.2)" font-size="6">3파트</text></g>
+<g transform="translate(640,8)"><rect width="48" height="54" rx="9" fill="rgba(150,79,76,.2)" stroke="rgba(150,79,76,.5)" stroke-width="2"/><text x="24" y="28" text-anchor="middle" fill="#C4726F" font-size="11" font-weight="900">Top1</text><text x="24" y="42" text-anchor="middle" fill="rgba(255,255,255,.3)" font-size="6">Decision</text></g>
+<text x="155" y="80" text-anchor="middle" fill="rgba(150,79,76,.3)" font-size="8">탈락(제거)</text>
+<text x="385" y="80" text-anchor="middle" fill="rgba(79,151,163,.3)" font-size="8">점수(정렬)</text>
+<text x="530" y="80" text-anchor="middle" fill="rgba(107,127,94,.3)" font-size="8">검증</text>
+</svg></div>
+<div class="two" style="margin-top:4px;gap:24px">
+<div><p style="font-size:10px;color:rgba(255,255,255,.25);margin-bottom:4px">5축 v2 가중치</p>
+<div class="sb"><span class="sb-l">TPO 30%</span><div class="sb-b" style="width:180px;background:#964F4C"></div></div>
+<div class="sb"><span class="sb-l">컬러 20%</span><div class="sb-b" style="width:120px;background:#A07830"></div></div>
+<div class="sb"><span class="sb-l">스타일 20%</span><div class="sb-b" style="width:120px;background:#6B5B8A"></div></div>
+<div class="sb"><span class="sb-l">핏 15%</span><div class="sb-b" style="width:90px;background:#4F97A3"></div></div>
+<div class="sb"><span class="sb-l">리스크</span><div class="sb-b" style="width:60px;background:#C4726F;opacity:.4"></div><span style="font-size:9px;color:rgba(255,255,255,.18);margin-left:2px">감점</span></div>
+</div>
+<div class="c s" style="padding:12px"><h3 style="font-size:12px">Stylist Criteria (내가 추가)</h3>
+<ul><li>TPO별 전문가 판단 기준 (단정함/안정감 등)</li>
+<li>TPO 맥락 스타일 재해석 (면접+캐주얼→미니멀)</li>
+<li>전문가 코멘트 + risk_guard 자동 생성</li></ul></div>
+</div>
+</div>
+
+<!-- 8 DATA PIPELINE -->
+<div class="slide">
+<div class="tag">Data Collection Pipeline</div>
+<h2>16만 8천 개에서 <span class="accent">1,645개</span>까지</h2>
+<div class="sub">수집 → 정제 → 조합 → 평가 → 검���</div>
+<!-- 파이프라인 SVG -->
+<div class="dia">
+<svg viewBox="0 0 800 130" xmlns="http://www.w3.org/2000/svg">
+<!-- 단계 박스 -->
+<g transform="translate(5,10)">
+<rect width="130" height="70" rx="8" fill="rgba(79,151,163,.08)" stroke="rgba(79,151,163,.2)"/>
+<text x="65" y="22" text-anchor="middle" fill="#4F97A3" font-size="10" font-weight="700">1. 원본 수집</text>
+<text x="65" y="40" text-anchor="middle" fill="#4F97A3" font-size="18" font-weight="900">167,684</text>
+<text x="65" y="56" text-anchor="middle" fill="rgba(255,255,255,.25)" font-size="8">네이버 API 크롤링</text>
+</g>
+<text x="145" y="48" fill="rgba(255,255,255,.12)" font-size="16">→</text>
+<g transform="translate(160,10)">
+<rect width="120" height="70" rx="8" fill="rgba(160,120,48,.08)" stroke="rgba(160,120,48,.2)"/>
+<text x="60" y="22" text-anchor="middle" fill="#A07830" font-size="10" font-weight="700">2. 성별 정제</text>
+<text x="60" y="40" text-anchor="middle" fill="#A07830" font-size="18" font-weight="900">4,840</text>
+<text x="60" y="56" text-anchor="middle" fill="rgba(255,255,255,.25)" font-size="7">남2,127+여2,005+운동708</text>
+</g>
+<text x="290" y="48" fill="rgba(255,255,255,.12)" font-size="16">→</text>
+<g transform="translate(305,10)">
+<rect width="120" height="70" rx="8" fill="rgba(107,91,138,.08)" stroke="rgba(107,91,138,.2)"/>
+<text x="60" y="22" text-anchor="middle" fill="#6B5B8A" font-size="10" font-weight="700">3. 코디 조합</text>
+<text x="60" y="40" text-anchor="middle" fill="#6B5B8A" font-size="18" font-weight="900">1,645</text>
+<text x="60" y="56" text-anchor="middle" fill="rgba(255,255,255,.25)" font-size="8">레시피 기반 생성</text>
+</g>
+<text x="435" y="48" fill="rgba(255,255,255,.12)" font-size="16">→</text>
+<g transform="translate(450,10)">
+<rect width="120" height="70" rx="8" fill="rgba(107,127,94,.08)" stroke="rgba(107,127,94,.2)"/>
+<text x="60" y="22" text-anchor="middle" fill="#6B7F5E" font-size="10" font-weight="700">4. LLM 평가</text>
+<text x="60" y="40" text-anchor="middle" fill="#6B7F5E" font-size="18" font-weight="900">1,073</text>
+<text x="60" y="56" text-anchor="middle" fill="rgba(255,255,255,.25)" font-size="8">3점+ 통과</text>
+</g>
+<text x="580" y="48" fill="rgba(255,255,255,.12)" font-size="16">→</text>
+<g transform="translate(595,10)">
+<rect width="130" height="70" rx="8" fill="rgba(150,79,76,.12)" stroke="rgba(150,79,76,.35)" stroke-width="2"/>
+<text x="65" y="22" text-anchor="middle" fill="#C4726F" font-size="10" font-weight="700">5. 최종 (갭 보충)</text>
+<text x="65" y="40" text-anchor="middle" fill="#C4726F" font-size="18" font-weight="900">1,645</text>
+<text x="65" y="56" text-anchor="middle" fill="rgba(255,255,255,.3)" font-size="8">192 조합 × 평균 8.6개</text>
+</g>
+<!-- 감소율 라벨 -->
+<text x="152" y="100" text-anchor="middle" fill="rgba(255,255,255,.15)" font-size="8">97% 정제</text>
+<text x="297" y="100" text-anchor="middle" fill="rgba(255,255,255,.15)" font-size="8">조합 생성</text>
+<text x="442" y="100" text-anchor="middle" fill="rgba(255,255,255,.15)" font-size="8">35% 탈락</text>
+<text x="587" y="100" text-anchor="middle" fill="rgba(255,255,255,.15)" font-size="8">갭 보충</text>
+</svg>
+<p class="dia-cap">네이버 API 167K → 성별 검증 4.8K → 코디 조합 1.6K → LLM 품질 → 최종 1,645개</p>
+</div>
+<div class="two" style="margin-top:6px;gap:24px">
+<div class="c s"><h3>수집 상세</h3><ul>
+<li>네이버 쇼핑 API — 12톤 × 카테고리별 크롤링</li>
+<li>색상 추출 (PIL + K-means) → 12톤 매핑</li>
+<li>하이브리드 분류: 키워드 70% + LLM 캐시 27% + 실시간 3%</li>
+<li>성별 재수집: 타이틀 "남성/여성" 키워드 필수</li>
+</ul></div>
+<div class="c s"><h3>최종 데이터</h3><ul>
+<li><strong>1,645개</strong> 코디 (4,280개 아이템)</li>
+<li><strong>192</strong> 조합 전부 5개 이상 커버</li>
+<li>5축 v2 스코어 사전 계산 포함</li>
+<li>4개 규칙 JSON (체형/비율/스타일/격식)</li>
+</ul></div>
+</div>
+</div>
+
+<!-- 9 DATA & DB — 백엔드 데이터 구조 -->
+<div class="slide">
+<div class="tag">Backend Data Structure</div>
+<h2>백엔드 데이터 <span class="accent">3레벨 구조</span></h2>
+<div class="sub">DB 모델 (설계) → 데이터 파일 (운용) → API 스키마 (응답)</div>
+<!-- ERD -->
+<div class="dia">
+<svg viewBox="0 0 780 105" xmlns="http://www.w3.org/2000/svg">
+<rect x="5" y="8" width="115" height="90" rx="8" fill="rgba(150,79,76,.08)" stroke="rgba(150,79,76,.25)"/>
+<text x="62" y="26" text-anchor="middle" fill="#C4726F" font-size="11" font-weight="700">User</text>
+<text x="14" y="42" fill="rgba(255,255,255,.4)" font-size="7.5">gender, tone_id</text>
+<text x="14" y="54" fill="rgba(255,255,255,.4)" font-size="7.5">tpo_list[], style_moods[]</text>
+<text x="14" y="66" fill="rgba(255,255,255,.4)" font-size="7.5">budget_min/max</text>
+<text x="14" y="78" fill="rgba(255,255,255,.4)" font-size="7.5">body_type, height_range</text>
+<line x1="120" y1="45" x2="150" y2="40" stroke="rgba(255,255,255,.1)" marker-end="url(#a)"/>
+<line x1="120" y1="65" x2="150" y2="82" stroke="rgba(255,255,255,.1)" marker-end="url(#a)"/>
+<rect x="150" y="5" width="130" height="70" rx="8" fill="rgba(79,151,163,.06)" stroke="rgba(79,151,163,.2)"/>
+<text x="215" y="23" text-anchor="middle" fill="#4F97A3" font-size="11" font-weight="700">Outfit (1,645)</text>
+<text x="160" y="39" fill="rgba(255,255,255,.4)" font-size="7.5">items[] — 2~4개 아이템</text>
+<text x="160" y="51" fill="rgba(255,255,255,.4)" font-size="7.5">designed_tpo, style_tag</text>
+<text x="160" y="63" fill="rgba(255,255,255,.4)" font-size="7.5">total_price, llm_quality</text>
+<rect x="300" y="5" width="120" height="70" rx="8" fill="rgba(160,120,48,.06)" stroke="rgba(160,120,48,.2)"/>
+<text x="360" y="23" text-anchor="middle" fill="#A07830" font-size="11" font-weight="700">Score v2</text>
+<text x="310" y="39" fill="rgba(255,255,255,.4)" font-size="7.5">tpo 30% / fit 15%</text>
+<text x="310" y="51" fill="rgba(255,255,255,.4)" font-size="7.5">color 20% / style 20%</text>
+<text x="310" y="63" fill="rgba(255,255,255,.4)" font-size="7.5">risk (-30~0) / final</text>
+<line x1="280" y1="40" x2="300" y2="40" stroke="rgba(255,255,255,.1)" marker-end="url(#a)"/>
+<rect x="440" y="5" width="120" height="70" rx="8" fill="rgba(107,91,138,.06)" stroke="rgba(107,91,138,.2)"/>
+<text x="500" y="23" text-anchor="middle" fill="#6B5B8A" font-size="11" font-weight="700">Reason v2</text>
+<text x="450" y="39" fill="rgba(255,255,255,.4)" font-size="7.5">core — 추천 이유</text>
+<text x="450" y="51" fill="rgba(255,255,255,.4)" font-size="7.5">risk_guard — 안전 근거</text>
+<text x="450" y="63" fill="rgba(255,255,255,.4)" font-size="7.5">situation — 착용 상황</text>
+<line x1="420" y1="40" x2="440" y2="40" stroke="rgba(255,255,255,.1)" marker-end="url(#a)"/>
+<rect x="150" y="80" width="130" height="22" rx="6" fill="rgba(107,127,94,.06)" stroke="rgba(107,127,94,.2)"/>
+<text x="215" y="95" text-anchor="middle" fill="#6B7F5E" font-size="9" font-weight="600">Reaction / Metrics (TTD, CTR)</text>
+<rect x="580" y="5" width="120" height="70" rx="8" fill="rgba(150,79,76,.04)" stroke="rgba(150,79,76,.15)"/>
+<text x="640" y="23" text-anchor="middle" fill="#C4726F" font-size="10" font-weight="700">Item (4,280)</text>
+<text x="590" y="39" fill="rgba(255,255,255,.4)" font-size="7.5">product_id, category</text>
+<text x="590" y="51" fill="rgba(255,255,255,.4)" font-size="7.5">color_hex, tone_id</text>
+<text x="590" y="63" fill="rgba(255,255,255,.4)" font-size="7.5">price, image_url, mall_url</text>
+<line x1="560" y1="40" x2="580" y2="40" stroke="rgba(255,255,255,.1)" marker-end="url(#a)"/>
+<defs><marker id="a" markerWidth="5" markerHeight="4" refX="5" refY="2" orient="auto"><polygon points="0 0,5 2,0 4" fill="rgba(255,255,255,.15)"/></marker></defs>
+</svg><p class="dia-cap">ERD — PostgreSQL 설계 완료, 현재 JSON 운용 (구조 변경 없이 전환 가능)</p></div>
+<!-- 3-level detail -->
+<div class="three" style="gap:10px;margin-top:6px">
+<div class="c s"><h3 style="color:#C4726F">데이터 파일 (운용 중)</h3><ul>
+<li><strong>outfits_scored.json</strong> — 1,645개 코디 + 5축 사전 계산</li>
+<li><strong>male/female_products_full.json</strong> — 성별 분리 상품 풀</li>
+<li><strong>outfit_recipes.json</strong> — 코디 조합 생성 템플릿</li>
+<li><strong>metrics_log.jsonl</strong> — 행동 로그</li>
+</ul></div>
+<div class="c s"><h3 style="color:#A07830">4개 규칙 JSON</h3><ul>
+<li><strong>body_type_rules</strong> — 체형별 실루엣 추천/회피</li>
+<li><strong>proportion_rules</strong> — 상·하의 비율 점수 매트릭스</li>
+<li><strong>style_tag_compat</strong> — 스타일 태그 조합 점수 (24쌍)</li>
+<li><strong>tpo_formality_map</strong> — TPO별 격식 기준 (1.5~4.5)</li>
+</ul></div>
+<div class="c s"><h3 style="color:#4F97A3">API 응답 스키마</h3><ul>
+<li><strong>OutfitResponse</strong> — items[] + scores + reasons</li>
+<li><strong>ScoresResponse</strong> — v2 6필드 + v1 호환 6필드</li>
+<li><strong>ReasonResponse</strong> — core / risk_guard / situation</li>
+<li><strong>FeedResponse</strong> — 페이지네이션 + 필터링</li>
+</ul></div>
+</div>
+</div>
+
+<!-- 9 QA / VALIDATION -->
+<div class="slide">
+<div class="tag">QA & Validation — 핵심</div>
+<h2>추천을 만든 게 아니라<br><span class="accent">검증하는 구조</span>까지 만들었다</h2>
+<div class="two">
+<div>
+<p style="font-size:11px;color:rgba(255,255,255,.3);margin-bottom:6px">QA Simulator로 발견한 문제들</p>
+<div class="qa-finding"><h4>뷰어 vs 앱 결과 불일치</h4><p>원인: 뷰어는 v1 스코어, 앱은 v2 실시간 계산<br>해결: v2 스코어 사전 계산 + _app_rank 동기화</p></div>
+<div class="qa-finding"><h4>성별 이미지 오염</h4><p>남성 코디에 여성 상품 이미지 30%+ 혼입<br>해결: 타이틀 키워드 검증 + 남녀 풀 분리 수집</p></div>
+<div class="qa-finding"><h4>TPO 스타일 편향</h4><p>면접 코디 95%가 formal → 캐주얼 선택 시 0건<br>해결: TPO_STYLE_REINTERPRET (면접+캐주얼→미니멀)</p></div>
+</div>
+<div>
+<p style="font-size:11px;color:rgba(255,255,255,.3);margin-bottom:6px">검증 구조</p>
+<div class="c s" style="margin-bottom:8px"><h3>QA Simulator v6</h3><ul>
+<li>앱과 동일 조건으로 결과 비교</li>
+<li>API 직접 호출 동기화 모드</li>
+<li>아이템 상세 모달 QA (product_id, CTA 유효성)</li>
+<li>필터 영향도 단계별 추적</li></ul></div>
+<div class="c ca s"><h3>검증 원칙</h3><ul>
+<li>"잘 추천하는 것보다 <strong>틀리지 않게</strong> 만드는 것"</li>
+<li>가격 불일치 → total_price = items 합산 강제</li>
+<li>스타일 충돌 → formality 중복 감점 금지</li>
+<li>0건 방지 → soft scoring fallback</li></ul></div>
+</div>
+</div>
+</div>
+
+<!-- 10 CHALLENGE -->
+<div class="slide">
+<div class="tag">Challenge & Trade-off</div>
+<h2>어디서 <span class="accent">고민</span>했는가</h2>
+<div class="tf">
+<div class="it"><h4>Top1 vs 다양성</h4><div class="p">Top1만 보여주면 선택지 부족</div><div class="sol">Explore를 보조로 — 기본 1개, 원하면 축 기반 Top3</div></div>
+<div class="it"><h4>추천 설득력</h4><div class="p">"잘 어울린다"만으로 결정 불가</div><div class="sol">Stylist Criteria — TPO별 판단 기준 + risk_guard</div></div>
+<div class="it"><h4>데이터 품질</h4><div class="p">상품 이미지 성별 불일치 다수</div><div class="sol">남녀 풀 분리 (2,187 + 2,005개) + 키워드 검증</div></div>
+<div class="it"><h4>속도 vs 정확도</h4><div class="p">실시간은 느리고, 사전 계산은 유연성 부족</div><div class="sol">사전 계산 + API 실시간 보정 하이브리드</div></div>
+</div>
+<div style="margin-top:10px;padding:10px 14px;background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.04);border-radius:8px">
+<p style="font-size:12px;color:rgba(255,255,255,.45)"><strong style="color:#C4726F">아직 부족한 점:</strong> 전문가 수준의 설득력. 추천은 동작하지만 "전문가가 골라줬다"는 감탄까지는 아직.</p>
+</div>
+</div>
+
+<!-- 11 DEMO -->
+<div class="slide">
+<div class="tag">Demo</div>
+<h2>실제 서비스로 <span class="accent">검증</span>하겠습니다</h2>
+<div class="flow" style="margin:12px 0">
+<div class="fb"><div class="ic" style="background:rgba(150,79,76,.12);border:1px solid rgba(150,79,76,.25)">👋</div><div class="lb">Welcome</div></div><span class="fa">→</span>
+<div class="fb"><div class="ic" style="background:rgba(79,151,163,.1);border:1px solid rgba(79,151,163,.2)">👤</div><div class="lb">온보딩</div></div><span class="fa">→</span>
+<div class="fb"><div class="ic" style="background:rgba(150,79,76,.2);border:2px solid rgba(150,79,76,.4)">👗</div><div class="lb" style="color:#C4726F;font-weight:600">Top1</div></div><span class="fa">→</span>
+<div class="fb"><div class="ic" style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06)">🔄</div><div class="lb">Explore</div></div><span class="fa">→</span>
+<div class="fb"><div class="ic" style="background:rgba(150,79,76,.15);border:1px solid rgba(150,79,76,.3)">✅</div><div class="lb">결정</div></div>
+</div>
+<p style="font-size:13px;color:rgba(255,255,255,.45);margin-bottom:8px">검증 포인트:</p>
+<div class="demo-pts">
+<span>① Top1이 왜 설득력 있는가</span>
+<span>② 전문가 설명이 납득되는가</span>
+<span>③ 비교는 필요할 때만 열리는가</span>
+<span>④ 결정까지 몇 초 걸리는가</span>
+</div>
+</div>
+
+<!-- 12 LEARNING + NEXT -->
+<div class="slide">
+<div class="tag">Learning & Next</div>
+<h2>배운 것 & 다음 단계</h2>
+<div class="two">
+<div>
+<div class="c" style="margin-bottom:8px"><h3 style="font-size:13px">배운 점</h3><ul class="s">
+<li><strong>추천 정확도 ≠ 사용자 만족</strong> — 결정 구조가 핵심</li>
+<li><strong>데이터 품질이 UX를 좌우</strong> — 이미지 성별 오류가 신뢰 붕괴</li>
+<li><strong>검증 없는 추천은 위험</strong> — QA Simulator가 구조 개선 주도</li>
+<li><strong>MVP에서의 기술 선택</strong> — 속도와 구조 사이 균형</li></ul></div>
+<div class="c" style="margin-bottom:8px"><h3 style="font-size:13px">현재 완료</h3><ul class="s">
+<li>전체 흐름 동작 (온보딩→추천→결정)</li>
+<li>5축 v2 + Reason v2 + Stylist Criteria</li>
+<li>iOS 데모 UI + QA Simulator v6</li></ul></div>
+</div>
+<div>
+<div class="c ca" style="margin-bottom:8px"><h3 style="font-size:13px">다음 단계</h3><ul class="s">
+<li>DB 전환 (PostgreSQL)</li>
+<li>행동 데이터 기반 개인화</li>
+<li>전문가 코디 규칙 고도화</li>
+<li>사용자 테스트 20인</li></ul></div>
+<div class="c ca"><h3 style="font-size:13px;color:#C4726F">멘토님께 질문</h3><ul class="s">
+<li>전문가 판단을 시스템화하는 <strong>구체적 방법</strong>은?<br><span style="color:rgba(255,255,255,.3)">현재: TPO별 정적 규칙 → 학습 기반으로 갈 수 있는가</span></li>
+<li>MVP에서 개인화의 <strong>적정 깊이</strong>는?<br><span style="color:rgba(255,255,255,.3)">현재: 입력 기반만 → 행동 데이터 언제부터 활용해야 하는가</span></li></ul></div>
+</div>
+</div>
+<div style="margin-top:12px;text-align:center">
+<p style="font-size:17px;font-weight:700;color:#C4726F">"추천을 만든 것이 아니라, 추천을 검증하는 구조까지 만들었습니다"</p>
+<p style="font-size:12px;color:rgba(255,255,255,.2);margin-top:6px">감사합니다 — Q&A</p>
+</div>
+</div>
+
+</div>
+<div class="counter"><span id="cur">1</span>/<span id="tot">13</span></div>
+<div class="nav"><button onclick="go(-1)">←</button><button onclick="go(1)">→</button></div>
+<script>
+const S=document.querySelectorAll('.slide');let i=0;
+function show(n){S.forEach((s,j)=>s.classList.toggle('active',j===n));document.getElementById('cur').textContent=n+1;document.getElementById('tot').textContent=S.length}
+function go(d){i=Math.max(0,Math.min(S.length-1,i+d));show(i)}
+document.addEventListener('keydown',e=>{if(e.key==='ArrowRight'||e.key===' ')go(1);if(e.key==='ArrowLeft')go(-1)});
+show(0);
+</script>
+</body>
+</html>
