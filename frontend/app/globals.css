@@ -93,7 +93,17 @@ body {
 
 /* ── iPhone Demo Frame ── */
 
-/* 모바일: 풀스크린 */
+/* 프로덕션: 풀스크린 */
+.prod-wrapper {
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+  min-height: 100dvh;
+  position: relative;
+  background-color: var(--color-bg);
+}
+
+/* 데모: 아이폰 프레임 */
 .demo-wrapper {
   display: flex;
   justify-content: center;

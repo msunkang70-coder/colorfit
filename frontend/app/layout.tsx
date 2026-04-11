@@ -16,6 +16,8 @@ export const metadata: Metadata = {
   description: "퍼스널컬러 기반 AI 패션 코디 추천 엔진",
 };
 
+const isDemo = process.env.NEXT_PUBLIC_DEMO_MODE === "true";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -27,13 +29,20 @@ export default function RootLayout({
         <meta name="referrer" content="no-referrer" />
       </head>
       <body>
-        <div className="demo-wrapper">
-          <div id="app-frame" className="app-frame">
+        {isDemo ? (
+          <div className="demo-wrapper">
+            <div id="app-frame" className="app-frame">
+              {children}
+              <BottomTabBar />
+            </div>
+            <DemoPanel />
+          </div>
+        ) : (
+          <div className="prod-wrapper">
             {children}
             <BottomTabBar />
           </div>
-          <DemoPanel />
-        </div>
+        )}
       </body>
     </html>
   );
