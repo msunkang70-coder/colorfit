@@ -452,7 +452,7 @@ export default function FeedPage() {
         )}
       </main>
 
-      {/* 설문 팝업 */}
+      {/* 설문 팝업 — 다크 글래스모피즘 */}
       <AnimatePresence>
         {showSurvey && (
           <motion.div
@@ -460,78 +460,139 @@ export default function FeedPage() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             className="fixed inset-0 z-50 flex items-end justify-center"
-            style={{ backgroundColor: "rgba(0,0,0,0.4)" }}
+            style={{ backgroundColor: "rgba(0,0,0,0.6)", backdropFilter: "blur(4px)" }}
             onClick={() => completeSurvey(true)}
           >
             <motion.div
               initial={{ y: 300 }}
               animate={{ y: 0 }}
               exit={{ y: 300 }}
-              transition={{ type: "spring", damping: 25, stiffness: 300 }}
-              className="w-full rounded-t-2xl bg-bg"
-              style={{ maxWidth: 393, padding: "24px 20px 32px" }}
+              transition={{ type: "spring", damping: 28, stiffness: 320 }}
+              className="w-full"
+              style={{
+                maxWidth: 393,
+                padding: "20px 20px 32px",
+                borderRadius: "20px 20px 0 0",
+                background: "rgba(30,27,24,0.95)",
+                backdropFilter: "blur(20px)",
+                WebkitBackdropFilter: "blur(20px)",
+                border: "1px solid rgba(255,255,255,0.08)",
+                borderBottom: "none",
+              }}
               onClick={(e) => e.stopPropagation()}
             >
-              <p style={{ fontSize: "15px", fontWeight: 600, color: "#222222" }}>
-                이 코디를 얼마나 신뢰하나요?
+              {/* 드래그 핸들 */}
+              <div style={{ width: 36, height: 4, borderRadius: 2, background: "rgba(255,255,255,0.15)", margin: "0 auto 20px" }} />
+
+              {/* 헤더 */}
+              <p style={{ fontSize: "11px", fontWeight: 600, color: "#964F4C", letterSpacing: "1.5px", textTransform: "uppercase", marginBottom: 4 }}>
+                Quick Survey
               </p>
-              <div className="flex gap-[8px] mt-[12px]">
-                {[1, 2, 3, 4, 5].map((n) => (
-                  <button
-                    key={n}
-                    onClick={() => setTrustScore(n)}
-                    className="flex-1 py-[12px] rounded-lg font-semibold"
-                    style={{
-                      fontSize: "16px",
-                      backgroundColor: trustScore === n ? "#964F4C" : "#F0EDE8",
-                      color: trustScore === n ? "#FFFFFF" : "#222222",
-                      transition: "background-color 0.15s, color 0.15s",
-                    }}
-                  >
-                    {n}
-                  </button>
-                ))}
-              </div>
-              <p className="text-text-tertiary mt-[4px]" style={{ fontSize: "11px" }}>
-                1 = 전혀 신뢰 안함 · 5 = 매우 신뢰
+              <p style={{ fontSize: "17px", fontWeight: 700, color: "rgba(240,237,232,0.9)", lineHeight: 1.3 }}>
+                이 코디, 어떠셨나요?
+              </p>
+              <p style={{ fontSize: "12px", color: "rgba(255,255,255,0.3)", marginTop: 4 }}>
+                2개 질문 · 5초면 끝나요
               </p>
 
-              <p className="mt-[20px]" style={{ fontSize: "15px", fontWeight: 600, color: "#222222" }}>
-                이대로 입을 것 같나요?
-              </p>
-              <div className="flex gap-[8px] mt-[12px]">
-                {([["yes", "네"], ["no", "아니요"]] as const).map(([val, label]) => (
-                  <button
-                    key={val}
-                    onClick={() => setConfidence(val)}
-                    className="flex-1 py-[12px] rounded-lg font-semibold"
-                    style={{
-                      fontSize: "15px",
-                      backgroundColor: confidence === val ? "#964F4C" : "#F0EDE8",
-                      color: confidence === val ? "#FFFFFF" : "#222222",
-                      transition: "background-color 0.15s, color 0.15s",
-                    }}
-                  >
-                    {label}
-                  </button>
-                ))}
+              {/* Q1: 신뢰도 */}
+              <div style={{ marginTop: 20, padding: "16px", borderRadius: 14, background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.06)" }}>
+                <p style={{ fontSize: "13px", fontWeight: 600, color: "rgba(240,237,232,0.8)", marginBottom: 10 }}>
+                  추천 신뢰도
+                </p>
+                <div className="flex gap-[6px]">
+                  {[1, 2, 3, 4, 5].map((n) => (
+                    <motion.button
+                      key={n}
+                      whileTap={{ scale: 0.92 }}
+                      onClick={() => setTrustScore(n)}
+                      className="flex-1 rounded-xl font-semibold"
+                      style={{
+                        padding: "12px 0",
+                        fontSize: "15px",
+                        backgroundColor: trustScore === n ? "#964F4C" : "rgba(255,255,255,0.06)",
+                        color: trustScore === n ? "#FFFFFF" : "rgba(255,255,255,0.4)",
+                        border: trustScore === n ? "1px solid rgba(150,79,76,0.5)" : "1px solid rgba(255,255,255,0.06)",
+                        transition: "all 0.2s",
+                      }}
+                    >
+                      {n}
+                    </motion.button>
+                  ))}
+                </div>
+                <div style={{ display: "flex", justifyContent: "space-between", marginTop: 6 }}>
+                  <span style={{ fontSize: "10px", color: "rgba(255,255,255,0.2)" }}>전혀 안 맞아요</span>
+                  <span style={{ fontSize: "10px", color: "rgba(255,255,255,0.2)" }}>완벽해요</span>
+                </div>
               </div>
 
-              <div className="flex gap-[8px] mt-[24px]">
+              {/* Q2: 구매 확신 */}
+              <div style={{ marginTop: 12, padding: "16px", borderRadius: 14, background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.06)" }}>
+                <p style={{ fontSize: "13px", fontWeight: 600, color: "rgba(240,237,232,0.8)", marginBottom: 10 }}>
+                  이대로 입고 나갈 수 있나요?
+                </p>
+                <div className="flex gap-[8px]">
+                  {([["yes", "네, 입을래요", "👍"], ["no", "아니요, 패스", "👎"]] as const).map(([val, label, emoji]) => (
+                    <motion.button
+                      key={val}
+                      whileTap={{ scale: 0.95 }}
+                      onClick={() => setConfidence(val)}
+                      className="flex-1 rounded-xl font-semibold"
+                      style={{
+                        padding: "14px 0",
+                        fontSize: "14px",
+                        backgroundColor: confidence === val
+                          ? val === "yes" ? "rgba(107,127,94,0.25)" : "rgba(160,120,48,0.2)"
+                          : "rgba(255,255,255,0.06)",
+                        color: confidence === val
+                          ? val === "yes" ? "rgba(140,180,130,0.9)" : "rgba(200,170,100,0.9)"
+                          : "rgba(255,255,255,0.4)",
+                        border: confidence === val
+                          ? val === "yes" ? "1px solid rgba(107,127,94,0.35)" : "1px solid rgba(160,120,48,0.3)"
+                          : "1px solid rgba(255,255,255,0.06)",
+                        transition: "all 0.2s",
+                      }}
+                    >
+                      <span style={{ marginRight: 4 }}>{emoji}</span>{label}
+                    </motion.button>
+                  ))}
+                </div>
+              </div>
+
+              {/* 버튼 */}
+              <div className="flex gap-[8px]" style={{ marginTop: 20 }}>
                 <button
                   onClick={() => completeSurvey(true)}
-                  className="flex-1 py-[12px] rounded-xl text-text-secondary"
-                  style={{ fontSize: "14px", border: "1.5px solid #E5E1DA" }}
+                  className="flex-1 rounded-xl"
+                  style={{
+                    padding: "14px 0",
+                    fontSize: "13px",
+                    fontWeight: 500,
+                    color: "rgba(255,255,255,0.35)",
+                    background: "rgba(255,255,255,0.04)",
+                    border: "1px solid rgba(255,255,255,0.08)",
+                  }}
                 >
                   건너뛰기
                 </button>
-                <button
+                <motion.button
+                  whileTap={{ scale: 0.97 }}
                   onClick={() => completeSurvey(false)}
-                  className="flex-1 py-[12px] rounded-xl text-white font-bold"
-                  style={{ fontSize: "14px", backgroundColor: "#964F4C" }}
+                  className="flex-1 rounded-xl font-bold"
+                  style={{
+                    padding: "14px 0",
+                    fontSize: "14px",
+                    background: (trustScore > 0 || confidence)
+                      ? "linear-gradient(135deg, #964F4C, #C4726F)"
+                      : "rgba(150,79,76,0.3)",
+                    color: "#FFFFFF",
+                    border: "none",
+                    boxShadow: (trustScore > 0 || confidence) ? "0 4px 16px rgba(150,79,76,0.3)" : "none",
+                    transition: "all 0.2s",
+                  }}
                 >
-                  제출하고 쇼핑몰 이동
-                </button>
+                  제출하고 쇼핑몰 이동 →
+                </motion.button>
               </div>
             </motion.div>
           </motion.div>
