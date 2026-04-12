@@ -213,16 +213,8 @@ export default function FeedPage() {
 
     const item = decision?.items[0];
     if (item) {
-      const url = item.mall_url || "";
-      let targetUrl: string;
-      if (url && url.startsWith("http") && !url.includes("/search/all?")) {
-        targetUrl = url;
-      } else {
-        const name = item.name || item.category || "패션";
-        const cat = item.category || "";
-        const query = cat ? `${cat} ${name.slice(0, 30)}` : name.slice(0, 30);
-        targetUrl = `https://search.shopping.naver.com/search/all?query=${encodeURIComponent(query)}&cat_id=&frm=NVSHATC`;
-      }
+      const name = item.name || item.category || "패션";
+      const targetUrl = `https://search.shopping.naver.com/search/all?query=${encodeURIComponent(name)}&cat_id=&frm=NVSHATC`;
       const newWindow = window.open(targetUrl, "_blank");
       if (!newWindow) window.location.href = targetUrl;
     }

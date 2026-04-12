@@ -21,16 +21,9 @@ interface OutfitItem {
 }
 
 function getItemUrl(item: OutfitItem): string {
-  const url = item.mall_url || "";
-  // 직접 링크가 있으면 그대로 사용 (smartstore, coupang, catalog 등)
-  if (url && url.startsWith("http") && !url.includes("/search/all?")) {
-    return url;
-  }
-  // fallback: 카테고리 + 상품명 앞부분으로 네이버 쇼핑 검색
+  // 상품명 전체로 네이버 쇼핑 검색 (상품 삭제/품절 대응)
   const name = item.name || item.category || "패션";
-  const cat = item.category || "";
-  const query = cat ? `${cat} ${name.slice(0, 30)}` : name.slice(0, 30);
-  return `https://search.shopping.naver.com/search/all?query=${encodeURIComponent(query)}&cat_id=&frm=NVSHATC`;
+  return `https://search.shopping.naver.com/search/all?query=${encodeURIComponent(name)}&cat_id=&frm=NVSHATC`;
 }
 
 interface OutfitCardProps {
@@ -472,7 +465,7 @@ export default function OutfitCard({
                     className="flex-1 rounded-xl flex items-center justify-center"
                     style={{ height: 48, fontSize: "14px", fontWeight: 600, backgroundColor: "#964F4C", color: "#fff", textDecoration: "none" }}
                   >
-                    상품 보러가기 →
+                    유사 상품 찾기 →
                   </a>
                 </div>
               </div>
