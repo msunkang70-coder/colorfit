@@ -22,8 +22,10 @@
   │     ├ 화면별 DOM 구조                                 │
   │     └ 설문 바텀시트 (Quick Survey)                    │
   │ 11. Decisions Log         — 디자인 결정 이력           │
+  │ 12. Change Summary        — 오리지널→현재 변경 사항    │
   │                                                     │
   │  ★ 현재 앱에 적용된 디자인은 10번 섹션이 핵심입니다     │
+  │  ★ 뭐가 바뀌었는지 빠르게 보려면 12번을 보세요         │
   │  구현 파일: frontend/app/globals.css                   │
   │  배경 이미지: frontend/public/images/style/            │
   └─────────────────────────────────────────────────────┘
