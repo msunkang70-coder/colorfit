@@ -215,13 +215,12 @@ export default function FeedPage() {
     if (item) {
       const name = item.name || item.category || "패션";
       let clean = name.replace(/\[.*?\]/g, "").trim();
-      const noise = ["단일사이즈","빅사이즈","빅 사이즈","임부복","하객룩","출근룩","데일리룩","데일리","사계절","간절기","무료배송","당일발송","면접"];
+      const noise = ["단일사이즈","빅사이즈","빅 사이즈","임부복","하객룩","출근룩","데일리룩","데일리","사계절","간절기","무료배송","당일발송","면접","반팔","긴팔","오버핏","루즈핏","레귤러핏","슬림핏"];
       for (const n of noise) clean = clean.replaceAll(n, "");
       clean = clean.replace(/\b(77|88|99|100|105|110|XS|S|M|L|XL|XXL|2XL|3XL|FREE)\b/gi, "").replace(/\s+/g, " ").trim();
-      const words = clean.split(" ").slice(0, 4);
-      let query = words.join(" ");
-      if (item.brand && !query.includes(item.brand)) query = item.brand + " " + query;
-      const searchUrl = `https://search.naver.com/search.naver?where=nexearch&sm=top_hty&fbm=0&ie=utf8&query=${encodeURIComponent(query.trim())}`;
+      const words = clean.split(" ").filter(w => w.length > 0).slice(0, 4);
+      const query = words.join(" ");
+      const searchUrl = `https://search.shopping.naver.com/search/all?query=${encodeURIComponent(query)}&cat_id=&frm=NVSHATC`;
       const newWindow = window.open(searchUrl, "_blank");
       if (!newWindow) window.location.href = searchUrl;
     }
