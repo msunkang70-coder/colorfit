@@ -55,6 +55,7 @@
 
 ## 디자인 시스템
 DESIGN.md를 반드시 읽고 UI 구현할 것.
+**UI 관련 코드(globals.css, 컴포넌트, 레이아웃) 변경 시 DESIGN.md도 즉시 동기화할 것. 코드만 수정하고 문서를 안 바꾸면 안 된다.**
 - 서체: Nanum Myeongjo (헤드라인) + Pretendard Variable (본문)
 - 액센트: Marsala #964F4C
 - 배경: Warm Off-White #F8F6F3
