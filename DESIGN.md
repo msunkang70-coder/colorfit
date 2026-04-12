@@ -59,9 +59,9 @@
 - **UI/Labels:** Pretendard Variable 500/600
 - **Data/Tables:** Pretendard Variable (font-variant-numeric: tabular-nums)
 - **Code:** JetBrains Mono (내부 개발용만)
-- **Loading:** Google Fonts CDN (`family=Nanum+Myeongjo:wght@400;700;800`)
+- **Loading:** Nanum Myeongjo — Google Fonts (next/font/google). Pretendard — CSS 변수 선언, 시스템 폰트 fallback (별도 CDN 로딩 없음)
 - **Scale:**
-  - h1: 36px / Nanum Myeongjo 700 / line-height 1.15
+  - h1: 32px / Nanum Myeongjo 700 / line-height 1.2
   - h2: 24px / Nanum Myeongjo 700 / line-height 1.25
   - h3: 18px / Nanum Myeongjo 700 / line-height 1.3
   - body: 16px / Pretendard 400 / line-height 1.6
@@ -87,15 +87,17 @@
 
 ### Score Axis Colors
 모든 축이 웜/뉴트럴 톤으로 통일. 동시 배치 시 시각 조화 확보.
+CSS 변수는 v1 약어(pcf/of/ch/pe/sf)를 사용하며, v2 축 이름(tpo/fit/color/style)과 매핑.
 
-| Axis | Name | HEX | Usage |
-|------|------|-----|-------|
-| tpo | Marsala | #964F4C | TPO 최적형 |
-| fit | Ocean Blue | #4F97A3 | 핏 추천형 |
-| color | Honey Gold | #A07830 | 컬러 매칭형 |
-| style | Grape Compote | #6B5B8A | 스타일 통일형 |
+| Axis (v2) | CSS 변수 | Name | Light HEX | Dark HEX | Usage |
+|-----------|---------|------|-----------|----------|-------|
+| tpo | `--color-score-pcf` | Marsala | #964F4C | #C4726F | TPO 최적형 |
+| fit | `--color-score-of` | Ocean Blue | #4F97A3 | #6BADB9 | 핏 추천형 |
+| color | `--color-score-ch` | Warm Gold | #DDB67D | #E8C693 | 컬러 매칭형 |
+| style | `--color-score-sf` | Grape | #6B5876 | #896E96 | 스타일 통일형 |
+| (legacy) | `--color-score-pe` | Amber | #D1933F | #DBA84F | 가성비 (v1 전용) |
 
-Score bar track (미충전): #E5E1DA (Border)
+Score bar track (미충전): #E5E1DA (`--color-score-track`)
 
 ### Semantic Colors (Warm-toned)
 표준 시맨틱 컬러 대신 웜 팔레트와 조화하는 톤 사용.
@@ -116,10 +118,10 @@ Score bar track (미충전): #E5E1DA (Border)
 | bg-secondary | #F0EDE8 | #242018 |
 | text-primary | #222222 | #F0EDE8 |
 | brand-accent | #964F4C | #C4726F |
-| score-tpo | #964F4C | #C4726F |
-| score-fit | #4F97A3 | #6BADB9 |
-| score-color | #A07830 | #C49540 |
-| score-style | #6B5B8A | #8971A6 |
+| score-tpo (pcf) | #964F4C | #C4726F |
+| score-fit (of) | #4F97A3 | #6BADB9 |
+| score-color (ch) | #DDB67D | #E8C693 |
+| score-style (sf) | #6B5876 | #896E96 |
 
 <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
 <!-- 5. 여백 — 8px 베이스, 2xs~3xl 스케일                   -->
