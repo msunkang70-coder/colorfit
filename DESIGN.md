@@ -1,11 +1,47 @@
 # Design System — ColorFit
 
+<!--
+  ┌─────────────────────────────────────────────────────┐
+  │  이 파일의 구조 (위에서 아래로 읽으면 됩니다)           │
+  │                                                     │
+  │  1. Product Context      — 서비스 정의               │
+  │  2. Aesthetic Direction   — 디자인 방향성              │
+  │  3. Typography            — 서체 규칙                 │
+  │  4. Color                 — 컬러 시스템 (라이트 기준)   │
+  │     └ Score Axis / Semantic / Dark Mode 토큰          │
+  │  5. Spacing               — 여백 (8px 베이스)         │
+  │  6. Layout                — 레이아웃 + border-radius   │
+  │  7. Motion                — 애니메이션 규칙            │
+  │  8. Components            — 버튼/태그/카드/인풋        │
+  │  9. Card Variants (v3)    — Full/Compact 카드         │
+  │ 10. ★ Dark Glassmorphism Theme (v4) — 현재 테마 전부  │
+  │     ├ 컬러 토큰 (다크 모드 실제 값)                    │
+  │     ├ 글래스모피즘 컴포넌트 (glass-card/cta/chip)      │
+  │     ├ 배경 이미지 시스템 (7화면 × 남녀)                │
+  │     ├ 레이아웃 모드 (프로덕션 vs 데모)                 │
+  │     ├ 화면별 DOM 구조                                 │
+  │     └ 설문 바텀시트 (Quick Survey)                    │
+  │ 11. Decisions Log         — 디자인 결정 이력           │
+  │                                                     │
+  │  ★ 현재 앱에 적용된 디자인은 10번 섹션이 핵심입니다     │
+  │  구현 파일: frontend/app/globals.css                   │
+  │  배경 이미지: frontend/public/images/style/            │
+  └─────────────────────────────────────────────────────┘
+-->
+
+<!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
+<!-- 1. 서비스 정의 — 이 서비스가 뭔지, 누구를 위한 건지     -->
+<!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
 ## Product Context
 - **What this is:** AI 퍼스널컬러 기반 패션 의사결정 엔진. 진단 결과를 실제 쇼핑에 연결한다.
 - **Who it's for:** 20대 중후반 여성, 퍼스널컬러 진단 후 쇼핑에 활용 못하는 사람
 - **Space/industry:** 퍼스널컬러 × 패션 커머스. 경쟁자: mycolor.kr, Dressika, 잼페이스(뷰티 앱), Fits, Indyx(스타일링 앱)
 - **Project type:** 모바일 웹 (반응형, 모바일 퍼스트)
 
+<!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
+<!-- 2. 디자인 방향성 — 어떤 느낌을 추구하는지               -->
+<!--    경쟁사 대비 차별화 포인트: "뷰티 앱"이 아닌 "패션 매거진" -->
+<!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
 ## Aesthetic Direction
 - **Direction:** Editorial/Magazine
 - **Decoration level:** Intentional (여백이 고급스러움을 만든다. 장식은 최소한)
@@ -13,6 +49,10 @@
 - **Differentiation:** 모든 경쟁 퍼스널컬러 앱이 파스텔 핑크/퍼플 "뷰티 앱"으로 보이는데, ColorFit만 "패션 매거진"으로 보인다. 이것이 핵심 차별화.
 - **Reference:** COS(여백+세리프+뉴트럴), SSENSE(풀블리드+미니멀 타이포), Farfetch(카드+가격 표시), Pinterest(저장 인터랙션)
 
+<!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
+<!-- 3. 서체 — 헤드라인(Nanum Myeongjo) + 본문(Pretendard) -->
+<!--    h1~h3, body, caption, micro 사이즈 스케일 정의      -->
+<!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
 ## Typography
 - **Display/Hero:** Nanum Myeongjo 700/800 — 한국 에디토리얼의 클래식. Vogue Korea, W Korea가 실제로 쓰는 서체. 얇고 우아한 획이 패션 매거진 무드를 만든다.
 - **Body:** Pretendard Variable 400/500/600 — 한글 가독성 최적화. 다양한 웨이트로 위계 표현. 검증된 본문체.
@@ -28,6 +68,11 @@
   - caption: 13px / Pretendard 400 / line-height 1.5
   - micro: 11px / Pretendard 400 / line-height 1.4
 
+<!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
+<!-- 4. 컬러 시스템 — 라이트 모드 기준 (원본)                -->
+<!--    Accent: Marsala #964F4C (핵심 브랜드 컬러)          -->
+<!--    다크 모드 실제 값은 아래 "Dark Glassmorphism" 섹션   -->
+<!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
 ## Color
 - **Approach:** Restrained. UI는 뉴트럴, 색상은 코디 이미지에 양보한다.
 - **Primary:** #222222 (Charcoal Black) — 텍스트, 헤더, Primary 버튼
@@ -76,11 +121,17 @@ Score bar track (미충전): #E5E1DA (Border)
 | score-color | #A07830 | #C49540 |
 | score-style | #6B5B8A | #8971A6 |
 
+<!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
+<!-- 5. 여백 — 8px 베이스, 2xs~3xl 스케일                   -->
+<!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
 ## Spacing
 - **Base unit:** 8px
 - **Density:** Comfortable
 - **Scale:** 2xs(2) xs(4) sm(8) md(16) lg(24) xl(32) 2xl(48) 3xl(64)
 
+<!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
+<!-- 6. 레이아웃 — 그리드, max-width, border-radius         -->
+<!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
 ## Layout
 - **Approach:** Hybrid. 피드는 카드 그리드, 온보딩은 풀스크린 에디토리얼.
 - **Grid:** 모바일 1열, 태블릿 2열
@@ -92,6 +143,9 @@ Score bar track (미충전): #E5E1DA (Border)
   - xl: 16px (온보딩 카드)
   - full: 9999px (필, 아바타)
 
+<!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
+<!-- 7. 모션 — Framer Motion spring 기반, 장식 애니메이션 금지 -->
+<!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
 ## Motion
 - **Approach:** Intentional. 의미 있는 모션만. 장식 아님.
 - **Library:** Framer Motion 11 (spring 물리 기반)
@@ -105,6 +159,9 @@ Score bar track (미충전): #E5E1DA (Border)
   - 바텀시트: y:100%→0, spring(stiffness:300, damping:30)
 - **Rule:** `prefers-reduced-motion` 존중. `transition: all` 금지. transform/opacity만 애니메이션.
 
+<!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
+<!-- 8. 공통 컴포넌트 — 버튼/태그/카드/인풋 기본 스타일       -->
+<!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
 ## Components
 - **Buttons:** Primary(Marsala bg, white text), Secondary(Marsala outline), Ghost(border only)
 - **Pills/Tags:** Active(Marsala bg), Inactive(Surface bg + border), Score(Surface bg)
@@ -112,11 +169,20 @@ Score bar track (미충전): #E5E1DA (Border)
 - **Inputs:** bg-primary, border, rounded-md, focus시 border → Marsala
 - **Alerts:** 웜 톤 시맨틱 (위 Semantic Colors 참조)
 
+<!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
+<!-- 9. 카드 변형 — Full(기본) / Compact(Explore) / 축 뱃지  -->
+<!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
 ## Card Variants (v3)
 - **Full Card:** 기본 코디 카드. 3:4 이미지 + core(Nanum Myeongjo 16px) + price + evidence + risk_guard. padding 0 20px.
 - **Compact Card:** Explore Mode 축소 카드. Surface bg(#F0EDE8), rounded-lg(8px), padding 12px. 가로 배치: 썸네일(80x100, rounded-md) + 텍스트(core 14px + price 14px + evidence 12px 1줄). 탭 시 해당 코디 선택.
 - **Axis Label Badge:** 축 라벨 필 뱃지. Marsala bg(#964F4C), white text, rounded-full, fontSize 10~11px, padding 2-3px 8-10px. Full/Compact 모두 사용.
 
+<!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
+<!-- ★ 10. 다크 글래스모피즘 테마 — 현재 앱에 적용된 핵심 섹션 -->
+<!--    구현 파일: frontend/app/globals.css                 -->
+<!--    배경 이미지: frontend/public/images/style/           -->
+<!--    레이아웃: frontend/app/layout.tsx                    -->
+<!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
 ## Dark Glassmorphism Theme (v4, 2026-04-10~)
 
 현재 앱의 기본 테마. iOS 다크 모드 + 글래스모피즘 기반.
@@ -202,6 +268,10 @@ Score bar track (미충전): #E5E1DA (Border)
 - Q2 구매 확신: 👍/👎 이모지 + 시맨틱 컬러 (초록=네, 노랑=아니요)
 - 제출 CTA: 입력 시 Marsala 그래디언트 활성화 + 글로우 섀도우
 
+<!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
+<!-- 11. 디자인 결정 이력 — 왜 이렇게 결정했는지 기록         -->
+<!--     날짜순. 새로운 결정은 맨 아래에 추가                  -->
+<!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
 ## Decisions Log
 | Date | Decision | Rationale |
 |------|----------|-----------|
