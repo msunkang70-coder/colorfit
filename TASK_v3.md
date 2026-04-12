@@ -331,13 +331,52 @@
 - [x] KPI 분석 스크립트: `scripts/analyze_kpi.py`
   - 가설 H1~H5 자동 판정, TTD/CTR/신뢰도/확신/Explore진입율/selected_rank 분석
 
-**Task 5.7v3 — 사용자 검증 테스트** 🔄 `준비 완료, 실행 대기`
+**Task 5.7v3 — 사용자 검증 테스트** 🔄 `초대 배포 완료, 테스트 진행 중`
 - [x] 테스트 가이드 문서 작성: `docs/USER_TEST_GUIDE.md`
 - [x] KPI 분석 스크립트 준비: `scripts/analyze_kpi.py`
+- [x] 초대 페이지 배포: `/invite.html` (다크 글래스모피즘 디자인)
 - [ ] 테스트 참여자 모집: 진단러 10명 + 효율러 10명 = 20명
 - [ ] 1주간 자유 사용 기간 운영
 - [ ] 가설별 검증 리포트 작성
 - **의존:** 참여자 모집 (수동 작업)
+
+### Lane I: 발표 준비 + 프로덕션 리파인 (4/10~4/13) ✅
+
+**Task 5.8 — 발표자료 + 스크립트** ✅ `2026-04-11`
+- [x] presentation.html 14장 슬라이드 (Problem→Pipeline→Data→Backend→QA→Demo)
+- [x] 구어체 발표 스크립트 + 예상 Q&A 11개
+- [x] 슬라이드 2 사실 기반 수정 (QA 검증 → 경쟁 서비스 분석 → 가설 수립)
+- [x] 백엔드 데이터 구조 슬라이드 추가 (3레벨: DB모델/데이터파일/API스키마)
+- **산출물:** `docs/presentation.html`, `docs/ColorFit_발표스크립트.docx` (로컬 전용)
+
+**Task 5.9 — 프로덕션/데모 모드 분리** ✅ `2026-04-11`
+- [x] `NEXT_PUBLIC_DEMO_MODE` 환경변수로 분기
+- [x] 프로덕션: DemoPanel + iPhone 프레임 제거, 풀스크린 480px 레이아웃
+- [x] 데모(localhost): iPhone 프레임 + DemoPanel 유지
+- **수정 파일:** `frontend/app/layout.tsx`, `frontend/app/globals.css`
+
+**Task 5.10 — 설문 UI 리디자인** ✅ `2026-04-11`
+- [x] 라이트 모드 → 다크 글래스모피즘 통일
+- [x] Quick Survey 태그 + "2개 질문 · 5초면 끝나요" 안내
+- [x] Q1 신뢰도: 글래스 카드 + 양끝 라벨
+- [x] Q2 구매 확신: 이모지 + 시맨틱 컬러 (초록/노랑)
+- [x] 제출 CTA: 입력 시 그래디언트 활성화
+- **수정 파일:** `frontend/app/feed/page.tsx`
+
+**Task 5.11 — 유저테스트 초대 페이지** ✅ `2026-04-11`
+- [x] 다크 글래스모피즘 디자인
+- [x] 가치 pill 3개 (1분/1벌/이유설명) + 아이콘 플로우
+- [x] CTA "내 코디 찾으러 가기" + 신뢰 시그널
+- [x] Vercel 배포: `/invite.html`
+- **산출물:** `frontend/public/invite.html`
+
+**Task 5.12 — 데이터 정합성 복원 + 상품 링크 수정** ✅ `2026-04-12`
+- [x] product_id별 이미지/상품명/브랜드 통일 (불일치 371→0개)
+- [x] image_url에서 실제 productId 추출하여 product_id 교정
+- [x] name을 title(이미지 매칭 원본)로 통일: 3,848개
+- [x] mall_url: 네이버 쇼핑 검색 (상품 삭제/품절 대응, "유사 상품 찾기")
+- [x] TypeScript 빌드 에러 수정 (FeedOutfit 타입 situation/style_tag 추가)
+- **수정 파일:** `backend/data/outfits_scored.json`, `frontend/components/OutfitCard.tsx`, `frontend/app/feed/page.tsx`, `frontend/lib/feed-utils.ts`
 
 ### W5 완료 기준
 - [x] 프로덕션 URL 접속 가능 (Task 5.5v3)
