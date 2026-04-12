@@ -117,6 +117,91 @@ Score bar track (미충전): #E5E1DA (Border)
 - **Compact Card:** Explore Mode 축소 카드. Surface bg(#F0EDE8), rounded-lg(8px), padding 12px. 가로 배치: 썸네일(80x100, rounded-md) + 텍스트(core 14px + price 14px + evidence 12px 1줄). 탭 시 해당 코디 선택.
 - **Axis Label Badge:** 축 라벨 필 뱃지. Marsala bg(#964F4C), white text, rounded-full, fontSize 10~11px, padding 2-3px 8-10px. Full/Compact 모두 사용.
 
+## Dark Glassmorphism Theme (v4, 2026-04-10~)
+
+현재 앱의 기본 테마. iOS 다크 모드 + 글래스모피즘 기반.
+
+### 핵심 원칙
+- 배경: 풀스크린 룩북 이미지 + 다크 그래디언트 오버레이
+- UI 요소: 반투명 유리(blur) 카드 위에 배치
+- 순수 블랙 사용 금지 → `#1A1714` (웜 차콜)
+- 순수 흰색 사용 금지 → `rgba(255,255,255,0.XX)` 투명도로 위계 표현
+
+### 컬러 토큰 (다크 모드)
+| Token | Value | Usage |
+|-------|-------|-------|
+| bg-base | `#1A1714` | 페이지 배경 |
+| bg-card | `rgba(255,255,255,0.08)` | 글래스 카드 |
+| bg-card-active | `rgba(150,79,76,0.15)` | 선택된 카드 |
+| text-primary | `rgba(240,237,232,0.9)` | 주요 텍스트 |
+| text-secondary | `rgba(255,255,255,0.5)` | 보조 텍스트 |
+| text-tertiary | `rgba(255,255,255,0.25)` | 캡션/비활성 |
+| border | `rgba(255,255,255,0.1)` | 카드/구분선 |
+| accent | `#964F4C` / `#C4726F` | CTA/강조 |
+| success | `rgba(107,127,94,0.9)` | risk_guard 안전 |
+| warning | `rgba(160,120,48,0.9)` | 주의 |
+
+### 글래스모피즘 컴포넌트
+구현: `frontend/app/globals.css`
+
+| 컴포넌트 | 배경 | blur | border | 용도 |
+|---------|------|------|--------|------|
+| `.glass-card` | `rgba(255,255,255,0.08)` | 12px | `rgba(255,255,255,0.1)` | 온보딩 선택 카드 |
+| `.glass-card.active` | `rgba(150,79,76,0.15)` | 12px | `rgba(150,79,76,0.5)` | 선택된 상태 |
+| `.glass-cta` | `linear-gradient(#7A3E3C → #964F4C → #B5605D)` | — | — | CTA 버튼 |
+| `.glass-chip` | `rgba(255,255,255,0.06)` | — | `rgba(255,255,255,0.1)` | TPO/무드 칩 |
+| `.glass-chip.on` | `rgba(150,79,76,0.25)` | — | `#964F4C` | 선택된 칩 |
+| 설문 바텀시트 | `rgba(30,27,24,0.95)` | 20px | `rgba(255,255,255,0.08)` | Quick Survey |
+
+### 배경 이미지 시스템
+구현: `frontend/app/globals.css`, 이미지 위치: `frontend/public/images/style/`
+
+**구조:** 풀스크린 이미지 → 다크 그래디언트 오버레이 → 콘텐츠
+
+| 화면 | 여성 이미지 | 남성 이미지 | CSS 클래스 |
+|------|-----------|-----------|-----------|
+| Welcome | `style_1.jpg` | `style_1.jpg` | `.welcome-bg` |
+| Step1 성별 | `style_1.jpg` | `style_1.jpg` | `.ob-bg-step1` |
+| Step2 톤 | `style_8.jpg` | `male_8.jpg` | `.ob-bg-step2-f/m` |
+| Step3 TPO+무드 | `style_5.jpg` | `male_5.jpg` | `.ob-bg-step3-f/m` |
+| Step4 예산 | `style_12.jpg` | `male_4.jpg` | `.ob-bg-step4-f/m` |
+| Step5 취향 | `style_4.jpg` | `male_1.jpg` | `.ob-bg-step5-f/m` |
+| Feed | `style_1.jpg` | `male_1.jpg` | `.feed-bg-f/m` |
+
+**오버레이 그래디언트:**
+- 온보딩: `rgba(20,18,16, 0.1→0.45→0.82→0.96)` — 하단으로 갈수록 어두워짐
+- Welcome: `rgba(20,18,16, 0.05→0.35→0.8→0.97)` — 콘텐츠 영역 가독성 확보
+- Feed: `rgba(20,18,16, 0.65)` 균일 + 이미지 `brightness(0.3) saturate(0.3) blur(6px)`
+
+**성별 분기:** Step1에서 성별 선택 시 Step2~5 + Feed 배경이 자동 전환
+
+### 레이아웃 모드
+구현: `frontend/app/layout.tsx`
+
+| 모드 | 조건 | 레이아웃 |
+|------|------|---------|
+| **프로덕션** | `NEXT_PUBLIC_DEMO_MODE` 미설정 | 풀스크린, max-width 480px, DemoPanel 없음 |
+| **데모** | `NEXT_PUBLIC_DEMO_MODE=true` | iPhone 15 Pro 프레임(393×852) + 우측 DemoPanel |
+
+**프로덕션 (`.prod-wrapper`):** `max-width: 480px; margin: 0 auto;`
+**데모 (`.app-frame`):** `width: 393px; min-height: 852px; border-radius: 40px; border: 6px solid #3A3530;`
+
+### 화면별 구조
+| 화면 | 파일 | 배경 구조 |
+|------|------|----------|
+| Welcome | `frontend/app/page.tsx` | `.welcome-page > .welcome-bg + .welcome-overlay + .welcome-content` |
+| 온보딩 | `frontend/app/onboarding/step*/page.tsx` | `.ob-page > .ob-bg + .ob-overlay + .ob-content` |
+| Feed | `frontend/app/feed/page.tsx` | `.feed-page > .feed-bg + .feed-overlay + 콘텐츠` |
+
+### 설문 바텀시트 (Quick Survey)
+구현: `frontend/app/feed/page.tsx`
+
+- 다크 반투명 배경: `rgba(30,27,24,0.95)` + `blur(20px)`
+- 드래그 핸들 + "Quick Survey" 태그
+- Q1 신뢰도: 1~5 버튼 (글래스 카드 안) + 양끝 라벨
+- Q2 구매 확신: 👍/👎 이모지 + 시맨틱 컬러 (초록=네, 노랑=아니요)
+- 제출 CTA: 입력 시 Marsala 그래디언트 활성화 + 글로우 섀도우
+
 ## Decisions Log
 | Date | Decision | Rationale |
 |------|----------|-----------|
@@ -126,3 +211,9 @@ Score bar track (미충전): #E5E1DA (Border)
 | 2026-03-28 | Alert 색상 웜 톤으로 교체 | 표준 시맨틱 컬러(초록/노랑/빨강/파랑)가 웜 팔레트와 동떨어진다는 피드백. Marsala/Ocean Blue 계열로 통일 |
 | 2026-03-28 | Marsala #964F4C를 Accent으로 확정 | 모든 경쟁 퍼스널컬러 앱이 핑크/퍼플을 쓰는 가운데, 와인 적갈색은 즉각적인 차별화. REFERENCE X Vol.1 기반 |
 | 2026-03-28 | Initial design system created | /design-consultation 리서치(mycolor.kr, Fits, SSENSE/COS 레퍼런스) + 기획서 v1.3 디자인 시스템 검증 기반 |
+| 2026-04-10 | 다크 글래스모피즘 테마 전환 | 라이트 모드 → 다크 모드. 이유: 패션 매거진 무드 강화, 이미지 중심 UI에서 다크 배경이 상품 이미지를 더 돋보이게 함 |
+| 2026-04-10 | 배경 이미지 + 오버레이 구조 도입 | 각 화면별 풀스크린 룩북 이미지 + 다크 그래디언트 오버레이. 성별 선택 시 남/여 이미지 자동 전환 |
+| 2026-04-10 | 글래스모피즘 컴포넌트 체계화 | glass-card, glass-cta, glass-chip 3종. backdrop-filter: blur 기반. iOS 디자인 랭귀지 참조 |
+| 2026-04-11 | 프로덕션/데모 모드 분리 | NEXT_PUBLIC_DEMO_MODE 환경변수로 분기. 프로덕션은 풀스크린, 데모는 iPhone 프레임+DemoPanel |
+| 2026-04-11 | 설문 UI 다크 글래스모피즘 리디자인 | 라이트 바텀시트 → 다크 blur 20px. Quick Survey 태그 + 이모지 + 시맨틱 컬러 |
+| 2026-04-12 | 상품 링크 "유사 상품 찾기"로 변경 | 정적 데이터 MVP 특성상 상품 삭제/품절 대응. 직접 링크 → 네이버 쇼핑 검색 |
