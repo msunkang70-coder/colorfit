@@ -211,12 +211,11 @@ export default function FeedPage() {
     postMetrics(payload);
     setShowSurvey(false);
 
-    const mallUrl = decision?.items[0]?.mall_url;
-    if (mallUrl) {
-      const newWindow = window.open(mallUrl, "_blank");
-      if (!newWindow) {
-        window.location.href = mallUrl;
-      }
+    const itemName = decision?.items[0]?.name || decision?.items[0]?.category || "패션";
+    const searchUrl = `https://search.naver.com/search.naver?where=nexearch&sm=top_hty&fbm=0&ie=utf8&query=${encodeURIComponent(itemName + " 구매")}`;
+    const newWindow = window.open(searchUrl, "_blank");
+    if (!newWindow) {
+      window.location.href = searchUrl;
     }
 
     showToast("결정 완료!");

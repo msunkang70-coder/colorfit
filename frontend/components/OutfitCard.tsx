@@ -451,18 +451,16 @@ export default function OutfitCard({
                   >
                     닫기
                   </button>
-                  {selectedItem.mall_url && (
-                    <a
-                      href={selectedItem.mall_url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      onClick={(e) => e.stopPropagation()}
-                      className="flex-1 rounded-xl flex items-center justify-center"
-                      style={{ height: 48, fontSize: "14px", fontWeight: 600, backgroundColor: "#964F4C", color: "#fff", textDecoration: "none" }}
-                    >
-                      상품 보러가기 →
-                    </a>
-                  )}
+                  <a
+                    href={`https://search.naver.com/search.naver?where=nexearch&sm=top_hty&fbm=0&ie=utf8&query=${encodeURIComponent((selectedItem.name || selectedItem.category || "패션") + " 구매")}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={(e) => e.stopPropagation()}
+                    className="flex-1 rounded-xl flex items-center justify-center"
+                    style={{ height: 48, fontSize: "14px", fontWeight: 600, backgroundColor: "#964F4C", color: "#fff", textDecoration: "none" }}
+                  >
+                    상품 보러가기 →
+                  </a>
                 </div>
               </div>
             </motion.div>
