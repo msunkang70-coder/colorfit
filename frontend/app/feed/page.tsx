@@ -211,11 +211,19 @@ export default function FeedPage() {
     postMetrics(payload);
     setShowSurvey(false);
 
-    const itemName = decision?.items[0]?.name || decision?.items[0]?.category || "패션";
-    const searchUrl = `https://search.naver.com/search.naver?where=nexearch&sm=top_hty&fbm=0&ie=utf8&query=${encodeURIComponent(itemName + " 구매")}`;
-    const newWindow = window.open(searchUrl, "_blank");
-    if (!newWindow) {
-      window.location.href = searchUrl;
+    const item = decision?.items[0];
+    if (item) {
+      const name = item.name || item.category || "패션";
+      let clean = name.replace(/\[.*?\]/g, "").trim();
+      const noise = ["단일사이즈","빅사이즈","빅 사이즈","임부복","하객룩","출근룩","데일리룩","데일리","사계절","간절기","무료배송","당일발송","면접"];
+      for (const n of noise) clean = clean.replaceAll(n, "");
+      clean = clean.replace(/\b(77|88|99|100|105|110|XS|S|M|L|XL|XXL|2XL|3XL|FREE)\b/gi, "").replace(/\s+/g, " ").trim();
+      const words = clean.split(" ").slice(0, 4);
+      let query = words.join(" ");
+      if (item.brand && !query.includes(item.brand)) query = item.brand + " " + query;
+      const searchUrl = `https://search.naver.com/search.naver?where=nexearch&sm=top_hty&fbm=0&ie=utf8&query=${encodeURIComponent(query.trim())}`;
+      const newWindow = window.open(searchUrl, "_blank");
+      if (!newWindow) window.location.href = searchUrl;
     }
 
     showToast("결정 완료!");
