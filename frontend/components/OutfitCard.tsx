@@ -21,12 +21,12 @@ interface OutfitItem {
 }
 
 function getItemUrl(item: OutfitItem): string {
-  // 직접 링크가 있으면 그대로 사용 (smartstore, coupang 등)
   const url = item.mall_url || "";
-  if (url && !url.includes("search.shopping.naver") && !url.includes("search.naver.com") && url.startsWith("http")) {
+  // 직접 링크가 있으면 그대로 사용 (smartstore, coupang, catalog 등)
+  if (url && url.startsWith("http") && !url.includes("/search/all?")) {
     return url;
   }
-  // fallback: 상품명 기반 네이버 쇼핑 검색
+  // fallback: 카테고리 + 상품명 앞부분으로 네이버 쇼핑 검색
   const name = item.name || item.category || "패션";
   const cat = item.category || "";
   const query = cat ? `${cat} ${name.slice(0, 30)}` : name.slice(0, 30);

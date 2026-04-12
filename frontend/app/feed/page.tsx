@@ -215,7 +215,7 @@ export default function FeedPage() {
     if (item) {
       const url = item.mall_url || "";
       let targetUrl: string;
-      if (url && !url.includes("search.shopping.naver") && !url.includes("search.naver.com") && url.startsWith("http")) {
+      if (url && url.startsWith("http") && !url.includes("/search/all?")) {
         targetUrl = url;
       } else {
         const name = item.name || item.category || "패션";
