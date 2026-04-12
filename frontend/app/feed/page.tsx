@@ -215,12 +215,17 @@ export default function FeedPage() {
     if (item) {
       const name = item.name || item.category || "패션";
       let clean = name.replace(/\[.*?\]/g, "").trim();
-      const noise = ["단일사이즈","빅사이즈","빅 사이즈","임부복","하객룩","출근룩","데일리룩","데일리","사계절","간절기","무료배송","당일발송","면접","반팔","긴팔","오버핏","루즈핏","레귤러핏","슬림핏"];
+      const noise = ["단일사이즈","빅사이즈","빅 사이즈","임부복","하객룩","출근룩","데일리룩","데일리","사계절","간절기","무료배송","당일발송","면접","오버핏","루즈핏","레귤러핏","슬림핏","여성","남성","여자","남자","봄","여름","가을","겨울","연보라","연노랑","코발트블루","파랑","흰색","아이보리","블랙","화이트","네이비","그레이","베이지","카키","브라운","핑크","레드","와인","머스타드"];
       for (const n of noise) clean = clean.replaceAll(n, "");
-      clean = clean.replace(/\b(77|88|99|100|105|110|XS|S|M|L|XL|XXL|2XL|3XL|FREE)\b/gi, "").replace(/\s+/g, " ").trim();
-      const words = clean.split(" ").filter(w => w.length > 0).slice(0, 4);
-      const query = words.join(" ");
-      const searchUrl = `https://search.shopping.naver.com/search/all?query=${encodeURIComponent(query)}&cat_id=&frm=NVSHATC`;
+      clean = clean.replace(/\b(77|88|99|100|105|110|XS|S|M|L|XL|XXL|2XL|3XL|FREE)\b/gi, "");
+      for (const s of ["반팔","긴팔","7부","9부"]) clean = clean.replaceAll(s, "");
+      clean = clean.replace(/\s+/g, " ").trim();
+      const catWords = ["니트","셔츠","블라우스","슬랙스","청바지","스커트","원피스","자켓","코트","가디건","맨투맨","후드","티셔츠","반바지","조거팬츠","트레이닝","레깅스","스니커즈","로퍼","힐","플랫슈즈","펌프스","부츠","백팩","크로스백","토트백","탑","팬츠","베스트","조끼"];
+      const words = clean.split(" ").filter(w => w.length > 0);
+      const important = words.filter(w => catWords.some(c => w.includes(c)));
+      const rest = words.filter(w => !catWords.some(c => w.includes(c)));
+      const query = [...rest.slice(0, 3), ...important].slice(0, 5).join(" ");
+      const searchUrl = `https://search.shopping.naver.com/search/all?query=${encodeURIComponent(query || name.slice(0, 20))}&cat_id=&frm=NVSHATC`;
       const newWindow = window.open(searchUrl, "_blank");
       if (!newWindow) window.location.href = searchUrl;
     }
