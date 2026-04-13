@@ -59,3 +59,23 @@ async def create_onboarding(body: OnboardingRequest) -> OnboardingResponse:
     _save_users(users)
 
     return OnboardingResponse(user_id=user_id)
+
+
+@router.get("/onboarding/summary")
+async def get_onboarding_summary() -> dict:
+    """온보딩 완료 사용자 요약."""
+    users = _load_users()
+    genders = {}
+    tones = {}
+    tpos = {}
+    moods = {}
+    for u in users:
+        g = u.get("gender", "unknown")
+        genders[g] = genders.get(g, 0) + 1
+        t = u.get("tone_id", "unknown")
+        tones[t] = tones.get(t, 0) + 1
+        for tp in u.get("tpo_list", []):
+            tpos[tp] = tpos.get(tp, 0) + 1
+        for m in u.get("style_moods", []):
+            moods[m] = moods.get(m, 0) + 1
+    return {"total": len(users), "genders": genders, "tones": tones, "tpos": tpos, "moods": moods}
