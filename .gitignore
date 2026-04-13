@@ -40,10 +40,10 @@ backend/data/eval_cache.json
 # 백업 파일
 backend/data/outfits_scored_backup_*.json
 
-# 런타임 데이터
-backend/data/metrics_log.jsonl
-backend/data/reactions.json
-backend/data/users.json
+# 런타임 데이터 — Git 추적 필요 (Railway ephemeral filesystem 대응)
+# backend/data/metrics_log.jsonl  ← 추적함 (유저테스트 데이터)
+# backend/data/reactions.json     ← 추적함
+# backend/data/users.json         ← 추적함
 
 # 이전 버전 데이터 (scored가 최종)
 backend/data/outfits.json
